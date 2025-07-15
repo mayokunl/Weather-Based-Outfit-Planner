@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block body %}
+<form method="post">
+  <label>Name: <input name="name" required></label>
+  <label>Age: <input name="age" type="number" min="1" required></label>
+  <label>Gender:
+    <select name="gender" required>
+      <option value="">— select —</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Non Binary</option>
+      <option>Prefer not to Say</option>
+      <option>Other</option>
+    </select>
+  </label>
+  <label>Email: <input name="email" type="email" required></label>
+  <button type="submit">Next →</button>
+</form>
+{% endblock %}

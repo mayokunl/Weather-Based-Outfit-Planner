@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block body %}
+<form method="post">
+<h2>Where are you going to ?</h2>
+  <label>City: <input name="city"></label>
+  <label>State, Country or Zip Code: <input name="region" required></label>
+  <button type="submit">Next →</button>
+</form>
+{% endblock %}
