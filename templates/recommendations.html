@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+<h2>Outfit Recommendations:</h2>
+<ul>
+ /* Gen AI Analysis */
+</ul>
+
+<h2>Places to Shop in {{ session.city }}</h2>
+<ul>
+    /* Gen AI Analysis */
+  
+</ul>
+
+ <div class="button-group">
+    <a href="{{ url_for('index') }}" class="btn">Start Over</a>
+  </div>
+{% endblock %}
