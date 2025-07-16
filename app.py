@@ -1,8 +1,15 @@
 # app.py
+import os
 from flask import Flask, render_template, request, redirect, url_for, session
+from dotenv import load_dotenv
+from openai_utils import build_prompt_from_session, get_recommendations
 
+# Load environment variables
+load_dotenv()
+
+# Initialize Flask app
 app = Flask(__name__)
-app.secret_key = 'dev'   # for session cookies; change before you go live!
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev')   # Use env variable or fallback to 'dev'
 
 @app.route('/')
 def index():
@@ -44,8 +51,12 @@ def duration():
 
 @app.route('/recommendations')
 def recommendations():
-    # Display all collected data including the new activities list
-    return render_template('recommendations.html', data=session)
+    # Generate AI recommendations using session data
+    prompt = build_prompt_from_session(session)
+    response = get_recommendations(prompt)
+    
+    # Pass both the AI response and session data to the template
+    return render_template('recommendations.html', response=response, data=session)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
