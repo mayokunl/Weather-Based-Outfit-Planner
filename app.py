@@ -10,6 +10,7 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    print("== Rendering register route ==")
     if request.method == 'POST':
         # store basic profile info in session
         session['name']   = request.form.get('name', '')
