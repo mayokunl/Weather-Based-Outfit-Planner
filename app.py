@@ -30,19 +30,20 @@ def destination():
 @app.route('/duration', methods=['GET', 'POST'])
 def duration():
     if request.method == 'POST':
+        # Handle both duration and activities from the combined form
         session['days'] = request.form.get('days', '')
-        return redirect(url_for('activities'))
-    return render_template('duration.html')
-
-@app.route('/activities', methods=['GET', 'POST'])
-def activities():
-    if request.method == 'POST':
+        
+        # Get all activities from the form (multiple inputs with same name)
+        activities = request.form.getlist('activities')
+        session['activities'] = activities
+        
+        # Skip the separate activities page and go directly to recommendations
         return redirect(url_for('recommendations'))
-    return render_template('activities.html')
+    return render_template('duration.html')
 
 @app.route('/recommendations')
 def recommendations():
-    # just dump everything back out for now
+    # Display all collected data including the new activities list
     return render_template('recommendations.html', data=session)
 
 if __name__ == '__main__':
