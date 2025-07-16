@@ -27,6 +27,16 @@
       <div class="ai-recommendations">
         {{ response|replace('\n', '<br>')|safe }}
       </div>
+    {% for item, urls in images.items() %}
+    <div class="recommendation-block">
+        <h4>{{ item }}</h4>
+        <div class="image-gallery">
+        {% for url in urls %}
+            <img src="{{ url }}" alt="{{ item }} image" />
+        {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
     {% else %}
       <div class="error-message">
         <p>Sorry, we couldn't generate recommendations at this time. Please make sure your OpenAI API key is configured correctly.</p>

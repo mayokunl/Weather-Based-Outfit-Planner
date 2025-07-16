@@ -15,15 +15,18 @@ def build_prompt_from_session(session):
     activities = session.get('activities', [])
     activities_text = ', '.join(activities) if activities else 'general travel'
     
+    weather_text = session.get('weather_summary', 'no weather data available')
     return f"""
-    You are a travel stylist. Based on the following trip details:
+        You are a travel stylist. Based on the following trip details:
 
-    Location: {session.get('city', 'N/A')}, {session.get('region', 'N/A')}
-    Gender: {session.get('gender', 'N/A')}
-    Age: {session.get('age', 'N/A')}
-    Activities: {activities_text}
-    Trip Duration: {session.get('days', 'N/A')} days
-    Weather: {session.get('weather_summary', 'mild and pleasant')}
+        Location: {session.get('city', 'N/A')}, {session.get('region', 'N/A')}
+        Gender:   {session.get('gender', 'N/A')}
+        Age:      {session.get('age', 'N/A')}
+        Activities: {', '.join(session.get('activities', [])) or 'general travel'}
+        Duration:   {session.get('days', 'N/A')} days
+
+        Here is the weather forecast for each day of the trip:
+        {weather_text}
 
     Please provide specific outfit recommendations for this {session.get('days', 'multi-day')} day trip. For each day, suggest:
     - Complete outfit (top, bottom, shoes, accessories)
