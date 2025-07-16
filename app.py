@@ -1,8 +1,11 @@
 # app.py
-import os
 from flask import Flask, render_template, request, redirect, url_for, session
 from dotenv import load_dotenv
 from openai_utils import build_prompt_from_session, get_recommendations
+from db_utils import add_user
+import os
+import db
+import db_utils
 
 # Load environment variables
 load_dotenv()
@@ -21,9 +24,10 @@ def register():
     if request.method == 'POST':
         # store basic profile info in session
         session['name']   = request.form.get('name', '')
+        session['email']  = request.form.get('email', '')
+        user_id = add_user(username, email)
         session['age']    = request.form.get('age', '')
         session['gender'] = request.form.get('gender', '')
-        session['email']  = request.form.get('email', '')
         return redirect(url_for('destination'))
     return render_template('register.html')
 
@@ -57,6 +61,8 @@ def recommendations():
     
     # Pass both the AI response and session data to the template
     return render_template('recommendations.html', response=response, data=session)
+    
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
