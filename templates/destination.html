@@ -1,1 +1,11 @@
-city=Baltimore&region=21234
+{% extends "layout.html" %}
+{% block body %}
+<form method="post">
+  <div class="form-section">
+    <h2>Where are you traveling?</h2>
+    <label>City: <input name="city"></label>
+    <label>State, Country or Zip Code: <input name="region" required></label>
+  </div>
+  <button type="submit">Next →</button>
+</form>
+{% endblock %}
