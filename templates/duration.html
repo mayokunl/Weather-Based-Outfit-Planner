@@ -7,11 +7,14 @@
 
 {% block body %}
 <form method="post" class="duration-container">
-  <!-- Duration Section -->
+  <!-- Trip Dates Section -->
   <div class="form-section">
-    <h2>Trip Duration</h2>
-    <label>How many days will you be traveling?
-      <input name="days" type="number" min="1" max="365" required>
+    <h2>Trip Dates</h2>
+    <label>Start Date:
+      <input name="start_date" type="date" required>
+    </label>
+    <label>End Date:
+      <input name="end_date" type="date" required>
     </label>
   </div>
 
