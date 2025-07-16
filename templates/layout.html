@@ -4,14 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Vacation Outfit Planner</title>
-  <style>
-    body { font-family: sans-serif; max-width: 400px; margin: auto; padding: 1em;}
-    label, input, select, button { display: block; width: 100%; margin-bottom: .5em;}
-    fieldset { margin-bottom: 1em; }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-  <h1>Vacation Outfit Planner</h1>
   {% block body %}{% endblock %}
 </body>
 </html>
