@@ -1,15 +1,16 @@
 {% extends "layout.html" %}
 
 {% block head %}
-<!-- Duration page specific CSS -->
-<link rel="stylesheet" href="{{ url_for('static', filename='reccomendations.css') }}">
+<!-- Recommendations page specific CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='recommendations.css') }}">
 {% endblock %}
 
 {% block body %}
 <div class="recommendations-container">
   <h1>Your Personalized Outfit Recommendations</h1>
-  
+
   <!-- Trip Summary -->
+  {% if data %}
   <div class="trip-summary">
     <h2>Trip Details</h2>
     <div class="trip-details">
@@ -17,7 +18,7 @@
       <p><strong>Duration:</strong> {{ data.days or 'N/A' }} days</p>
       <p><strong>Gender:</strong> {{ data.gender or 'N/A' }}</p>
       {% if data.activities %}
-        <p><strong>Activities:</strong> 
+        <p><strong>Activities:</strong>
           {% for activity in data.activities %}
             <span class="activity-tag">{{ activity }}</span>{% if not loop.last %}, {% endif %}
           {% endfor %}
@@ -25,8 +26,9 @@
       {% endif %}
     </div>
   </div>
+  {% endif %}
 
-  <!-- AI-Generated Recommendations -->
+  <!-- AI Text -->
   <div class="recommendations-section">
     <h2>AI-Powered Outfit Recommendations</h2>
     {% if response %}
@@ -34,15 +36,38 @@
         {{ response|replace('\n', '<br>')|safe }}
       </div>
 
-      <!-- SerpAPI Images per Activity -->
-      {% if images %}
-        <div class="image-gallery-section">
-          {% for item, urls in images.items() %}
+      <!-- Visual & Shopping Results -->
+      {% if outfit_data %}
+        <div class="outfit-results">
+          {% for day, info in outfit_data.items() %}
             <div class="recommendation-block">
-              <h4>{{ item.title() }}</h4>
-              {% for url in urls %}
-                <img src="{{ url }}" alt="Outfit for {{ item }}" class="outfit-image" />
-              {% endfor %}
+              <h3>{{ day }}</h3>
+              <p><em>Search Query:</em> "{{ info.query }}"</p>
+
+              {% if info.image %}
+                <img src="{{ info.image }}" alt="Outfit image for {{ day }}" class="outfit-image">
+              {% endif %}
+
+              {% if info.shopping %}
+                <div class="shopping-section">
+                  <h4>Shop This Look:</h4>
+                  {% for group in info.shopping %}
+                    <h5>{{ group.item }}</h5>
+                    <ul class="shopping-list">
+                      {% for product in group.results %}
+                        <li class="shopping-item">
+                          <a href="{{ product.link }}" target="_blank">
+                            {% if product.thumbnail %}
+                              <img src="{{ product.thumbnail }}" alt="{{ product.title }}" width="60">
+                            {% endif %}
+                            {{ product.title }} — {{ product.price }} <span class="source">({{ product.source }})</span>
+                          </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% endfor %}
+                </div>
+              {% endif %}
             </div>
           {% endfor %}
         </div>
