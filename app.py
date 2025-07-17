@@ -2,12 +2,13 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, session
 from dotenv import load_dotenv
-from openai_utils import build_prompt_from_session, get_recommendations
+from openai_utils import  get_recommendations #, build_prompt_from_session
 from weather_utils import get_weather_summary
-from serp_utils import get_image_urls
+from serp_utils import get_overall_outfit_image, get_shopping_items
+
 
 from datetime import datetime
-
+import re
 
 # Load environment variables
 load_dotenv()
@@ -65,40 +66,57 @@ def duration():
         return redirect(url_for('recommendations'))
      return render_template('duration.html')
 
-from serp_utils import get_image_urls
+def parse_daily_outfits(gpt_response):
+    outfits = {}
+    days = re.split(r'### Day (\d+):', gpt_response)
+
+    # days = ['', '1', ' San Francisco\n**Outfit Recommendation:**\n- Top: ...', '2', ...]
+    for i in range(1, len(days), 2):
+        day_num = days[i].strip()
+        content = days[i + 1]
+
+        day_label = f"Day {day_num}"
+        match = re.search(r'\*\*Search Query:\*\* (.*)', content)
+        if match:
+            query = match.group(1).strip()
+            outfits[day_label] = query
+        else:
+            outfits[day_label] = "default outfit"
+
+    return outfits
 
 @app.route('/recommendations')
 def recommendations():
-    # Pull data from session
-    gender = session.get('gender', 'unisex').lower()
-    age = int(session.get('age', 25))
-    activities = session.get('activities', [])
+    response = get_recommendations("fake prompt")
+    parsed_outfits = parse_daily_outfits(response)
 
-    # --- OpenAI GPT: Generate outfit text recommendations ---
-    prompt = build_prompt_from_session(session)
-    response = get_recommendations(prompt)
+    gender = session.get("gender", "unisex").lower()
 
-    # --- SerpAPI: Fetch 1 outfit image per activity ---
-    image_results = []
-    for activity in activities:
-        query = f"{gender} {activity} outfit"
-        urls = get_image_urls(query, num_results=1)
-        if urls:
-            image_results.append({
-                "activity": activity,
-                "image_url": urls[0],
-                "query": query
-            })
+    outfit_data = {}
 
-    # Convert to dict format for the template: {activity: [image_url]}
-    images_by_activity = {item['activity']: [item['image_url']] for item in image_results}
+    for day, outfit_query in parsed_outfits.items():
+        print(f"🔍 FULL LOOK for: {outfit_query}")
+        outfit_image = get_overall_outfit_image(outfit_query, gender)
 
-    # --- Pass all data to template ---
+        # Split outfit query into individual items
+        item_keywords = [item.strip() for item in outfit_query.split(",")]
+        shopping_links = []
+        for item in item_keywords:
+            products = get_shopping_items(item, gender)
+            if products:
+                shopping_links.append({"item": item, "results": products})
+
+        outfit_data[day] = {
+            "query": outfit_query,
+            "image": outfit_image,
+            "shopping": shopping_links
+        }
+
     return render_template(
         "recommendations.html",
-        data=session,
+        outfit_data=outfit_data,
         response=response,
-        images=images_by_activity
+        data=session
     )
 
 if __name__ == '__main__':
