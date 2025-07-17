@@ -1,11 +1,13 @@
 # app.py
+import os
 from flask import Flask, render_template, request, redirect, url_for, session
 from dotenv import load_dotenv
 from openai_utils import build_prompt_from_session, get_recommendations
-from db_utils import add_user
-import os
-import db
-import db_utils
+from weather_utils import get_weather_summary
+from serp_utils import get_image_urls
+
+from datetime import datetime
+
 
 # Load environment variables
 load_dotenv()
@@ -24,10 +26,9 @@ def register():
     if request.method == 'POST':
         # store basic profile info in session
         session['name']   = request.form.get('name', '')
-        session['email']  = request.form.get('email', '')
-        user_id = add_user(username, email)
         session['age']    = request.form.get('age', '')
         session['gender'] = request.form.get('gender', '')
+        session['email']  = request.form.get('email', '')
         return redirect(url_for('destination'))
     return render_template('register.html')
 
@@ -41,28 +42,62 @@ def destination():
 
 @app.route('/duration', methods=['GET', 'POST'])
 def duration():
-    if request.method == 'POST':
-        # Handle both duration and activities from the combined form
-        session['days'] = request.form.get('days', '')
-        
-        # Get all activities from the form (multiple inputs with same name)
+     if request.method == 'POST':
+        # Trip dates
+        start_date = request.form.get('start_date')
+        end_date   = request.form.get('end_date')
+        session['start_date'] = start_date
+        session['end_date']   = end_date
+
+        # Compute number of days
+        try:
+            start = datetime.strptime(start_date, '%Y-%m-%d')
+            end   = datetime.strptime(end_date, '%Y-%m-%d')
+            days = (end - start).days + 1
+        except Exception:
+            days = None
+        session['days'] = days
+
+        # Get activities
         activities = request.form.getlist('activities')
         session['activities'] = activities
-        
-        # Skip the separate activities page and go directly to recommendations
+
         return redirect(url_for('recommendations'))
-    return render_template('duration.html')
+     return render_template('duration.html')
 
 @app.route('/recommendations')
 def recommendations():
+    # Fetch weather summary and store in session
+    city       = session.get('city')
+    region     = session.get('region')
+    start_date = session.get('start_date')
+    end_date   = session.get('end_date')
+    if city and region and start_date and end_date:
+        weather_summary = get_weather_summary(city, region, start_date, end_date)
+    else:
+        weather_summary = "Weather data unavailable."
+    session['weather_summary'] = weather_summary
+
     # Generate AI recommendations using session data
     prompt = build_prompt_from_session(session)
     response = get_recommendations(prompt)
-    
-    # Pass both the AI response and session data to the template
-    return render_template('recommendations.html', response=response, data=session)
-    
 
+    items = []
+    for line in response.split('\n'):
+        stripped = line.strip()
+        if stripped.startswith('-'):
+            items.append(stripped.lstrip('-').strip())
+
+    # 4) Fetch 3 images per item via SerpAPI
+    images = { item: get_image_urls(item, num_results=1) for item in items }
+
+    # 5) Render template with AI text, session data, and images dict
+    return render_template(
+        'recommendations.html',
+        response=response,
+        data=session,
+        images=images
+    )
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
