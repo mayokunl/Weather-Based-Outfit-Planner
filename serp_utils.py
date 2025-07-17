@@ -2,7 +2,7 @@
 import os
 from serpapi import GoogleSearch
 
-def get_image_urls(query: str, num_results: int = 3) -> list[str]:
+def get_image_urls(query: str, num_results: int = 1) -> list[str]:
     """
     Fetches a list of image URLs from Google Images via SerpApi.
     """
