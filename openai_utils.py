@@ -4,11 +4,30 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 
+#hardcoded response
+HARDCODED_RESPONSE = """
+**Day 1: Hiking Adventure**
+
+Outfit Recommendation:
+- Top: Moisture-wicking tank top
+- Bottom: Comfortable and breathable leggings
+- Shoes: Sturdy hiking boots
+- Accessories: Wide-brim hat, sunglasses, and a small backpack
+
+**Day 2: Swimming Fun**
+
+Outfit Recommendation:
+- Top: Bright-colored bikini top
+- Bottom: Matching bikini bottoms
+- Shoes: Flip-flops
+- Accessories: Sun hat, beach towel, and waterproof phone case
+"""
+
 # Load environment variables from .env file
 load_dotenv()
 
 # Initialize OpenAI client
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+# client = OpenAI(api_key=os.getenv('OPENAI_API_KEY')) #COMMENTED OUT
 
 def build_prompt_from_session(session):
     # Handle activities list (from the new combined form)
@@ -40,15 +59,9 @@ def build_prompt_from_session(session):
 
 def get_recommendations(prompt):
     try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # Using gpt-3.5-turbo as it's more cost-effective
-            messages=[
-                {"role": "system", "content": "You are a helpful travel stylist."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=1000,
-            temperature=0.7
-        )
+        # Use hardcoded response for now
+        return HARDCODED_RESPONSE
+
         return response.choices[0].message.content
     except Exception as e:
         return f"Error getting recommendations: {str(e)}"
