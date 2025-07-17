@@ -48,6 +48,7 @@
   <div class="button-group">
     <a href="{{ url_for('duration') }}" class="btn btn-secondary">← Back</a>
     <a href="{{ url_for('index') }}" class="btn btn-primary">Start Over</a>
+    <a href="{{ url_for('trips') }}" class="btn btn-success">View Trips</a>
   </div>
 </div>
 
@@ -143,6 +144,17 @@
 .btn-secondary:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(107, 114, 128, 0.4);
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
 }
 </style>
 {% endblock %}
