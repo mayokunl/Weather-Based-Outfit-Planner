@@ -1,47 +1,58 @@
 # openai_utils.py
 
-from openai import OpenAI
 import os
+from openai import OpenAI
 from dotenv import load_dotenv
+import logging
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Initialize OpenAI client
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+# Setup logging (optional but helpful for debugging)
+logging.basicConfig(level=logging.INFO)
+
+# Initialize OpenAI client with your API key
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def build_prompt_from_session(session):
-    # Handle activities list (from the new combined form)
+    """
+    Constructs a natural-language prompt for the travel stylist based on session data.
+    """
     activities = session.get('activities', [])
     activities_text = ', '.join(activities) if activities else 'general travel'
-    
     weather_text = session.get('weather_summary', 'no weather data available')
-    return f"""
-        You are a travel stylist. Based on the following trip details:
+    days = session.get('days', 'multi-day')
 
-        Location: {session.get('city', 'N/A')}, {session.get('region', 'N/A')}
-        Gender:   {session.get('gender', 'N/A')}
-        Age:      {session.get('age', 'N/A')}
-        Activities: {', '.join(session.get('activities', [])) or 'general travel'}
-        Duration:   {session.get('days', 'N/A')} days
+    prompt = f"""
+You are a travel stylist. Based on the following trip details:
 
-        Here is the weather forecast for each day of the trip:
-        {weather_text}
+Location: {session.get('city', 'N/A')}, {session.get('region', 'N/A')}
+Gender: {session.get('gender', 'N/A')}
+Age: {session.get('age', 'N/A')}
+Activities: {activities_text}
+Duration: {days} days
+Weather Forecast: {weather_text}
 
-    Please provide specific outfit recommendations for this {session.get('days', 'multi-day')} day trip. For each day, suggest:
-    - Complete outfit (top, bottom, shoes, accessories)
-    - Weather-appropriate clothing
-    - Activity-specific recommendations
-    - Packing vs. shopping suggestions
-    - Use a helpful and stylish tone
+Your task:
+For each day of the trip, provide a detailed outfit recommendation that includes:
+- Complete outfit (top, bottom, shoes, accessories)
+- Adjustments based on weather conditions
+- Tailoring to the planned activities
+- Notes on whether each item should be packed or purchased
 
-    Format your response with clear day-by-day recommendations.
+Use a helpful and stylish tone.
+Format the response with clear Day-by-Day headings.
     """
+    return prompt.strip()
 
 def get_recommendations(prompt):
+    """
+    Sends the prompt to the OpenAI API and returns the generated outfit recommendations.
+    """
     try:
+        logging.info("Sending prompt to OpenAI...")
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # Using gpt-3.5-turbo as it's more cost-effective
+            model="gpt-3.5-turbo",  # Use "gpt-4" or "gpt-4o" if desired
             messages=[
                 {"role": "system", "content": "You are a helpful travel stylist."},
                 {"role": "user", "content": prompt}
@@ -51,4 +62,5 @@ def get_recommendations(prompt):
         )
         return response.choices[0].message.content
     except Exception as e:
+        logging.error(f"OpenAI API error: {e}")
         return f"Error getting recommendations: {str(e)}"

@@ -65,38 +65,40 @@ def duration():
         return redirect(url_for('recommendations'))
      return render_template('duration.html')
 
+from serp_utils import get_image_urls
+
 @app.route('/recommendations')
 def recommendations():
-    # Fetch weather summary and store in session
-    city       = session.get('city')
-    region     = session.get('region')
-    start_date = session.get('start_date')
-    end_date   = session.get('end_date')
-    if city and region and start_date and end_date:
-        weather_summary = get_weather_summary(city, region, start_date, end_date)
-    else:
-        weather_summary = "Weather data unavailable."
-    session['weather_summary'] = weather_summary
+    # Pull data from session
+    gender = session.get('gender', 'unisex').lower()
+    age = int(session.get('age', 25))
+    activities = session.get('activities', [])
 
-    # Generate AI recommendations using session data
+    # --- OpenAI GPT: Generate outfit text recommendations ---
     prompt = build_prompt_from_session(session)
     response = get_recommendations(prompt)
 
-    items = []
-    for line in response.split('\n'):
-        stripped = line.strip()
-        if stripped.startswith('-'):
-            items.append(stripped.lstrip('-').strip())
+    # --- SerpAPI: Fetch 1 outfit image per activity ---
+    image_results = []
+    for activity in activities:
+        query = f"{gender} {activity} outfit"
+        urls = get_image_urls(query, num_results=1)
+        if urls:
+            image_results.append({
+                "activity": activity,
+                "image_url": urls[0],
+                "query": query
+            })
 
-    # 4) Fetch 3 images per item via SerpAPI
-    images = { item: get_image_urls(item, num_results=1) for item in items }
+    # Convert to dict format for the template: {activity: [image_url]}
+    images_by_activity = {item['activity']: [item['image_url']] for item in image_results}
 
-    # 5) Render template with AI text, session data, and images dict
+    # --- Pass all data to template ---
     return render_template(
-        'recommendations.html',
-        response=response,
+        "recommendations.html",
         data=session,
-        images=images
+        response=response,
+        images=images_by_activity
     )
 
 if __name__ == '__main__':
