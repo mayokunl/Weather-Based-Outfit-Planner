@@ -1,67 +1,83 @@
 # openai_utils.py
-
-from openai import OpenAI
 import os
+from openai import OpenAI
 from dotenv import load_dotenv
-
-#hardcoded response
-HARDCODED_RESPONSE = """
-**Day 1: Hiking Adventure**
-
-Outfit Recommendation:
-- Top: Moisture-wicking tank top
-- Bottom: Comfortable and breathable leggings
-- Shoes: Sturdy hiking boots
-- Accessories: Wide-brim hat, sunglasses, and a small backpack
-
-**Day 2: Swimming Fun**
-
-Outfit Recommendation:
-- Top: Bright-colored bikini top
-- Bottom: Matching bikini bottoms
-- Shoes: Flip-flops
-- Accessories: Sun hat, beach towel, and waterproof phone case
-"""
+import logging
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Initialize OpenAI client
-# client = OpenAI(api_key=os.getenv('OPENAI_API_KEY')) #COMMENTED OUT
+# Setup logging (optional but helpful for debugging)
+logging.basicConfig(level=logging.INFO)
+
+# Initialize OpenAI client with your API key
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def build_prompt_from_session(session):
-    # Handle activities list (from the new combined form)
+    """
+    Constructs a natural-language prompt for the travel stylist based on session data.
+    """
     activities = session.get('activities', [])
     activities_text = ', '.join(activities) if activities else 'general travel'
-    
     weather_text = session.get('weather_summary', 'no weather data available')
-    return f"""
-        You are a travel stylist. Based on the following trip details:
+    days = session.get('days', 'multi-day')
 
-        Location: {session.get('city', 'N/A')}, {session.get('region', 'N/A')}
-        Gender:   {session.get('gender', 'N/A')}
-        Age:      {session.get('age', 'N/A')}
-        Activities: {', '.join(session.get('activities', [])) or 'general travel'}
-        Duration:   {session.get('days', 'N/A')} days
+    prompt = f"""
+    You are a travel stylist. Based on the following trip details:
 
-        Here is the weather forecast for each day of the trip:
-        {weather_text}
+    Location: {session.get('city', 'N/A')}, {session.get('region', 'N/A')}
+    Gender: {session.get('gender', 'N/A')}
+    Age: {session.get('age', 'N/A')}
+    Activities: {activities_text}
+    Duration: {days} days
+    Weather Forecast: {weather_text}
 
-    Please provide specific outfit recommendations for this {session.get('days', 'multi-day')} day trip. For each day, suggest:
+    Your task:
+    For each day of the trip, provide a detailed outfit recommendation that includes:
     - Complete outfit (top, bottom, shoes, accessories)
-    - Weather-appropriate clothing
-    - Activity-specific recommendations
-    - Packing vs. shopping suggestions
-    - Use a helpful and stylish tone
+    - Adjustments based on weather conditions
+    - Tailoring to the planned activities
+    - Notes on whether each item should be packed or purchased
+    At the end of each day’s section, include a one-line Google image search query summarizing the core outfit (only clothes/accessories). Keep it short and specific.
 
-    Format your response with clear day-by-day recommendations.
-    """
+    Label it like:  
+    **Search Query:** tank top, leggings, hiking boots
+
+    Use a helpful and stylish tone.
+    Format the response with clear Day-by-Day headings.
+        """
+    return prompt.strip()
+
+HARD_CODED_GPT_RESPONSE = """
+### Day 1: San Francisco
+**Outfit Recommendation:**
+- Top: Lightweight breathable tank top
+- Bottom: Comfy athletic shorts
+- Shoes: Sturdy hiking sandals
+- Accessories: Wide-brimmed hat, sunglasses, small backpack
+- Adjustments: Layer with a light jacket for the cooler evenings
+- Tailoring: Opt for moisture-wicking fabrics for hiking comfort
+- Packing/Purchase: Pack the accessories, purchase if needed
+**Search Query:** tank top, athletic shorts, hiking sandals
+"""
 
 def get_recommendations(prompt):
+    """
+    Sends the prompt to the OpenAI API and returns the generated outfit recommendations.
+    """
+    # return HARD_CODED_GPT_RESPONSE # For now, return the hardcoded response
     try:
-        # Use hardcoded response for now
-        return HARDCODED_RESPONSE
-
+        logging.info("Sending prompt to OpenAI...")
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",  # Use "gpt-4" or "gpt-4o" if desired
+            messages=[
+                {"role": "system", "content": "You are a helpful travel stylist."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=1000,
+            temperature=0.7
+        )
         return response.choices[0].message.content
     except Exception as e:
+        logging.error(f"OpenAI API error: {e}")
         return f"Error getting recommendations: {str(e)}"
