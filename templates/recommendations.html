@@ -72,6 +72,11 @@
           {% endfor %}
         </div>
       {% endif %}
+    {% elif error %}
+      <div class="error-message">
+        <p>Error generating recommendations: {{ error }}</p>
+        <p>Please check your configuration and try again.</p>
+      </div>
     {% else %}
       <div class="error-message">
         <p>Sorry, we couldn't generate recommendations at this time. Please make sure your OpenAI API key is configured correctly.</p>
