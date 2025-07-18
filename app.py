@@ -3,7 +3,7 @@ import os
 import markdown
 import re
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from dotenv import load_dotenv
 from openai_utils import get_recommendations, build_prompt_from_session
 from weather_utils import get_weather_summary
