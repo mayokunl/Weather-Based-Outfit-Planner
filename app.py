@@ -6,6 +6,10 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session
 from dotenv import load_dotenv
 from openai_utils import get_recommendations, build_prompt_from_session
+from db import init_db
+from db_utils import add_trip, add_user, fetch_trips_by_user
+
+init_db()
 
 # Conditional imports for optional features
 try:
@@ -66,7 +70,7 @@ def destination():
 
 @app.route('/duration', methods=['GET', 'POST'])
 def duration():
-     if request.method == 'POST':
+    if request.method == 'POST':
         # Trip dates
         start_date = request.form.get('start_date')
         end_date   = request.form.get('end_date')
@@ -85,9 +89,11 @@ def duration():
         # Get activities
         activities = request.form.getlist('activities')
         session['activities'] = activities
-        
-        # Skip the separate activities page and go directly to recommendations
+
+        # Go directly to recommendations
         return redirect(url_for('recommendations'))
+    
+    return render_template('duration.html')
 
 def parse_daily_outfits(gpt_response):
     outfits = {}
@@ -110,16 +116,18 @@ def parse_daily_outfits(gpt_response):
 
 @app.route('/recommendations')
 def recommendations():
+
+    city = session.get('city')
+    region = session.get('region')
+    weather_summary = session.get('weather_summary')
+    gender = session.get("gender", "unisex").lower()
+
     prompt = build_prompt_from_session(session)
     response = get_recommendations(prompt)
-<<<<<<< HEAD
-=======
     session['recommendations'] = response
     parsed_outfits = parse_daily_outfits(response)
 
     html_response = markdown.markdown(response)
-
-    gender = session.get("gender", "unisex").lower()
 
     outfit_data = {}
 
@@ -153,16 +161,6 @@ def recommendations():
         weather=weather_summary,
         recommendations=response
     )
->>>>>>> database_testing
-
-    items = []
-    for line in response.split('\n'):
-        stripped = line.strip()
-        if stripped.startswith('-'):
-            items.append(stripped.lstrip('-').strip())
-
-    # 4) Fetch 3 images per item via SerpAPI
-    images = { item: get_image_urls(item, num_results=1) for item in items }
 
     # 5) Render template with AI text, session data, and images dict
     return render_template(
