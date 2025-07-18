@@ -33,7 +33,7 @@
     <h2>AI-Powered Outfit Recommendations</h2>
     {% if response %}
       <div class="ai-recommendations">
-        {{ response|replace('\n', '<br>')|safe }}
+        {{ html_response|safe }}
       </div>
 
       <!-- Visual & Shopping Results -->

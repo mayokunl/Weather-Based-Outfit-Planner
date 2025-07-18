@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_KEY = '198a79b4f4321d5ce1b109639730f1263080503c763471ef6ac51d9b28dcf625'
+API_KEY = os.getenv("SERPAPI_KEY")
 if not API_KEY:
     raise EnvironmentError("SERPAPI_KEY environment variable not set")
 
