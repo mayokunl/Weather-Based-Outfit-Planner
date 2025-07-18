@@ -5,13 +5,9 @@ from dotenv import load_dotenv
 from openai_utils import build_prompt_from_session, get_recommendations
 from weather_utils import get_weather_summary
 from serp_utils import get_image_urls
-<<<<<<< HEAD
-
-=======
 from db import init_db
 init_db()
 from db_utils import add_trip, add_user, fetch_trips_by_user
->>>>>>> database_testing
 from datetime import datetime
 
 
@@ -30,7 +26,7 @@ def index():
 def register():
     print("== Rendering register route ==")
     if request.method == 'POST':
-        # Get form inputs into variables
+        # Store form inputs into variables
         name = request.form.get('name', '')
         age = request.form.get('age', '')
         gender = request.form.get('gender', '')
@@ -98,8 +94,6 @@ def recommendations():
     # Generate AI recommendations using session data
     prompt = build_prompt_from_session(session)
     response = get_recommendations(prompt)
-<<<<<<< HEAD
-=======
     session['recommendations'] = response
 
     # Save trip to database here
@@ -114,7 +108,6 @@ def recommendations():
         weather=weather_summary,
         recommendations=response
     )
->>>>>>> database_testing
 
     items = []
     for line in response.split('\n'):
@@ -132,8 +125,6 @@ def recommendations():
         data=session,
         images=images
     )
-<<<<<<< HEAD
-=======
 
 
 @app.route('/trips')
@@ -160,7 +151,6 @@ def trips():
 
     return render_template('trips.html', trips=trips_to_show)
 
->>>>>>> database_testing
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
