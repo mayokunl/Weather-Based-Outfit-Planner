@@ -6,6 +6,8 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session
 from dotenv import load_dotenv
 from openai_utils import get_recommendations, build_prompt_from_session
+from weather_utils import get_weather_summary
+from serp_utils import get_overall_outfit_image, get_shopping_items
 from db import init_db
 from db_utils import add_trip, add_user, fetch_trips_by_user
 
