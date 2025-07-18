@@ -1,15 +1,26 @@
 # app.py
 import os
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from dotenv import load_dotenv
-from openai_utils import build_prompt_from_session, get_recommendations
-from weather_utils import get_weather_summary
-from serp_utils import get_image_urls
-from db import init_db
-init_db()
-from db_utils import add_trip, add_user, fetch_trips_by_user
+import markdown
+import re
 from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, session
+from dotenv import load_dotenv
+from openai_utils import get_recommendations, build_prompt_from_session
 
+# Conditional imports for optional features
+try:
+    from weather_utils import get_weather_summary
+except ImportError:
+    def get_weather_summary(*args, **kwargs):
+        return "Weather data unavailable"
+
+try:
+    from serp_utils import get_overall_outfit_image, get_shopping_items
+except ImportError:
+    def get_overall_outfit_image(*args, **kwargs):
+        return None
+    def get_shopping_items(*args, **kwargs):
+        return []
 
 # Load environment variables
 load_dotenv()
@@ -74,27 +85,61 @@ def duration():
         # Get activities
         activities = request.form.getlist('activities')
         session['activities'] = activities
-
+        
+        # Skip the separate activities page and go directly to recommendations
         return redirect(url_for('recommendations'))
-     return render_template('duration.html')
+
+def parse_daily_outfits(gpt_response):
+    outfits = {}
+    days = re.split(r'### Day (\d+):', gpt_response)
+
+    # days = ['', '1', ' San Francisco\n**Outfit Recommendation:**\n- Top: ...', '2', ...]
+    for i in range(1, len(days), 2):
+        day_num = days[i].strip()
+        content = days[i + 1]
+
+        day_label = f"Day {day_num}"
+        match = re.search(r'\*\*Search Query:\*\* (.*)', content)
+        if match:
+            query = match.group(1).strip()
+            outfits[day_label] = query
+        else:
+            outfits[day_label] = "default outfit"
+
+    return outfits
 
 @app.route('/recommendations')
 def recommendations():
-    # Fetch weather summary and store in session
-    city       = session.get('city')
-    region     = session.get('region')
-    start_date = session.get('start_date')
-    end_date   = session.get('end_date')
-    if city and region and start_date and end_date:
-        weather_summary = get_weather_summary(city, region, start_date, end_date)
-    else:
-        weather_summary = "Weather data unavailable."
-    session['weather_summary'] = weather_summary
-
-    # Generate AI recommendations using session data
     prompt = build_prompt_from_session(session)
     response = get_recommendations(prompt)
+<<<<<<< HEAD
+=======
     session['recommendations'] = response
+    parsed_outfits = parse_daily_outfits(response)
+
+    html_response = markdown.markdown(response)
+
+    gender = session.get("gender", "unisex").lower()
+
+    outfit_data = {}
+
+    for day, outfit_query in parsed_outfits.items():
+        print(f"🔍 FULL LOOK for: {outfit_query}")
+        outfit_image = get_overall_outfit_image(outfit_query, gender)
+
+        # Split outfit query into individual items
+        item_keywords = [item.strip() for item in outfit_query.split(",")]
+        shopping_links = []
+        for item in item_keywords:
+            products = get_shopping_items(item, gender)
+            if products:
+                shopping_links.append({"item": item, "results": products})
+
+        outfit_data[day] = {
+            "query": outfit_query,
+            "image": outfit_image,
+            "shopping": shopping_links
+        }
 
     # Save trip to database here
     add_trip(
@@ -108,6 +153,7 @@ def recommendations():
         weather=weather_summary,
         recommendations=response
     )
+>>>>>>> database_testing
 
     items = []
     for line in response.split('\n'):
@@ -120,10 +166,10 @@ def recommendations():
 
     # 5) Render template with AI text, session data, and images dict
     return render_template(
-        'recommendations.html',
+        "recommendations.html",
+        outfit_data=outfit_data,
         response=response,
-        data=session,
-        images=images
+        data=session
     )
 
 
