@@ -1,21 +1,26 @@
 # app.py
 import os
 import markdown
+import re
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session
 from dotenv import load_dotenv
-from openai_utils import  get_recommendations , build_prompt_from_session
-from weather_utils import get_weather_summary
-from serp_utils import get_overall_outfit_image, get_shopping_items
+from openai_utils import get_recommendations, build_prompt_from_session
 
+# Conditional imports for optional features
+try:
+    from weather_utils import get_weather_summary
+except ImportError:
+    def get_weather_summary(*args, **kwargs):
+        return "Weather data unavailable"
 
-=======
-from db import init_db
-init_db()
-from db_utils import add_trip, add_user, fetch_trips_by_user
->>>>>>> database_testing
-from datetime import datetime
-import re
-import markdown
+try:
+    from serp_utils import get_overall_outfit_image, get_shopping_items
+except ImportError:
+    def get_overall_outfit_image(*args, **kwargs):
+        return None
+    def get_shopping_items(*args, **kwargs):
+        return []
 
 # Load environment variables
 load_dotenv()
@@ -32,22 +37,11 @@ def index():
 def register():
     print("== Rendering register route ==")
     if request.method == 'POST':
-        # Get form inputs into variables
-        name = request.form.get('name', '')
-        age = request.form.get('age', '')
-        gender = request.form.get('gender', '')
-        email = request.form.get('email', '')
-
-        # Store in session
-        session['name'] = name
-        session['age'] = age
-        session['gender'] = gender
-        session['email'] = email
-
-        # Save user to DB and store user_id in session
-        user_id = add_user(username=name, email=email)  # assuming add_user takes these args
-        session['user_id'] = user_id
-
+        # store basic profile info in session
+        session['name']   = request.form.get('name', '')
+        session['age']    = request.form.get('age', '')
+        session['gender'] = request.form.get('gender', '')
+        session['email']  = request.form.get('email', '')
         return redirect(url_for('destination'))
     return render_template('register.html')
 
@@ -80,9 +74,9 @@ def duration():
         # Get activities
         activities = request.form.getlist('activities')
         session['activities'] = activities
-
+        
+        # Skip the separate activities page and go directly to recommendations
         return redirect(url_for('recommendations'))
-     return render_template('duration.html')
 
 def parse_daily_outfits(gpt_response):
     outfits = {}
@@ -107,23 +101,6 @@ def parse_daily_outfits(gpt_response):
 def recommendations():
     prompt = build_prompt_from_session(session)
     response = get_recommendations(prompt)
-<<<<<<< HEAD
-=======
-    session['recommendations'] = response
-
-    # Save trip to database here
-    add_trip(
-        user_id=session['user_id'],
-        city=city,
-        region=region,
-        gender=session.get('gender'),
-        age=session.get('age'),
-        activities=",".join(session.get('activities', [])) if session.get('activities') else None,
-        duration=session.get('days'),
-        weather=weather_summary,
-        recommendations=response
-    )
->>>>>>> database_testing
     parsed_outfits = parse_daily_outfits(response)
 
     html_response = markdown.markdown(response)
@@ -154,39 +131,8 @@ def recommendations():
         "recommendations.html",
         outfit_data=outfit_data,
         response=response,
-        data=session,
-        html_response=html_response,
-        images=images
+        data=session
     )
-<<<<<<< HEAD
-=======
-
-
-@app.route('/trips')
-def trips():
-    user_id = session.get('user_id')
-    if not user_id:
-        flash("Please log in to view your trips.", "error")
-        return redirect(url_for('login'))
-
-    trips_data = fetch_trips_by_user(user_id)
-
-    trips_to_show = []
-    for trip in trips_data:
-        location = trip['city']
-        if trip.get('region'):
-            location += f", {trip['region']}"
-
-        trips_to_show.append({
-            'location': location,
-            'activities': trip['activities'],
-            'duration': trip['duration'],
-            'recommendations': trip['recommendations']
-        })
-
-    return render_template('trips.html', trips=trips_to_show)
-
->>>>>>> database_testing
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
