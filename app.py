@@ -8,6 +8,11 @@ from weather_utils import get_weather_summary
 from serp_utils import get_overall_outfit_image, get_shopping_items
 
 
+=======
+from db import init_db
+init_db()
+from db_utils import add_trip, add_user, fetch_trips_by_user
+>>>>>>> database_testing
 from datetime import datetime
 import re
 import markdown
@@ -27,11 +32,22 @@ def index():
 def register():
     print("== Rendering register route ==")
     if request.method == 'POST':
-        # store basic profile info in session
-        session['name']   = request.form.get('name', '')
-        session['age']    = request.form.get('age', '')
-        session['gender'] = request.form.get('gender', '')
-        session['email']  = request.form.get('email', '')
+        # Get form inputs into variables
+        name = request.form.get('name', '')
+        age = request.form.get('age', '')
+        gender = request.form.get('gender', '')
+        email = request.form.get('email', '')
+
+        # Store in session
+        session['name'] = name
+        session['age'] = age
+        session['gender'] = gender
+        session['email'] = email
+
+        # Save user to DB and store user_id in session
+        user_id = add_user(username=name, email=email)  # assuming add_user takes these args
+        session['user_id'] = user_id
+
         return redirect(url_for('destination'))
     return render_template('register.html')
 
@@ -91,6 +107,23 @@ def parse_daily_outfits(gpt_response):
 def recommendations():
     prompt = build_prompt_from_session(session)
     response = get_recommendations(prompt)
+<<<<<<< HEAD
+=======
+    session['recommendations'] = response
+
+    # Save trip to database here
+    add_trip(
+        user_id=session['user_id'],
+        city=city,
+        region=region,
+        gender=session.get('gender'),
+        age=session.get('age'),
+        activities=",".join(session.get('activities', [])) if session.get('activities') else None,
+        duration=session.get('days'),
+        weather=weather_summary,
+        recommendations=response
+    )
+>>>>>>> database_testing
     parsed_outfits = parse_daily_outfits(response)
 
     html_response = markdown.markdown(response)
@@ -121,9 +154,39 @@ def recommendations():
         "recommendations.html",
         outfit_data=outfit_data,
         response=response,
+        data=session,
         html_response=html_response,
-        data=session
+        images=images
     )
+<<<<<<< HEAD
+=======
+
+
+@app.route('/trips')
+def trips():
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("Please log in to view your trips.", "error")
+        return redirect(url_for('login'))
+
+    trips_data = fetch_trips_by_user(user_id)
+
+    trips_to_show = []
+    for trip in trips_data:
+        location = trip['city']
+        if trip.get('region'):
+            location += f", {trip['region']}"
+
+        trips_to_show.append({
+            'location': location,
+            'activities': trip['activities'],
+            'duration': trip['duration'],
+            'recommendations': trip['recommendations']
+        })
+
+    return render_template('trips.html', trips=trips_to_show)
+
+>>>>>>> database_testing
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
