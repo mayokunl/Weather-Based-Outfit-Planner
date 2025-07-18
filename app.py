@@ -1,14 +1,16 @@
 # app.py
 import os
+import markdown
 from flask import Flask, render_template, request, redirect, url_for, session
 from dotenv import load_dotenv
-from openai_utils import  get_recommendations #, build_prompt_from_session
+from openai_utils import  get_recommendations , build_prompt_from_session
 from weather_utils import get_weather_summary
 from serp_utils import get_overall_outfit_image, get_shopping_items
 
 
 from datetime import datetime
 import re
+import markdown
 
 # Load environment variables
 load_dotenv()
@@ -87,8 +89,11 @@ def parse_daily_outfits(gpt_response):
 
 @app.route('/recommendations')
 def recommendations():
-    response = get_recommendations("fake prompt")
+    prompt = build_prompt_from_session(session)
+    response = get_recommendations(prompt)
     parsed_outfits = parse_daily_outfits(response)
+
+    html_response = markdown.markdown(response)
 
     gender = session.get("gender", "unisex").lower()
 
@@ -116,6 +121,7 @@ def recommendations():
         "recommendations.html",
         outfit_data=outfit_data,
         response=response,
+        html_response=html_response,
         data=session
     )
 
