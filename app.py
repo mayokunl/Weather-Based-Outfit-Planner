@@ -121,7 +121,12 @@ def recommendations():
 
     city = session.get('city')
     region = session.get('region')
-    weather_summary = session.get('weather_summary')
+
+    start_date = session.get('start_date')
+    end_date = session.get('end_date')
+    weather_summary = get_weather_summary(city, region, start_date, end_date)
+    session['weather_summary'] = weather_summary
+   
     gender = session.get("gender", "unisex").lower()
 
     prompt = build_prompt_from_session(session)
