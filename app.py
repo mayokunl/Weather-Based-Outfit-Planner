@@ -169,6 +169,7 @@ def recommendations():
         "recommendations.html",
         outfit_data=outfit_data,
         response=response,
+        html_response=html_response,
         data=session
     )
 
