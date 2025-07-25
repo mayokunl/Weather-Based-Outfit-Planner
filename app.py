@@ -66,8 +66,9 @@ def load_user(user_id):
     return db.session.get(User, int(user_id))
 
 @app.route('/')
-def index():
-    return redirect(url_for('register'))
+@app.route('/home')
+def home():
+    return render_template('home.html')
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -78,7 +79,7 @@ def login():
             password = form.password.data
             if user and check_password_hash(user.password, password):
                 login_user(user)
-                return redirect(url_for('workouts'))
+                return redirect(url_for('login'))
             else:
                 raise ValueError("Invalid Email/Password")
         except Exception as e:
