@@ -4,24 +4,18 @@ import markdown
 import re
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-<<<<<<< HEAD
-=======
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required
 from flask_migrate import Migrate
->>>>>>> 3fe85fac856e771e7fcbbd4185a9c64875b777ea
 from dotenv import load_dotenv
 from openai_utils import get_recommendations, build_prompt_from_session
 from weather_utils import get_weather_summary
 from serp_utils import get_overall_outfit_image, get_shopping_items
 from db import init_db
 from db_utils import add_trip, add_user, fetch_trips_by_user
-<<<<<<< HEAD
-=======
 from forms import RegistrationForm, LoginForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import (LoginManager, UserMixin, login_user, logout_user, login_required, current_user)
->>>>>>> 3fe85fac856e771e7fcbbd4185a9c64875b777ea
 
 init_db()
 
@@ -46,8 +40,6 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev')   # Use env variable or fallback to 'dev'
-<<<<<<< HEAD
-=======
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -72,36 +64,11 @@ with app.app_context():
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
->>>>>>> 3fe85fac856e771e7fcbbd4185a9c64875b777ea
 
 @app.route('/')
 def index():
     return redirect(url_for('register'))
 
-<<<<<<< HEAD
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    print("== Rendering register route ==")
-    if request.method == 'POST':
-        # Store form inputs into variables
-        name = request.form.get('name', '')
-        age = request.form.get('age', '')
-        gender = request.form.get('gender', '')
-        email = request.form.get('email', '')
-
-        # Store in session
-        session['name'] = name
-        session['age'] = age
-        session['gender'] = gender
-        session['email'] = email
-
-        # Save user to DB and store user_id in session
-        user_id = add_user(username=name, email=email)  # assuming add_user takes these args
-        session['user_id'] = user_id
-
-        return redirect(url_for('destination'))
-    return render_template('register.html')
-=======
 @app.route('/login', methods=["GET", "POST"])
 def login():
     form = LoginForm()
@@ -146,7 +113,6 @@ def complete_profile():
         return redirect(url_for('home'))  # or dashboard, etc.
     return render_template('complete_profile.html')
 
->>>>>>> 3fe85fac856e771e7fcbbd4185a9c64875b777ea
 
 @app.route('/destination', methods=['GET', 'POST'])
 def destination():
