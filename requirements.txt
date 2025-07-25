@@ -8,3 +8,4 @@ markdown==3.5.2
 gunicorn==21.2.0
 Flask-Login==0.6.3
 pip freeze > requirements.txt	
+email_validator
