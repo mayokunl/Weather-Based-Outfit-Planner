@@ -198,11 +198,49 @@ button {
 
 button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(41, 182, 246, 0.4);
+  box-shadow: 0 8px 20px rgba(34, 142, 192, 0.4);
 }
 
 button:active {
   transform: translateY(0);
+}
+
+/* How it works section styling  */
+.how-it-works {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.how-it-works h2 {
+  color: white;
+  font-weight: 800; 
+  font-size: 3.5rem;
+  margin-bottom: 2rem;
+}
+
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: white;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  max-width: 400px;
+  flex: 1;
+}
+
+.card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.card p {
+  color: #555;
 }
 
 /* Select dropdown styling */
