@@ -4,7 +4,7 @@ import markdown
 import re
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from dotenv import load_dotenv
+from dotenv import load_dot
 from openai_utils import get_recommendations, build_prompt_from_session
 from weather_utils import get_weather_summary
 from serp_utils import get_overall_outfit_image, get_shopping_items
@@ -39,28 +39,66 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev')   # Use env variable or fa
 def index():
     return redirect(url_for('register'))
 
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        try:
+            user = User.query.filter_by(email=form.email.data).first()
+            password = form.password.data
+            if user and check_password_hash(user.password, password):
+                login_user(user)
+                return redirect(url_for('workouts'))
+            else:
+                raise ValueError("Invalid Email/Password")
+        except Exception as e:
+            return render_template('login.html', form=form, message=e)
+    return render_template('login.html', form=form)
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        try:
+            user_exists = User.query.filter_by(username=form.username.data).first()
+            email_exists = User.query.filter_by(email=form.email.data).first()
+            if user_exists:
+                raise ValueError("User already exsists")
+            if email_exists:
+                raise ValueError("Email already in use")
+            user = User(username=form.username.data, email=form.email.data, password=generate_password_hash(form.password.data))
+            db.session.add(user)
+            db.session.commit()
+            flash(f'Account created for {form.username.data}!', 'success')
+            return redirect(url_for('login'))
+        except Exception as e:
+            message = f'An error has occured: {e}'
+            return render_template("signup.html", form=form, message=message)
+    return render_template("signup.html", form=form)
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    print("== Rendering register route ==")
+    form = RegisterForm()
+    if form.validate_on_submit():
+        # save user with username, email, hashed password
+        user = User(username=form.username.data, email=form.email.data, password=hash_pw(form.password.data))
+        db.session.add(user)
+        db.session.commit()
+        login_user(user)
+        return redirect(url_for('complete_profile'))  
+    return render_template('register.html', form=form)
+
+@app.route('/complete-profile', methods=['GET', 'POST'])
+@login_required
+def complete_profile():
     if request.method == 'POST':
-        # Store form inputs into variables
-        name = request.form.get('name', '')
-        age = request.form.get('age', '')
-        gender = request.form.get('gender', '')
-        email = request.form.get('email', '')
+        current_user.name = request.form['name']
+        current_user.age = request.form['age']
+        current_user.gender = request.form['gender']
+        db.session.commit()
+        return redirect(url_for('home'))  # or dashboard, etc.
+    return render_template('complete_profile.html')
 
-        # Store in session
-        session['name'] = name
-        session['age'] = age
-        session['gender'] = gender
-        session['email'] = email
-
-        # Save user to DB and store user_id in session
-        user_id = add_user(username=name, email=email)  # assuming add_user takes these args
-        session['user_id'] = user_id
-
-        return redirect(url_for('destination'))
-    return render_template('register.html')
 
 @app.route('/destination', methods=['GET', 'POST'])
 def destination():

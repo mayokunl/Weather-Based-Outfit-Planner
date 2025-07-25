@@ -1,0 +1,57 @@
+{% extends "nav.html" %}
+{% block content %}
+<div class="container mt-5" style="background-color: white; border-radius: 30px;">
+    <div class="row">
+        <div class="col">
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                <legend class="mb-2 mt-4">Login</legend>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+                <div class=" fs-10 text-success">{{success_message}}</div>
+                <div class=" fs-10 text-danger">{{message}}</div>
+                <div class="form-group">
+                    {{ form.email.label(class="form-control-label") }} {% if
+                    form.email.errors %} {{ form.email(class="form-control
+                    form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                        <span class="fs-10 text-danger">{{error}}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %} {{ form.email(class="form-control form-control-lg") }} {%
+                    endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label(class="form-control-label") }} {% if
+                    form.password.errors %} {{ form.password(class="form-control
+                    form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.password.errors %}
+                        <span class="fs-10 text-danger">{{error}}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %} {{ form.password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group mt-2 mb-3">
+                    {{ form.submit(class="btn btn-outline-secondary") }}
+                    <p>New user? <a href="{{ url_for('register') }}">Register</a></p>
+                </div>
+            </form>
+        </div>
+        <div class="col d-flex" style="align-items: center; justify-content: center;">
+            <img src="{{url_for('static', filename='images/log-pic.png')}}" class="mt-4 mb-4 img-fluid rounded mx-auto"
+                alt="Motivational Image" style="height: 53vh; width: 26vw;">
+        </div>
+    </div>
+</div>
+{% endblock content %}
