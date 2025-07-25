@@ -256,6 +256,11 @@ def trips():
 
     return render_template('trips.html', trips=trips_to_show)
 
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
