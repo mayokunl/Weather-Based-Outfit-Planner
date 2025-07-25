@@ -111,8 +111,8 @@ def complete_profile():
         current_user.age = request.form['age']
         current_user.gender = request.form['gender']
         db.session.commit()
-        return redirect(url_for('home'))  # or dashboard, etc.
-    return render_template('complete_profile.html')
+        return redirect(url_for('home'))
+    return render_template('completeProfile.html')
 
 
 @app.route('/destination', methods=['GET', 'POST'])
