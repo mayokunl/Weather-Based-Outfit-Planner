@@ -1,4 +1,4 @@
-{% extends "nav.html" %}
+{% extends "layout.html" %}
 {% block content %}
 <div class="container mt-5" style="background-color: white; border-radius: 30px;">
     <div class="row">
@@ -47,10 +47,6 @@
                     <p>New user? <a href="{{ url_for('register') }}">Register</a></p>
                 </div>
             </form>
-        </div>
-        <div class="col d-flex" style="align-items: center; justify-content: center;">
-            <img src="{{url_for('static', filename='images/log-pic.png')}}" class="mt-4 mb-4 img-fluid rounded mx-auto"
-                alt="Motivational Image" style="height: 53vh; width: 26vw;">
         </div>
     </div>
 </div>
