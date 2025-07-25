@@ -4,12 +4,24 @@ import markdown
 import re
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+<<<<<<< HEAD
+=======
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import login_required
+from flask_migrate import Migrate
+>>>>>>> 3fe85fac856e771e7fcbbd4185a9c64875b777ea
 from dotenv import load_dotenv
 from openai_utils import get_recommendations, build_prompt_from_session
 from weather_utils import get_weather_summary
 from serp_utils import get_overall_outfit_image, get_shopping_items
 from db import init_db
 from db_utils import add_trip, add_user, fetch_trips_by_user
+<<<<<<< HEAD
+=======
+from forms import RegistrationForm, LoginForm
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import (LoginManager, UserMixin, login_user, logout_user, login_required, current_user)
+>>>>>>> 3fe85fac856e771e7fcbbd4185a9c64875b777ea
 
 init_db()
 
@@ -34,11 +46,39 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev')   # Use env variable or fallback to 'dev'
+<<<<<<< HEAD
+=======
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+class User(db.Model, UserMixin):
+  id = db.Column(db.Integer, primary_key=True)
+  username = db.Column(db.String(20), unique=True, nullable=False)
+  email = db.Column(db.String(120), unique=True, nullable=False)
+  password = db.Column(db.String(60), nullable=False)
+
+
+  def __repr__(self):
+    return f"User('{self.username}', '{self.email}')"
+
+with app.app_context():
+  db.create_all()
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
+>>>>>>> 3fe85fac856e771e7fcbbd4185a9c64875b777ea
 
 @app.route('/')
 def index():
     return redirect(url_for('register'))
 
+<<<<<<< HEAD
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     print("== Rendering register route ==")
@@ -61,6 +101,52 @@ def register():
 
         return redirect(url_for('destination'))
     return render_template('register.html')
+=======
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        try:
+            user = User.query.filter_by(email=form.email.data).first()
+            password = form.password.data
+            if user and check_password_hash(user.password, password):
+                login_user(user)
+                return redirect(url_for('workouts'))
+            else:
+                raise ValueError("Invalid Email/Password")
+        except Exception as e:
+            return render_template('login.html', form=form, message=e)
+    return render_template('login.html', form=form)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user_exists = User.query.filter_by(username=form.username.data).first()
+        email_exists = User.query.filter_by(email=form.email.data).first()
+        if user_exists or email_exists:
+            flash('User or email already exists.', 'error')
+            return render_template('register.html', form=form)
+        hashed_pw = generate_password_hash(form.password.data)
+        user = User(username=form.username.data, email=form.email.data, password=hashed_pw)
+        db.session.add(user)
+        db.session.commit()
+        login_user(user)
+        return redirect(url_for('complete_profile'))
+    return render_template('register.html', form=form)
+
+@app.route('/complete-profile', methods=['GET', 'POST'])
+@login_required
+def complete_profile():
+    if request.method == 'POST':
+        current_user.name = request.form['name']
+        current_user.age = request.form['age']
+        current_user.gender = request.form['gender']
+        db.session.commit()
+        return redirect(url_for('home'))  # or dashboard, etc.
+    return render_template('complete_profile.html')
+
+>>>>>>> 3fe85fac856e771e7fcbbd4185a9c64875b777ea
 
 @app.route('/destination', methods=['GET', 'POST'])
 def destination():
