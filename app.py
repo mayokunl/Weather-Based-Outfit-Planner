@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required
 from flask_migrate import Migrate
 from dotenv import load_dotenv
-from openai_utils import get_recommendations, build_prompt_from_session
+from genai_utils import get_recommendations, build_prompt_from_session
 from weather_utils import get_weather_summary
 from serp_utils import get_overall_outfit_image, get_shopping_items
 from db import init_db
