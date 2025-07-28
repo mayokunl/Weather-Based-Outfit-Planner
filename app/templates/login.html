@@ -1,11 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container-card container-form mt-xl">
-    <div class="row">
-        <div class="col">
-            <form method="POST" action="">
+    <form method="POST" action="">
                 {{ form.hidden_tag() }}
-                <legend class="heading-1 mb-lg">Login</legend>
+                <h2 class="form-title">Login</h2>
                 {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                 {% for category, message in messages %}
@@ -19,35 +17,31 @@
                 <div class=" fs-10 text-success">{{success_message}}</div>
                 <div class=" fs-10 text-danger">{{message}}</div>
                 <div class="form-group">
-                    {{ form.email.label(class="form-control-label") }} {% if
-                    form.email.errors %} {{ form.email(class="form-control
-                    form-control-lg is-invalid") }}
+                    {{ form.email.label(class="form-label") }} {% if
+                    form.email.errors %} {{ form.email(class="form-input is-invalid") }}
                     <div class="invalid-feedback">
                         {% for error in form.email.errors %}
-                        <span class="fs-10 text-danger">{{error}}</span>
+                        <span class="text-danger">{{error}}</span>
                         {% endfor %}
                     </div>
-                    {% else %} {{ form.email(class="form-control form-control-lg") }} {%
+                    {% else %} {{ form.email(class="form-input") }} {%
                     endif %}
                 </div>
                 <div class="form-group">
-                    {{ form.password.label(class="form-control-label") }} {% if
-                    form.password.errors %} {{ form.password(class="form-control
-                    form-control-lg is-invalid") }}
+                    {{ form.password.label(class="form-label") }} {% if
+                    form.password.errors %} {{ form.password(class="form-input is-invalid") }}
                     <div class="invalid-feedback">
                         {% for error in form.password.errors %}
-                        <span class="fs-10 text-danger">{{error}}</span>
+                        <span class="text-danger">{{error}}</span>
                         {% endfor %}
                     </div>
-                    {% else %} {{ form.password(class="form-control form-control-lg") }}
+                    {% else %} {{ form.password(class="form-input") }}
                     {% endif %}
                 </div>
                 <div class="form-group mt-2 mb-3">
-                    {{ form.submit(class="btn btn-outline-secondary") }}
+                    {{ form.submit(class="btn btn-large") }}
                     <p class="mt-md">New user? <a href="{{ url_for('auth.register') }}">Register</a></p>
                 </div>
-            </form>
-        </div>
-    </div>
+    </form>
 </div>
 {% endblock content %}

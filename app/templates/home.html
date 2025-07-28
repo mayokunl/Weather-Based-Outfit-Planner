@@ -9,40 +9,12 @@
       <h1>RAIN OR SHINE.</h1>
       <p>Get the perfect outfit for today.</p>
       {% if not current_user.is_authenticated %}
-      <button class="btn-get-started" onclick="window.location.href='{{ url_for('auth.register') }}';">
-        <div class="wrapper">
-          <span>Get Started</span>
-          <div class="circle circle-1"></div>
-          <div class="circle circle-2"></div>
-          <div class="circle circle-3"></div>
-          <div class="circle circle-4"></div>
-          <div class="circle circle-5"></div>
-          <div class="circle circle-6"></div>
-          <div class="circle circle-7"></div>
-          <div class="circle circle-8"></div>
-          <div class="circle circle-9"></div>
-          <div class="circle circle-10"></div>
-          <div class="circle circle-11"></div>
-          <div class="circle circle-12"></div>
-        </div>
+      <button class="btn btn-get-started" onclick="window.location.href='{{ url_for('auth.register') }}';">
+        Get Started
       </button>
       {% else %}
-      <button class="btn-get-started" onclick="window.location.href='{{ url_for('main.destination') }}';">
-        <div class="wrapper">
-          <span>Plan Your Trip</span>
-          <div class="circle circle-1"></div>
-          <div class="circle circle-2"></div>
-          <div class="circle circle-3"></div>
-          <div class="circle circle-4"></div>
-          <div class="circle circle-5"></div>
-          <div class="circle circle-6"></div>
-          <div class="circle circle-7"></div>
-          <div class="circle circle-8"></div>
-          <div class="circle circle-9"></div>
-          <div class="circle circle-10"></div>
-          <div class="circle circle-11"></div>
-          <div class="circle circle-12"></div>
-        </div>
+      <button class="btn btn-get-started" onclick="window.location.href='{{ url_for('main.destination') }}';">
+        Plan Your Trip
       </button>
       {% endif %}
     </div>

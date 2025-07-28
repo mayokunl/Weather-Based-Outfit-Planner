@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container-card container-form mt-xl">
-    <form method="POST" class="p-lg">
+    <form method="POST">
         {{ form.hidden_tag() }}
-        <legend class="heading-1 mb-lg">Sign Up</legend>
+        <h2 class="form-title">Sign Up</h2>
 
         <div class="form-group mb-3">
             {{ form.username.label(class="form-label") }}
@@ -62,7 +62,7 @@
         </div>
 
         <div class="form-group mt-4 text-center">
-            {{ form.submit(class="btn btn-primary") }}
+            {{ form.submit(class="btn btn-large") }}
             <p class="mt-2">Already registered? <a href="{{ url_for('auth.login') }}">Log in</a></p>
         </div>
     </form>
