@@ -1,0 +1,284 @@
+/* Import base styles with CSS variables and utilities */
+@import url('base.css');
+
+/* ==========================================
+   NAVIGATION BAR
+   ========================================== */
+.navbar {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  padding-left: 2rem !important;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+  width: 100%;
+}
+
+.navbar-brand {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-inverse) !important;
+}
+
+.nav-link {
+  margin-right: 30px !important;
+  width: 8vw !important;
+  text-align: center !important;
+  transition: all .3s !important;
+  font-weight: bold !important;
+  color: #1E1E1E !important;
+  text-decoration: none;
+}
+
+.navbar .nav-link {
+  color: #1E1E1E !important;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  background-color: #0288D1 !important;
+}
+
+/* ==========================================
+   FORM CONTROLS
+   ========================================== */
+.form-control {
+  background-color: var(--color-background-input) !important;
+}
+
+/* ==========================================
+   FOOTER
+   ========================================== */
+.footer-box {
+  background-color: var(--color-primary-dark) !important;
+  bottom: 0;
+  left: 0;
+  width: 100% !important;
+  text-align: right;
+  padding: var(--spacing-md);
+  font-size: 0.6rem;
+  z-index: 100;
+}
+
+/* ==========================================
+   HOME PAGE SPECIFIC STYLES
+   ========================================== */
+.image-overlay-container {
+  position: relative;
+  width: 100%;
+  height: 90vh;
+  overflow: hidden;
+}
+
+.full-width-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.overlay-text {
+  color: white;
+  padding: var(--spacing-xl);
+}
+
+.overlay-text h1 {
+  font-size: var(--font-size-4xl);
+  margin-bottom: var(--spacing-md);
+}
+
+.overlay-text p {
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* How it works section */
+.how-it-works {
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+}
+
+.how-it-works h2 {
+  color: white;
+  font-weight: var(--font-weight-extrabold);
+  font-size: 3.5rem;
+  margin-bottom: var(--spacing-xl);
+}
+
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.card {
+  background: white;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  max-width: 400px;
+  flex: 1;
+}
+
+.card h3 {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--spacing-md);
+}
+
+.card p {
+  color: #555;
+}
+
+/* ==========================================
+   LEGACY STYLES - Keep for backward compatibility
+   ========================================== */
+
+/* Headings - use utility classes instead */
+h1 {
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  color: var(--color-text-primary);
+  text-shadow: var(--shadow-sm);
+}
+
+h2 {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+/* Labels and Inputs - use utility classes instead */
+label {
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  display: block;
+  color: #4b5563;
+  font-size: var(--font-size-sm);
+}
+
+input,
+select {
+  margin-top: var(--spacing-xs);
+  padding: 0.8rem var(--spacing-md);
+  width: 100%;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  transition: var(--transition-fast);
+  background: white;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(41, 182, 246, 0.1);
+}
+
+input:hover,
+select:hover {
+  border-color: var(--color-text-muted);
+}
+
+/* Button - use utility classes instead */
+button {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  width: 100%;
+  box-shadow: var(--shadow-primary);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-hover);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Select dropdown styling */
+select {
+  cursor: pointer;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-md) center;
+  background-size: var(--spacing-md);
+  padding-right: 2.5rem;
+}
+
+/* Form sections */
+.form-section {
+  padding: var(--spacing-lg) 0;
+}
+
+.form-section h2 {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+/* Page titles */
+.page-title {
+  text-align: center;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: #1f2937;
+  margin-bottom: var(--spacing-xl);
+  text-shadow: var(--shadow-sm);
+}
+
+.section-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: #2563eb;
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #4fc3f7, var(--color-primary));
+  margin: var(--spacing-sm) auto 0;
+  border-radius: 2px;
+}
+
+.page-subtitle {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-xl);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.5;
+}

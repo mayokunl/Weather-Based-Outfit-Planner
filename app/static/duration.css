@@ -1,0 +1,79 @@
+/* Import base utility classes */
+@import url('base.css');
+
+/* ==========================================
+   DURATION PAGE SPECIFIC STYLES
+   ========================================== */
+
+/* Activity input container */
+.activity-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Activities display area */
+#activities-display {
+  background: var(--color-background-light);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  min-height: 80px;
+  margin-top: var(--spacing-md);
+}
+
+#no-activities {
+  color: var(--color-text-muted);
+  font-style: italic;
+  text-align: center;
+  margin: var(--spacing-md) 0;
+  font-size: var(--font-size-sm);
+}
+
+/* Activity tags */
+#activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+#activity-list li {
+  /* Use utility class: .tag */
+  background: var(--color-background-tag);
+  color: #1565c0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-xl);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid var(--color-border-accent);
+  display: inline-block;
+  white-space: nowrap;
+  transition: var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+#activity-list li:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+}
+
+/* Days input specific styling */
+input[name="days"] {
+  max-width: 200px;
+  text-align: center;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Section description text */
+.section-description {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.5;
+}

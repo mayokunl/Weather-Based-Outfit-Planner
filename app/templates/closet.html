@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container-card container-wide mt-xl">
+  <h1 class="heading-1">🧥 My Closet</h1>
+  
+  {% if items %}
+    <div class="grid grid-2">
+      {% for item in items %}
+        <div class="mb-lg">
+          <div class="container-section">
+            <img src="{{ item.image_url }}" class="img-card-full" alt="{{ item.title }}">
+            <div class="p-lg">
+              <h5 class="heading-3">{{ item.title }}</h5>
+              {% if item.price %}
+                <p class="text-muted"><strong>${{ item.price }}</strong></p>
+              {% endif %}
+              {% if item.brand %}
+                <p class="text-muted">Brand: {{ item.brand }}</p>
+              {% endif %}
+              {% if item.color %}
+                <p class="text-muted">Color: {{ item.color }}</p>
+              {% endif %}
+              {% if item.category %}
+                <span class="tag">{{ item.category }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="container-section text-center">
+      <h4 class="heading-2">Your closet is empty!</h4>
+      <p class="text-muted mb-lg">Start planning trips and adding items to build your wardrobe.</p>
+      <a class="btn btn-primary" href="{{ url_for('main.destination') }}">Plan a Trip</a>
+    </div>
+  {% endif %}
+  
+  <div class="button-group mt-xl">
+    <a class="btn btn-secondary" href="{{ url_for('main.home') }}">🏠 Back to Home</a>
+  </div>
+</div>
+{% endblock %}
