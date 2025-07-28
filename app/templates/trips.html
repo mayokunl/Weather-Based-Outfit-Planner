@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="table-container trips-container">
+  <h1 class="heading-1">Your Previous Trips</h1>
+  
+  {% if trips %}
+    <table class="data-table trips-table">
+      <thead>
+        <tr>
+          <th>Location</th>
+          <th>Duration</th>
+          <th>Activities</th>
+          <th>Recommendations</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for trip in trips %}
+        <tr>
+          <td>{{ trip.location }}</td>
+          <td>{{ trip.duration }} days</td>
+          <td>
+            {% for activity in trip.activities %}
+              <span class="tag">{{ activity }}</span>
+            {% endfor %}
+          </td>
+          <td><pre class="pre-wrap">{{ trip.recommendations }}</pre></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="no-data-message text-center">You haven't taken any trips yet!</p>
+  {% endif %}
+
+  <div class="button-group">
+    <a href="{{ url_for('main.destination') }}" class="btn btn-primary">Add a New Trip</a>
+    <a href="{{ url_for('main.home') }}" class="btn btn-secondary">Start Over</a>
+  </div>
+</div>
+{% endblock %}

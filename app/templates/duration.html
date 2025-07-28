@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<!-- Duration page specific CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='duration.css') }}">
+{% endblock %}
+
+{% extends "layout.html" %}
+
+{% block head %}
+<!-- Duration page specific CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='duration.css') }}">
+{% endblock %}
+
+{% block content %}
+<form method="post" class="container-card container-form duration-container">
+  <h1 class="heading-1">Trip Details</h1>
+  
+  <!-- Trip Dates Section -->
+  <div class="form-section">
+    <h2 class="heading-2">Trip Dates</h2>
+    <div class="form-group">
+      <label class="form-label">Start Date:</label>
+      <input name="start_date" type="date" class="form-input" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">End Date:</label>
+      <input name="end_date" type="date" class="form-input" required>
+    </div>
+  </div>
+
+  <!-- Activities Section -->
+  <div class="form-section">
+    <h2 class="heading-2">Activities & Interests</h2>
+    <p class="section-description text-muted">
+      Add activities you're planning to do during your trip to get personalized outfit recommendations
+    </p>
+    
+    <div class="activity-input-container">
+      <div class="form-group">
+        <label class="form-label">Enter an activity:</label>
+        <input type="text" id="activity-input" class="form-input" placeholder="e.g. Hiking, Swimming, Sightseeing">
+      </div>
+      <button type="button" id="add-btn" class="btn btn-primary btn-small">Add Activity</button>
+    </div>
+
+    <!-- Activities display area -->
+    <div id="activities-display">
+      <p id="no-activities" class="text-muted text-center">
+        No activities added yet
+      </p>
+      <ul id="activity-list"></ul>
+    </div>
+
+    <!-- Container for hidden inputs -->
+    <div id="hidden-inputs"></div>
+  </div>
+
+  <button type="submit" class="btn btn-primary btn-large mt-xl">Continue to Recommendations →</button>
+</form>
+
+<script>
+// Enhanced JavaScript for better activity management
+document.getElementById('add-btn').addEventListener('click', function() {
+    const input = document.getElementById('activity-input');
+    const activity = input.value.trim();
+    
+    if (activity) {
+        const list = document.getElementById('activity-list');
+        const hiddenInputs = document.getElementById('hidden-inputs');
+        const noActivitiesMsg = document.getElementById('no-activities');
+        
+        // Hide "no activities" message on first addition
+        if (noActivitiesMsg) {
+            noActivitiesMsg.style.display = 'none';
+        }
+        
+        // Add to visible list as inline tag
+        const li = document.createElement('li');
+        li.textContent = activity;
+        list.appendChild(li);
+        
+        // Add hidden input for form submission
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'activities';
+        hiddenInput.value = activity;
+        hiddenInputs.appendChild(hiddenInput);
+        
+        // Clear input and focus back for easy multiple additions
+        input.value = '';
+        input.focus();
+    }
+});
+
+// Allow Enter key to add activity
+document.getElementById('activity-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('add-btn').click();
+    }
+});
+</script>
+{% endblock %}
+
+

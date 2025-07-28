@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div class="image-overlay-container">
+    <img src="{{ url_for('static', filename='images/womansmiling.png') }}" alt="Hero Image" class="full-width-image">
+    <div class="overlay">
+      <div class="overlay-text">
+        <h1>TAKE YOUR CLOSET TO THE NEXT LEVEL</h1>
+        <h1>RAIN OR SHINE.</h1>
+        <p>Get the perfect outfit for today.</p>
+        <a href="/destination" class="btn btn-primary">Plan your Outfit</a>
+        <a href="{{ url_for('closet.view_closet') }}" class="btn btn-primary">View Closet</a>
+
+      </div>
+    </div>
+  </div>
+
+  <section class="how-it-works">
+    <h2>HOW IT WORKS</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>1. SELECT DESTINATION 📍</h3>
+        <p>Tell us the city and state you're visiting so we can get the right weather data.</p>
+      </div>
+      <div class="card">
+        <h3>2. CHECK FORECAST ⛅</h3>
+        <p>We pull in real-time weather data for your exact destination.</p>
+      </div>
+      <div class="card">
+        <h3>3. GET STYLED 👗</h3>
+        <p>We generate the perfect outfit based on the weather and your closet</p>
+      </div>
+    </div>
+  </section>
+{% endblock %}

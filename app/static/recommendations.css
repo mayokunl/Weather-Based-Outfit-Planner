@@ -1,0 +1,178 @@
+/* Import base utility classes */
+@import url('base.css');
+
+/* ==========================================
+   RECOMMENDATIONS PAGE SPECIFIC STYLES
+   ========================================== */
+
+/* Override body layout for recommendations page */
+body {
+  justify-content: flex-start !important;
+  padding-top: var(--spacing-md) !important;
+}
+
+/* AI text recommendations */
+.ai-recommendations {
+  background: var(--color-background-light);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--color-primary);
+  line-height: 1.7;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xl);
+  white-space: pre-line;
+}
+
+/* Visual outfit results grid */
+.outfit-results {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
+}
+
+@media (min-width: 768px) {
+  .outfit-results {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+}
+
+/* Individual recommendation blocks */
+.recommendation-block {
+  background: rgba(255, 255, 255, 0.9);
+  padding: var(--spacing-xl);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border-light);
+  transition: var(--transition-fast);
+}
+
+.recommendation-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.recommendation-block h3 {
+  color: #1f2937;
+  font-size: 1.4rem;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.recommendation-block p {
+  font-size: 0.95rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+/* Outfit images */
+.outfit-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  border-radius: var(--radius-md);
+  margin: var(--spacing-md) auto;
+  display: block;
+  box-shadow: var(--shadow-md);
+}
+
+/* Shopping section */
+.shopping-section {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 2px solid var(--color-border-light);
+}
+
+.shopping-section h4 {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
+}
+
+.shopping-section h5 {
+  color: #1f2937;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+}
+
+/* Shopping list */
+.shopping-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+.shopping-item {
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: rgba(248, 250, 252, 0.6);
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+}
+
+.shopping-item:hover {
+  background: rgba(241, 245, 249, 0.8);
+}
+
+.shopping-item a {
+  color: #1565c0;
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.shopping-item a:hover {
+  text-decoration: underline;
+}
+
+.shopping-item img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.source {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+}
+
+/* Button group */
+.button-group {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  margin-top: var(--spacing-2xl);
+  padding-top: var(--spacing-xl);
+  border-top: 1px solid var(--color-border-light);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .recommendations-container {
+    padding: var(--spacing-xl);
+    margin: var(--spacing-md);
+  }
+  
+  .recommendation-block {
+    padding: var(--spacing-lg);
+  }
+  
+  .button-group {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn {
+    width: 200px;
+    text-align: center;
+  }
+}
