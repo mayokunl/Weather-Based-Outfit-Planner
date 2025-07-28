@@ -1,17 +1,9 @@
-# openai_utils.py
 import os
 from openai import OpenAI
-from dotenv import load_dotenv
 import logging
 
-# Load environment variables from .env file
-load_dotenv()
-
-# Setup logging (optional but helpful for debugging)
+# Setup logging
 logging.basicConfig(level=logging.INFO)
-
-# Initialize OpenAI client with your API key
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def build_prompt_from_session(session):
     """
@@ -38,7 +30,7 @@ def build_prompt_from_session(session):
     - Adjustments based on weather conditions
     - Tailoring to the planned activities
     - Notes on whether each item should be packed or purchased
-    At the end of each day’s section, include a one-line Google image search query summarizing the core outfit (only clothes/accessories). Keep it short and specific.
+    At the end of each day's section, include a one-line Google image search query summarizing the core outfit (only clothes/accessories). Keep it short and specific.
 
     Label it like:  
     **Search Query:** tank top, leggings, hiking boots
@@ -48,28 +40,21 @@ def build_prompt_from_session(session):
         """
     return prompt.strip()
 
-HARD_CODED_GPT_RESPONSE = """
-### Day 1: San Francisco
-**Outfit Recommendation:**
-- Top: Lightweight breathable tank top
-- Bottom: Comfy athletic shorts
-- Shoes: Sturdy hiking sandals
-- Accessories: Wide-brimmed hat, sunglasses, small backpack
-- Adjustments: Layer with a light jacket for the cooler evenings
-- Tailoring: Opt for moisture-wicking fabrics for hiking comfort
-- Packing/Purchase: Pack the accessories, purchase if needed
-**Search Query:** tank top, athletic shorts, hiking sandals
-"""
-
 def get_recommendations(prompt):
     """
     Sends the prompt to the OpenAI API and returns the generated outfit recommendations.
     """
-    # return HARD_CODED_GPT_RESPONSE # For now, return the hardcoded response
+    api_key = os.getenv("OPENAI_API_KEY")
+    
+    if not api_key:
+        return "OpenAI API key not configured."
+    
+    client = OpenAI(api_key=api_key)
+    
     try:
         logging.info("Sending prompt to OpenAI...")
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # Use "gpt-4" or "gpt-4o" if desired
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a helpful travel stylist."},
                 {"role": "user", "content": prompt}

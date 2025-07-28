@@ -1,4 +1,9 @@
-Flask==3.0.0
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+Flask-Login==0.6.3
+Flask-Migrate==4.0.5
+Flask-WTF==1.1.1
+WTForms==3.0.1
 python-dotenv==1.0.0
 openai==1.97.1
 requests==2.31.0
@@ -6,6 +11,5 @@ google-search-results==2.4.2
 sqlalchemy==2.0.41
 markdown==3.5.2
 gunicorn==21.2.0
-Flask-Login==0.6.3
-pip freeze > requirements.txt	
-email_validator
+email-validator==2.1.0
+Werkzeug==2.3.7
