@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h1>🧥 My Closet</h1>
+  
+  {% if items %}
+    <div class="row">
+      {% for item in items %}
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <img src="{{ item.image_url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ item.title }}">
+            <div class="card-body">
+              <h5 class="card-title">{{ item.title }}</h5>
+              {% if item.price %}
+                <p class="card-text"><strong>${{ item.price }}</strong></p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info" role="alert">
+      <h4 class="alert-heading">Your closet is empty!</h4>
+      <p>Start planning trips and adding items to build your wardrobe.</p>
+      <hr>
+      <a class="btn btn-primary" href="{{ url_for('main.destination') }}">Plan a Trip</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

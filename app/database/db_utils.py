@@ -3,6 +3,7 @@ from sqlalchemy import text
 from db import engine 
 
 def add_user(username, email):
+    """Add a user to the legacy database table."""
     select_sql = "SELECT id FROM users WHERE email = :email"
     with engine.connect() as connection:
         result = connection.execute(db.text(select_sql), {"email": email}).fetchone()
@@ -15,8 +16,8 @@ def add_user(username, email):
         connection.commit()
         return res.lastrowid
 
-
 def add_trip(user_id, city, region, gender, age, activities, duration, weather, recommendations=None):
+    """Add a trip to the database."""
     insert_sql = """
     INSERT INTO trips (user_id, city, region, gender, age, activities, duration, weather, recommendations)
     VALUES (:user_id, :city, :region, :gender, :age, :activities, :duration, :weather, :recommendations)
@@ -35,6 +36,7 @@ def add_trip(user_id, city, region, gender, age, activities, duration, weather, 
         })
 
 def fetch_trips_by_user(user_id):
+    """Fetch all trips for a specific user."""
     query = """
         SELECT id, city, region, activities, duration, recommendations
         FROM trips
@@ -44,4 +46,3 @@ def fetch_trips_by_user(user_id):
         result = connection.execute(text(query), {"user_id": user_id})
         trips = [dict(row._mapping) for row in result]
     return trips
-
