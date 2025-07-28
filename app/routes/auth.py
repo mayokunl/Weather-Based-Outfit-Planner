@@ -15,7 +15,7 @@ def login():
             user = User.query.filter_by(email=form.email.data).first()
             if user and check_password_hash(user.password, form.password.data):
                 login_user(user)
-                session['user_id'] = user.id
+                # Remove redundant session storage - Flask-Login handles this
                 return redirect(url_for('main.home'))
             else:
                 raise ValueError("Invalid Email/Password")
@@ -37,7 +37,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         login_user(user)
-        session['user_id'] = user.id
+        # Remove redundant session storage - Flask-Login handles this
         return redirect(url_for('auth.complete_profile'))
     return render_template('register.html', form=form)
 
@@ -49,6 +49,7 @@ def complete_profile():
         current_user.age = request.form['age']
         current_user.gender = request.form['gender']
         db.session.commit()
+        # Store user profile data in session for trip planning
         session['age'] = current_user.age
         session['gender'] = current_user.gender
         return redirect(url_for('main.home'))

@@ -5,21 +5,21 @@ import logging
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 
-def build_prompt_from_session(session):
+def build_prompt_from_trip_data(trip_data, user_profile):
     """
-    Constructs a natural-language prompt for the travel stylist based on session data.
+    Constructs a natural-language prompt for the travel stylist based on trip and user data.
     """
-    activities = session.get('activities', [])
+    activities = trip_data.get('activities', [])
     activities_text = ', '.join(activities) if activities else 'general travel'
-    weather_text = session.get('weather_summary', 'no weather data available')
-    days = session.get('days', 'multi-day')
+    weather_text = trip_data.get('weather_summary', 'no weather data available')
+    days = trip_data.get('days', 'multi-day')
 
     prompt = f"""
     You are a travel stylist. Based on the following trip details:
 
-    Location: {session.get('city', 'N/A')}, {session.get('region', 'N/A')}
-    Gender: {session.get('gender', 'N/A')}
-    Age: {session.get('age', 'N/A')}
+    Location: {trip_data.get('city', 'N/A')}, {trip_data.get('region', 'N/A')}
+    Gender: {user_profile.get('gender', 'N/A')}
+    Age: {user_profile.get('age', 'N/A')}
     Activities: {activities_text}
     Duration: {days} days
     Weather Forecast: {weather_text}
@@ -39,6 +39,14 @@ def build_prompt_from_session(session):
     Format the response with clear Day-by-Day headings.
         """
     return prompt.strip()
+
+# Legacy function for backward compatibility
+def build_prompt_from_session(session):
+    """Legacy function - use build_prompt_from_trip_data instead."""
+    from app.services.session_service import TripPlanningSession
+    trip_data = TripPlanningSession.get_trip_data()
+    user_profile = TripPlanningSession.get_user_profile()
+    return build_prompt_from_trip_data(trip_data, user_profile)
 
 def get_recommendations(prompt):
     """
