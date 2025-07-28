@@ -22,9 +22,11 @@
                     <div class="nav-link-container"><a class="nav-link rounded fs-5" href="/">Home</a></div>
                     {% if not current_user.is_authenticated %}
                     <div class="nav-link-container"><a class="nav-link rounded fs-5" href="/login">Login</a></div>
-                    <div class="nav-link-container"><a class="nav-link rounded fs-5" href="/register">Sign Up</a></div>
+                    <div class="nav-link-container"><a class="nav-link rounded fs-5" href="/signup">Sign Up</a></div>
                     {% else %}
-                    <div class="nav-link-container"><a class="nav-link rounded fs-5" href="/completeProfile">Profile</a></div>
+                    <div class="nav-link-container"><a class="nav-link rounded fs-5" href="/destination">Plan</a></div>
+                    <div class="nav-link-container"><a class="nav-link rounded fs-5" href="/closet/view">Closet</a></div>
+                    <div class="nav-link-container"><a class="nav-link rounded fs-5" href="/profile">Profile</a></div>
                     <div class="nav-link-container"><a class="nav-link rounded fs-5" href="/logout">Logout</a></div>
                     {% endif %}              
                 </div>
