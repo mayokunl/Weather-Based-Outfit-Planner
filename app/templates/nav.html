@@ -1,6 +1,6 @@
-<nav class="navbar sticky-top navbar-expand-lg" style="background-color: #FFFFFF">
-  <div class="container-fluid" style="color:#0288D1">
-    <a href="{{ url_for('main.home') }}" class="navbar-brand"><h2>StyleCast</h2></a>
+<nav class="navbar sticky-top navbar-expand-lg">
+  <div class="container-fluid">
+    <a href="{{ url_for('main.home') }}" class="navbar-brand">StyleCast</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
         aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -8,13 +8,13 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav ms-auto d-flex">
             {% if not current_user.is_authenticated %}
-            <div class="nav-link-container"><a class="nav-link rounded fs-5" href="{{ url_for('auth.login') }}">Login</a></div>
-            <div class="nav-link-container"><a class="nav-link rounded fs-5" href="{{ url_for('auth.register') }}">Sign Up</a></div>
+            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+            <a class="nav-link" href="{{ url_for('auth.register') }}">Sign Up</a>
             {% else %}
-            <div class="nav-link-container"><a class="nav-link rounded fs-5" href="{{ url_for('main.destination') }}">Plan</a></div>
-            <div class="nav-link-container"><a class="nav-link rounded fs-5" href="{{ url_for('closet.view_closet') }}">Closet</a></div>
-            <div class="nav-link-container"><a class="nav-link rounded fs-5" href="{{ url_for('main.trips') }}">Profile</a></div>
-            <div class="nav-link-container"><a class="nav-link rounded fs-5" href="{{ url_for('auth.logout') }}">Logout</a></div>
+            <a class="nav-link" href="{{ url_for('main.destination') }}">Plan</a>
+            <a class="nav-link" href="{{ url_for('closet.view_closet') }}">Closet</a>
+            <a class="nav-link" href="{{ url_for('main.trips') }}">Profile</a>
+            <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
             {% endif %}              
         </div>
     </div>

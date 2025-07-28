@@ -5,13 +5,6 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='duration.css') }}">
 {% endblock %}
 
-{% extends "layout.html" %}
-
-{% block head %}
-<!-- Duration page specific CSS -->
-<link rel="stylesheet" href="{{ url_for('static', filename='duration.css') }}">
-{% endblock %}
-
 {% block content %}
 <form method="post" class="container-card container-form duration-container">
   <h1 class="heading-1">Trip Details</h1>
@@ -41,7 +34,7 @@
         <label class="form-label">Enter an activity:</label>
         <input type="text" id="activity-input" class="form-input" placeholder="e.g. Hiking, Swimming, Sightseeing">
       </div>
-      <button type="button" id="add-btn" class="btn btn-primary btn-small">Add Activity</button>
+      <button type="button" id="add-btn" class="btn btn-small">Add Activity</button>
     </div>
 
     <!-- Activities display area -->
@@ -56,7 +49,7 @@
     <div id="hidden-inputs"></div>
   </div>
 
-  <button type="submit" class="btn btn-primary btn-large mt-xl">Continue to Recommendations →</button>
+  <button type="submit" class="btn btn-large mt-xl">Continue to Recommendations →</button>
 </form>
 
 <script>
@@ -101,6 +94,4 @@ document.getElementById('activity-input').addEventListener('keypress', function(
     }
 });
 </script>
-{% endblock %}
-
-
+{% endblock %} 
