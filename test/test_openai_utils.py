@@ -1,6 +1,6 @@
 # tests/test_openai_utils.py
 import unittest
-from openai_utils import build_prompt_from_session, get_recommendations, HARDCODED_RESPONSE
+from genai_utils import build_prompt_from_session, get_recommendations, HARDCODED_RESPONSE
 
 class TestOpenAIUtils(unittest.TestCase):
     def test_build_prompt_from_session_with_data(self):
