@@ -1,16 +1,50 @@
 {% extends "layout.html" %}
 {% block content %}
-  <div class="image-overlay-container">
-    <img src="{{ url_for('static', filename='images/womansmiling.png') }}" alt="Hero Image" class="full-width-image">
-    <div class="overlay">
-      <div class="overlay-text">
-        <h1>TAKE YOUR CLOSET TO THE NEXT LEVEL</h1>
-        <h1>RAIN OR SHINE.</h1>
-        <p>Get the perfect outfit for today.</p>
-        <a href="/destination" class="btn btn-primary">Plan your Outfit</a>
-        <a href="{{ url_for('closet.view_closet') }}" class="btn btn-primary">View Closet</a>
-
-      </div>
+  <div class="hero-section">
+    <div class="hero-image-container">
+      <img src="{{ url_for('static', filename='images/womansmiling.png') }}" alt="Hero Image" class="hero-image">
+    </div>
+    <div class="hero-content">
+      <h1>TAKE YOUR CLOSET TO THE NEXT LEVEL</h1>
+      <h1>RAIN OR SHINE.</h1>
+      <p>Get the perfect outfit for today.</p>
+      {% if not current_user.is_authenticated %}
+      <button class="btn-get-started" onclick="window.location.href='{{ url_for('auth.register') }}';">
+        <div class="wrapper">
+          <span>Get Started</span>
+          <div class="circle circle-1"></div>
+          <div class="circle circle-2"></div>
+          <div class="circle circle-3"></div>
+          <div class="circle circle-4"></div>
+          <div class="circle circle-5"></div>
+          <div class="circle circle-6"></div>
+          <div class="circle circle-7"></div>
+          <div class="circle circle-8"></div>
+          <div class="circle circle-9"></div>
+          <div class="circle circle-10"></div>
+          <div class="circle circle-11"></div>
+          <div class="circle circle-12"></div>
+        </div>
+      </button>
+      {% else %}
+      <button class="btn-get-started" onclick="window.location.href='{{ url_for('main.destination') }}';">
+        <div class="wrapper">
+          <span>Plan Your Trip</span>
+          <div class="circle circle-1"></div>
+          <div class="circle circle-2"></div>
+          <div class="circle circle-3"></div>
+          <div class="circle circle-4"></div>
+          <div class="circle circle-5"></div>
+          <div class="circle circle-6"></div>
+          <div class="circle circle-7"></div>
+          <div class="circle circle-8"></div>
+          <div class="circle circle-9"></div>
+          <div class="circle circle-10"></div>
+          <div class="circle circle-11"></div>
+          <div class="circle circle-12"></div>
+        </div>
+      </button>
+      {% endif %}
     </div>
   </div>
 
@@ -18,16 +52,22 @@
     <h2>HOW IT WORKS</h2>
     <div class="cards">
       <div class="card">
-        <h3>1. SELECT DESTINATION 📍</h3>
-        <p>Tell us the city and state you're visiting so we can get the right weather data.</p>
+        <div class="card-info">
+          <h3 class="title">1. SELECT DESTINATION 📍</h3>
+          <p class="description">Tell us the city and state you're visiting so we can get the right weather data.</p>
+        </div>
       </div>
       <div class="card">
-        <h3>2. CHECK FORECAST ⛅</h3>
-        <p>We pull in real-time weather data for your exact destination.</p>
+        <div class="card-info">
+          <h3 class="title">2. CHECK FORECAST ⛅</h3>
+          <p class="description">We pull in real-time weather data for your exact destination.</p>
+        </div>
       </div>
       <div class="card">
-        <h3>3. GET STYLED 👗</h3>
-        <p>We generate the perfect outfit based on the weather and your closet</p>
+        <div class="card-info">
+          <h3 class="title">3. GET STYLED 👗</h3>
+          <p class="description">We generate a perfect outfit based on the weather and your closet</p>
+        </div>
       </div>
     </div>
   </section>
