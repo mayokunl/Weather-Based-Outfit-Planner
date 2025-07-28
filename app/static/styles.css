@@ -14,7 +14,19 @@
 
 .navbar-brand {
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-inverse) !important;
+  color: #0288D1 !important;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+  color: #0277BD !important;
+  text-decoration: none;
+}
+
+.navbar-brand h2 {
+  margin: 0;
+  color: inherit;
 }
 
 .nav-link {
@@ -64,7 +76,7 @@
 .image-overlay-container {
   position: relative;
   width: 100%;
-  height: 90vh;
+  height: 75vh; /* Increased from 60vh to 75vh - longer but not as tall as original 90vh */
   overflow: hidden;
 }
 
@@ -81,7 +93,13 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.3) 30%,
+    rgba(0, 0, 0, 0.6) 70%,
+    rgba(0, 0, 0, 0.9) 100%
+  ); /* Enhanced gradient with more dramatic bottom fade */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,6 +119,26 @@
 .overlay-text p {
   font-size: 1.25rem;
   margin-bottom: var(--spacing-lg);
+}
+
+/* Enhanced Get Started button */
+.btn-get-started {
+  font-size: 1.2rem;
+  padding: 12px 30px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 30px;
+  background: linear-gradient(45deg, #0288D1, #03A9F4);
+  border: none;
+  box-shadow: 0 4px 15px rgba(2, 136, 209, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-get-started:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(2, 136, 209, 0.4);
+  background: linear-gradient(45deg, #0277BD, #0288D1);
 }
 
 /* How it works section */
