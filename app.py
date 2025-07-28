@@ -95,7 +95,7 @@ def register():
         return redirect(url_for('complete_profile'))
     return render_template('register.html', form=form)
 
-@app.route('/complete-profile', methods=['GET', 'POST'])
+@app.route('/completeProfile', methods=['GET', 'POST'])
 @login_required
 def complete_profile():
     if request.method == 'POST':
