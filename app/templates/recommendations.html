@@ -6,13 +6,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-card container-wide recommendations-container">
-  <h1 class="heading-1">Your Personalized Outfit Recommendations</h1>
+<div class="recommendations-container">
+  <h1>Your Personalized Outfit Recommendations</h1>
 
   <!-- Trip Summary -->
   {% if data %}
-  <div class="container-section trip-summary">
-    <h2 class="heading-2">Trip Details</h2>
+  <div class="trip-summary">
+    <h2>Trip Details</h2>
     <div class="trip-details">
       <p><strong>Destination:</strong> {{ data.city or 'N/A' }}{% if data.region %}, {{ data.region }}{% endif %}</p>
       <p><strong>Duration:</strong> {{ data.days or 'N/A' }} days</p>
@@ -20,7 +20,7 @@
       {% if data.activities %}
         <p><strong>Activities:</strong>
           {% for activity in data.activities %}
-            <span class="tag">{{ activity }}</span>{% if not loop.last %} {% endif %}
+            <span class="activity-tag">{{ activity }}</span>{% if not loop.last %}, {% endif %}
           {% endfor %}
         </p>
       {% endif %}
@@ -49,39 +49,49 @@
           {% for day, info in outfit_data.items() %}
             <div class="recommendation-block">
               <h3>{{ day }}</h3>
-              <p><em>Search Query:</em> "{{ info.query }}"</p>
 
               {% if info.image %}
-                <img src="{{ info.image }}" alt="Outfit image for {{ day }}" class="outfit-image">
+                <div class="outfit-inspiration">
+                  <img src="{{ info.image }}" alt="Outfit inspiration for {{ day }}" class="outfit-image">
+                </div>
               {% endif %}
 
               {% if info.shopping %}
                 <div class="shopping-section">
                   <h4>Shop This Look:</h4>
-                  {% for group in info.shopping %}
-                    <h5>{{ group.item }}</h5>
-                    <ul class="shopping-list">
-                      {% for product in group.results %}
-                        <li class="shopping-item">
-                          <div class="flex-row">
-                            <a href="{{ product.link }}" target="_blank" class="flex-1">
-                              {% if product.thumbnail %}
-                                <img src="{{ product.thumbnail }}" alt="{{ product.title }}" width="60">
-                              {% endif %}
-                              {{ product.title }} — {{ product.price }} <span class="source">({{ product.source }})</span>
-                            </a>
-                            <form action="{{ url_for('closet.add_to_closet') }}" method="POST">
-                              <input type="hidden" name="title" value="{{ product.title }}">
-                              <input type="hidden" name="price" value="{{ product.price }}">
-                              <input type="hidden" name="image" value="{{ product.thumbnail }}">
-                              <button type="submit" class="btn btn-secondary btn-small-inline">
-                                Add to Closet
-                              </button>
-                            </form>
+                  {% for category, category_data in info.shopping.items() %}
+                    <div class="category-section">
+                      <h5>{{ category }}</h5>
+                      <div class="products-grid">
+                        {% for product in category_data.products %}
+                          <div class="product-card">
+                            {% if product.thumbnail %}
+                              <img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="product-image">
+                            {% endif %}
+                            <div class="product-info">
+                              <h6 class="product-title">{{ product.title }}</h6>
+                              <p class="product-price">{{ product.price or 'Price not available' }}</p>
+                              <p class="product-source">from {{ product.source }}</p>
+                              <div class="product-actions">
+                                {% if product.link %}
+                                  <a href="{{ product.link }}" target="_blank" class="btn btn-primary btn-sm">
+                                    View Product
+                                  </a>
+                                {% endif %}
+                                <form action="{{ url_for('add_to_closet') }}" method="POST" style="display: inline;">
+                                  <input type="hidden" name="title" value="{{ product.title }}">
+                                  <input type="hidden" name="price" value="{{ product.price }}">
+                                  <input type="hidden" name="image" value="{{ product.thumbnail }}">
+                                  <button type="submit" class="btn btn-secondary btn-sm">
+                                    Add to Closet
+                                  </button>
+                                </form>
+                              </div>
+                            </div>
                           </div>
-                        </li>
-                      {% endfor %}
-                    </ul>
+                        {% endfor %}
+                      </div>
+                    </div>
                   {% endfor %}
                 </div>
               {% endif %}
@@ -96,24 +106,23 @@
       </div>
     {% else %}
       <div class="error-message">
-        <p>Sorry, we couldn't generate recommendations at this time. Please make sure your OpenAI API key is configured correctly.</p>
+        <p>Sorry, we couldn't generate recommendations at this time. Please make sure your API keys are configured correctly.</p>
       </div>
     {% endif %}
   </div>
 
   <!-- Action Buttons -->
   <div class="button-group">
-    <a href="{{ url_for('main.duration') }}" class="btn btn-secondary">← Back</a>
-    <a href="{{ url_for('main.trips') }}" class="btn btn-success">View Trips</a>
-    <a href="{{ url_for('closet.view_closet') }}" class="btn btn-secondary">👚 View Closet</a>
+    <a href="{{ url_for('duration') }}" class="btn btn-secondary">← Back</a>
+    <a href="{{ url_for('trips') }}" class="btn btn-success">View Trips</a>
+    <a href="{{ url_for('view_closet') }}" class="btn btn-secondary">👚 View Closet</a>
   </div>
 </div>
-
 
 <style>
 /* Recommendations page specific styling */
 .recommendations-container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 2rem;
 }
@@ -158,6 +167,176 @@
   white-space: pre-line;
 }
 
+.recommendation-block {
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.recommendation-block h3 {
+  color: #1f2937;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.outfit-inspiration {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.outfit-image {
+  max-width: 300px;
+  max-height: 400px;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.shopping-section {
+  margin-top: 2rem;
+}
+
+.shopping-section h4 {
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.category-section {
+  margin-bottom: 2rem;
+}
+
+.category-section h5 {
+  color: #374151;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: #29b6f6;
+}
+
+.product-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.product-info {
+  text-align: center;
+}
+
+.product-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  height: 2.8rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.product-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #059669;
+  margin-bottom: 0.25rem;
+}
+
+.product-source {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.product-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+.btn-primary {
+  background: #29b6f6;
+  color: white;
+  box-shadow: 0 2px 8px rgba(41, 182, 246, 0.3);
+}
+
+.btn-primary:hover {
+  background: #1e88e5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(41, 182, 246, 0.4);
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+  box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+}
+
+.btn-secondary:hover {
+  background: #565e6b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.4);
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
 .error-message {
   background: #fef2f2;
   color: #dc2626;
@@ -173,48 +352,6 @@
   margin-top: 2rem;
 }
 
-.btn {
-  padding: 0.8rem 2rem;
-  border-radius: 0.75rem;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  display: inline-block;
-}
-
-.btn-primary {
-  background: #29b6f6;
-  color: white;
-  box-shadow: 0 4px 12px rgba(41, 182, 246, 0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(41, 182, 246, 0.4);
-}
-
-.btn-secondary {
-  background: #6b7280;
-  color: white;
-  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
-}
-
-.btn-secondary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(107, 114, 128, 0.4);
-}
-
-.btn-success {
-  background: #10b981;
-  color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.btn-success:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
-}
-
 .weather-summary {
   border-radius: 12px;
   padding: 16px;
@@ -222,6 +359,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   align-items: center;
   text-align: center;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .weather-summary h2 {
@@ -235,10 +373,23 @@
   border-radius: 8px;
   padding: 12px;
   font-size: 0.95rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.6;
-  text-align: center;
+  text-align: left;
 }
 
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .recommendations-container {
+    padding: 1rem;
+  }
+  
+  .product-actions {
+    flex-direction: column;
+  }
+}
 </style>
 {% endblock %}
