@@ -6,6 +6,5 @@ google-search-results==2.4.2
 sqlalchemy==2.0.41
 markdown==3.5.2
 gunicorn==21.2.0
-Flask-Login==0.6.3
-pip freeze > requirements.txt	
+Flask-Login==0.6.3	
 email_validator
