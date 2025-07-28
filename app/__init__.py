@@ -24,6 +24,7 @@ def create_app(config_name='development'):
     
     # Import models to ensure they're registered with SQLAlchemy
     from app.models import user, closet
+    from app.models.trip import Trip
     
     # Register blueprints
     from app.routes.auth import auth_bp
