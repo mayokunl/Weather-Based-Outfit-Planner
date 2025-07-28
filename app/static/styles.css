@@ -76,8 +76,26 @@
 .image-overlay-container {
   position: relative;
   width: 100%;
-  height: 75vh; /* Increased from 60vh to 75vh - longer but not as tall as original 90vh */
+  height: 75vh;
   overflow: hidden;
+}
+
+.image-overlay-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.3) 70%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 
 .full-width-image {
@@ -85,6 +103,20 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  mask: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 60%,
+    rgba(0, 0, 0, 0.7) 85%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  -webkit-mask: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 60%,
+    rgba(0, 0, 0, 0.7) 85%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
 }
 
 .overlay {
@@ -93,17 +125,12 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.2) 0%,
-    rgba(0, 0, 0, 0.3) 30%,
-    rgba(0, 0, 0, 0.6) 70%,
-    rgba(0, 0, 0, 0.9) 100%
-  ); /* Enhanced gradient with more dramatic bottom fade */
+  background: rgba(0, 0, 0, 0.2); /* Light overlay for text readability */
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  z-index: 2;
 }
 
 .overlay-text {
