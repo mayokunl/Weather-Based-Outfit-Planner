@@ -1,6 +1,6 @@
 import os
 import markdown
-import re
+import requests
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -94,6 +94,48 @@ def register():
         session['user_id'] = user.id
         return redirect(url_for('complete_profile'))
     return render_template('register.html', form=form)
+
+@app.route('/starter-closet', methods=['GET', 'POST'])
+@login_required
+def starter_closet():
+    if request.method == 'POST':
+        selected_titles = request.form.getlist('title')
+        selected_images = request.form.getlist('image')
+        selected_prices = request.form.getlist('price')
+
+        for title, image, price in zip(selected_titles, selected_images, selected_prices):
+            item = ClosetItem(
+                user_id=current_user.id,
+                title=title,
+                price=price,
+                image_url=image
+            )
+            db.session.add(item)
+
+        db.session.commit()
+        flash("Items added to your closet!", "success")
+        return redirect(url_for('view_closet'))
+
+    # ✅ Fetch clothing-only categories
+    categories = [
+        "tops",
+        "womens-dresses",
+        "womens-shoes",
+        "mens-shirts",
+        "mens-shoes",
+        "mens-watches",
+        "womens-watches",
+        "womens-bags",
+        "womens-jewellery",
+        "sunglasses"
+    ]
+
+    products = []
+    for category in categories:
+        res = requests.get(f'https://dummyjson.com/products/category/{category}?limit=55')
+        products += res.json().get('products', [])
+
+    return render_template('starter-closet.html', products=products)
 
 @app.route('/completeProfile', methods=['GET', 'POST'])
 @login_required

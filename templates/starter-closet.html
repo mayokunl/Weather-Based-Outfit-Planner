@@ -1,0 +1,28 @@
+<!-- templates/starter_closet.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Starter Closet</title>
+</head>
+<body>
+  <h1>Pick Basic Items for Your Closet</h1>
+  <form method="POST">
+    {% for product in products %}
+      <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+        <img src="{{ product.thumbnail }}" alt="{{ product.title }}" width="100">
+        <h3>{{ product.title }}</h3>
+        <p>${{ product.price }}</p>
+        <label>
+          <input type="checkbox" name="title" value="{{ product.title }}">
+          <input type="hidden" name="image" value="{{ product.thumbnail }}">
+          <input type="hidden" name="price" value="{{ product.price }}">
+          Add to closet
+        </label>
+      </div>
+    {% endfor %}
+    <button type="submit">Add Selected Items</button>
+  </form>
+</body>
+</html>
+
