@@ -12,21 +12,26 @@ def home():
 @login_required
 def destination():
     if request.method == 'POST':
-        # Get form data  
+        # Get form data
         city = request.form.get('city', '').strip()
         region = request.form.get('region', '').strip()
-        
+
+        # Debugging messages
+        print(f"City: {city}, Region: {region}")
+
         # Basic validation
         if not city or not region:
             flash('Both city and region are required', 'error')
             return render_template('destination.html')
-        
+
         # Store in session for now
         session['city'] = city
         session['region'] = region
-        
+
+        # Debugging messages
+        print("Redirecting to duration...")
         return redirect(url_for('main.duration'))
-    
+
     return render_template('destination.html')
 
 @main_bp.route('/duration', methods=['GET', 'POST'])
