@@ -33,7 +33,7 @@
     <h2>Weather Forecast</h2>
     <pre>{{ data.weather_summary }}</pre>
   </div>
-{% endif %}
+  {% endif %}
 
   <!-- AI Text -->
   <div class="recommendations-section">
@@ -63,12 +63,22 @@
                     <ul class="shopping-list">
                       {% for product in group.results %}
                         <li class="shopping-item">
-                          <a href="{{ product.link }}" target="_blank">
-                            {% if product.thumbnail %}
-                              <img src="{{ product.thumbnail }}" alt="{{ product.title }}" width="60">
-                            {% endif %}
-                            {{ product.title }} — {{ product.price }} <span class="source">({{ product.source }})</span>
-                          </a>
+                          <div style="display: flex; gap: 1rem; align-items: center;">
+                            <a href="{{ product.link }}" target="_blank" style="flex: 1;">
+                              {% if product.thumbnail %}
+                                <img src="{{ product.thumbnail }}" alt="{{ product.title }}" width="60">
+                              {% endif %}
+                              {{ product.title }} — {{ product.price }} <span class="source">({{ product.source }})</span>
+                            </a>
+                            <form action="{{ url_for('add_to_closet') }}" method="POST">
+                              <input type="hidden" name="title" value="{{ product.title }}">
+                              <input type="hidden" name="price" value="{{ product.price }}">
+                              <input type="hidden" name="image" value="{{ product.thumbnail }}">
+                              <button type="submit" class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.8rem;">
+                                Add to Closet
+                              </button>
+                            </form>
+                          </div>
                         </li>
                       {% endfor %}
                     </ul>
@@ -94,10 +104,11 @@
   <!-- Action Buttons -->
   <div class="button-group">
     <a href="{{ url_for('duration') }}" class="btn btn-secondary">← Back</a>
-    <a href="{{ url_for('index') }}" class="btn btn-primary">Start Over</a>
     <a href="{{ url_for('trips') }}" class="btn btn-success">View Trips</a>
+    <a href="{{ url_for('view_closet') }}" class="btn btn-secondary">👚 View Closet</a>
   </div>
 </div>
+
 
 <style>
 /* Recommendations page specific styling */
