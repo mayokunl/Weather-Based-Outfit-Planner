@@ -2,10 +2,12 @@
 {% block content %}
 <!DOCTYPE html>
 <html>
-<head><title>My Closet</title></head>
+<head>
+  <title>My Closet</title>
+</head>
+
 <body>
-  <h1>🧥 My Closet</h1>
-  <a href="{{ url_for('home') }}">🏠 Home</a>
+  <h1> My Closet 🧥</h1>
 
   {% if items %}
     <div style="display: flex; flex-wrap: wrap;">
