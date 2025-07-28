@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container mt-5" style="background-color: white; border-radius: 30px; max-width: 600px;">
-    <form method="POST" class="p-4">
+<div class="container-card container-form mt-xl">
+    <form method="POST" class="p-lg">
         {{ form.hidden_tag() }}
-        <legend class="mb-4 mt-2 text-center">Sign Up</legend>
+        <legend class="heading-1 mb-lg">Sign Up</legend>
 
         <div class="form-group mb-3">
             {{ form.username.label(class="form-label") }}
