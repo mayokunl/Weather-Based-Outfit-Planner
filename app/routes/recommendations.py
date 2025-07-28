@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, session, flash, redirect, url_for
 import markdown
 from flask_login import current_user, login_required
 from app.services.weather_service import get_weather_summary
-from app.services.openai_service import build_prompt_from_session, get_recommendations
+# from app.services.openai_service import build_prompt_from_session, get_recommendations
 from app.services.shopping_service import get_overall_outfit_image, get_shopping_items
 from app.services.database_service import add_trip_orm, DatabaseError, DatabaseValidationError
 from app.services.session_service import TripPlanningSession
@@ -29,8 +29,10 @@ def recommendations():
         TripPlanningSession.set_weather_summary(weather_summary)
 
         user_profile = TripPlanningSession.get_user_profile()
-        prompt = build_prompt_from_session(session)
-        response = get_recommendations(prompt)
+        
+        # Placeholder for outfit recommendations (AI service removed)
+        response = f"Weather-based outfit recommendations for {trip_data['city']}, {trip_data['region']} from {trip_data['start_date']} to {trip_data['end_date']}:\n\nDay 1: Casual comfort outfit suitable for the weather\nDay 2: Versatile layers for changing conditions\nDay 3: Activity-appropriate attire"
+        
         TripPlanningSession.set_recommendations(response)
         parsed_outfits = parse_daily_outfits(response)
 
