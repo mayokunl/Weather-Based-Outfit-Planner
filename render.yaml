@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: weather-outfit-planner
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn wsgi:app"
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: weather-outfit-planner-db
+          property: connectionString
+
+databases:
+  - name: weather-outfit-planner-db
+    databaseName: weather_outfit_planner
+    user: weather_user
