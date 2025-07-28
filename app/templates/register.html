@@ -5,6 +5,18 @@
         {{ form.hidden_tag() }}
         <h2 class="form-title">Sign Up</h2>
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="alert-container">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
         <div class="form-group mb-3">
             {{ form.username.label(class="form-label") }}
             {% if form.username.errors %}
