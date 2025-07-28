@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h1>Your Profile</h1>
+
+  <form method="post">
+    <label for="name">Name</label>
+    <input id="name" name="name" value="{{ user.name }}" required>
+
+    <label for="age">Age</label>
+    <input id="age" name="age" type="number" min="1" value="{{ user.age }}" required>
+
+    <label for="gender">Gender</label>
+    <select id="gender" name="gender" required>
+      <option value="">— Select —</option>
+      <option {% if user.gender == "Male" %}selected{% endif %}>Male</option>
+      <option {% if user.gender == "Female" %}selected{% endif %}>Female</option>
+      <option {% if user.gender == "Non Binary" %}selected{% endif %}>Non Binary</option>
+      <option {% if user.gender == "Prefer not to Say" %}selected{% endif %}>Prefer not to Say</option>
+      <option {% if user.gender == "Other" %}selected{% endif %}>Other</option>
+    </select>
+
+    <button type="submit">Update</button>
+  </form>
+{% endblock %}
