@@ -5,7 +5,9 @@
    NAVIGATION BAR
    ========================================== */
 .navbar {
-  padding: var(--spacing-md) var(--spacing-xl) !important;
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  padding-left: 2rem !important;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
   width: 100%;
 }
@@ -19,14 +21,20 @@
   margin-right: 30px !important;
   width: 8vw !important;
   text-align: center !important;
-  transition: var(--transition-normal) !important;
-  font-weight: var(--font-weight-bold) !important;
-  color: var(--color-text-inverse) !important;
+  transition: all .3s !important;
+  font-weight: bold !important;
+  color: #1E1E1E !important;
+  text-decoration: none;
+}
+
+.navbar .nav-link {
+  color: #1E1E1E !important;
+  font-weight: bold;
   text-decoration: none;
 }
 
 .nav-link:hover {
-  background-color: var(--color-primary-dark) !important;
+  background-color: #0288D1 !important;
 }
 
 /* ==========================================
