@@ -393,6 +393,13 @@ body {
   object-fit: cover;
 }
 
+.img-card-full {
+  width: 100%;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  object-fit: cover;
+  height: 250px;
+}
+
 .btn-small-inline {
   padding: 6px 10px;
   font-size: 0.8rem;
