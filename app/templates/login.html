@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container mt-5" style="background-color: #F5F9FC; border-radius: 30px;">
+<div class="container-card container-form mt-xl">
     <div class="row">
         <div class="col">
             <form method="POST" action="">
                 {{ form.hidden_tag() }}
-                <legend class="mb-2 mt-4">Login</legend>
+                <legend class="heading-1 mb-lg">Login</legend>
                 {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                 {% for category, message in messages %}
@@ -44,7 +44,7 @@
                 </div>
                 <div class="form-group mt-2 mb-3">
                     {{ form.submit(class="btn btn-outline-secondary") }}
-                    <p style="margin-top: 1rem;">New user? <a href="{{ url_for('auth.register') }}">Register</a></p>
+                    <p class="mt-md">New user? <a href="{{ url_for('auth.register') }}">Register</a></p>
                 </div>
             </form>
         </div>

@@ -1,11 +1,18 @@
 {% extends "layout.html" %}
 {% block content %}
-<form method="post">
+<form method="post" class="container-card container-form">
+  <h1 class="heading-1">Plan Your Trip</h1>
   <div class="form-section">
-    <h2>Where are you traveling?</h2>
-    <label>City: <input name="city"></label>
-    <label>State: <input name="region" required></label>
+    <h2 class="heading-2">Where are you traveling?</h2>
+    <div class="form-group">
+      <label class="form-label">City:</label>
+      <input name="city" class="form-input" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">State:</label>
+      <input name="region" class="form-input" required>
+    </div>
   </div>
-  <button type="submit">Next →</button>
+  <button type="submit" class="btn btn-primary btn-large">Next →</button>
 </form>
 {% endblock %}

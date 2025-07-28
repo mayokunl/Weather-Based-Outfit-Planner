@@ -1,89 +1,58 @@
-/* Reset */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* Import base styles with CSS variables and utilities */
+@import url('base.css');
 
-body{
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: linear-gradient(180deg, #e0f2fe 0%, #b3e5fc 50%, #81d4fa 100%);
-  color: #1f2937;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 100vh;
-}
-
-/* Base styles - Clean light blue gradient background */
-.page-content {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 50%, #81d4fa 100%);
-  color: #1f2937;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-}
-
-/* Form container - Centered and enhanced styling */
-form {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 3rem;
-  border-radius: 2rem;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+/* ==========================================
+   NAVIGATION BAR
+   ========================================== */
+.navbar {
+  padding: var(--spacing-md) var(--spacing-xl) !important;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 600px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
-}
-.navbar{
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
-    padding-left: 2rem !important;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
-    width: 100%;
 }
 
-.nav-link{
-    margin-right: 30px !important;
-    width: 8vw !important;
-    text-align: center !important;
-    transition: all .3s !important;
-    font-weight: bold !important;
+.navbar-brand {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-inverse) !important;
 }
 
-.navbar .nav-link {
-    color: #1E1E1E !important;
-    font-weight: bold;
-    text-decoration: none;
+.nav-link {
+  margin-right: 30px !important;
+  width: 8vw !important;
+  text-align: center !important;
+  transition: var(--transition-normal) !important;
+  font-weight: var(--font-weight-bold) !important;
+  color: var(--color-text-inverse) !important;
+  text-decoration: none;
 }
 
-.nav-link:hover{
-    background-color: #0288D1 !important;
+.nav-link:hover {
+  background-color: var(--color-primary-dark) !important;
 }
 
-.form-control{
-    background-color: #D9D9D9 !important;
+/* ==========================================
+   FORM CONTROLS
+   ========================================== */
+.form-control {
+  background-color: var(--color-background-input) !important;
 }
 
-/* Footer */
-.footer-box{
-  background-color: #0288D1 !important;
+/* ==========================================
+   FOOTER
+   ========================================== */
+.footer-box {
+  background-color: var(--color-primary-dark) !important;
   bottom: 0;
   left: 0;
   width: 100% !important;
   text-align: right;
-  padding: 1rem;
+  padding: var(--spacing-md);
   font-size: 0.6rem;
   z-index: 100;
 }
 
-
-/* Home page image and text styling */
+/* ==========================================
+   HOME PAGE SPECIFIC STYLES
+   ========================================== */
 .image-overlay-container {
   position: relative;
   width: 100%;
@@ -104,7 +73,7 @@ form {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 50% transparent black */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -113,134 +82,136 @@ form {
 
 .overlay-text {
   color: white;
-  padding: 2rem;
+  padding: var(--spacing-xl);
 }
 
 .overlay-text h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+  font-size: var(--font-size-4xl);
+  margin-bottom: var(--spacing-md);
 }
 
 .overlay-text p {
   font-size: 1.25rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-lg);
 }
 
-
-
-/* Headings */
-h1 {
-  margin-bottom: 1.5rem;
-  font-size: 2.2rem;
-  font-weight: 700;
+/* How it works section */
+.how-it-works {
   text-align: center;
-  color: #374151;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-3xl) var(--spacing-xl);
+}
+
+.how-it-works h2 {
+  color: white;
+  font-weight: var(--font-weight-extrabold);
+  font-size: 3.5rem;
+  margin-bottom: var(--spacing-xl);
+}
+
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.card {
+  background: white;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  max-width: 400px;
+  flex: 1;
+}
+
+.card h3 {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--spacing-md);
+}
+
+.card p {
+  color: #555;
+}
+
+/* ==========================================
+   LEGACY STYLES - Keep for backward compatibility
+   ========================================== */
+
+/* Headings - use utility classes instead */
+h1 {
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  color: var(--color-text-primary);
+  text-shadow: var(--shadow-sm);
 }
 
 h2 {
-  color: #374151;
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
   text-align: center;
 }
 
-/* Labels and Inputs */
+/* Labels and Inputs - use utility classes instead */
 label {
-  font-weight: 500;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
   display: block;
   color: #4b5563;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 input,
 select {
-  margin-top: 0.25rem;
-  padding: 0.8rem 1rem;
+  margin-top: var(--spacing-xs);
+  padding: 0.8rem var(--spacing-md);
   width: 100%;
-  border: 2px solid #e5e7eb;
-  border-radius: 0.75rem;
-  font-size: 1rem;
-  transition: all 0.2s ease;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  transition: var(--transition-fast);
   background: white;
 }
 
 input:focus,
 select:focus {
   outline: none;
-  border-color: #29b6f6;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(41, 182, 246, 0.1);
 }
 
 input:hover,
 select:hover {
-  border-color: #9ca3af;
+  border-color: var(--color-text-muted);
 }
 
-/* Button - Solid light blue to match background theme */
+/* Button - use utility classes instead */
 button {
-  margin-top: 2rem;
-  padding: 1rem 2rem;
-  background: #29b6f6;
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 0.75rem;
-  font-size: 1.1rem;
-  font-weight: 600;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
   width: 100%;
-  box-shadow: 0 4px 12px rgba(41, 182, 246, 0.3);
+  box-shadow: var(--shadow-primary);
 }
 
 button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(34, 142, 192, 0.4);
+  box-shadow: var(--shadow-primary-hover);
 }
 
 button:active {
   transform: translateY(0);
-}
-
-/* How it works section styling  */
-.how-it-works {
-  text-align: center;
-  padding: 4rem 2rem;
-}
-
-.how-it-works h2 {
-  color: white;
-  font-weight: 800; 
-  font-size: 3.5rem;
-  margin-bottom: 2rem;
-}
-
-.cards {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.card {
-  background: white;
-  padding: 2rem;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  max-width: 400px;
-  flex: 1;
-}
-
-.card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.card p {
-  color: #555;
 }
 
 /* Select dropdown styling */
@@ -248,40 +219,39 @@ select {
   cursor: pointer;
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>');
   background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 1rem;
+  background-position: right var(--spacing-md) center;
+  background-size: var(--spacing-md);
   padding-right: 2.5rem;
 }
 
-/* Form sections - basic styling for all pages */
+/* Form sections */
 .form-section {
-  padding: 1.5rem 0;
+  padding: var(--spacing-lg) 0;
 }
 
 .form-section h2 {
-  color: #374151;
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
   text-align: center;
 }
 
-/* Page titles for forms */
+/* Page titles */
 .page-title {
   text-align: center;
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
   color: #1f2937;
-  margin-bottom: 2rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: var(--spacing-xl);
+  text-shadow: var(--shadow-sm);
 }
 
-/* Alternative title style for different pages */
 .section-title {
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
   color: #2563eb;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-lg);
   text-align: center;
   position: relative;
 }
@@ -291,17 +261,16 @@ select {
   display: block;
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, #4fc3f7, #29b6f6);
-  margin: 0.5rem auto 0;
+  background: linear-gradient(90deg, #4fc3f7, var(--color-primary));
+  margin: var(--spacing-sm) auto 0;
   border-radius: 2px;
 }
 
-/* For subtitle text */
 .page-subtitle {
   text-align: center;
-  color: #6b7280;
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  font-weight: 400;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-xl);
+  font-weight: var(--font-weight-normal);
   line-height: 1.5;
 }

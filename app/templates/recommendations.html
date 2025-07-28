@@ -6,13 +6,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="recommendations-container">
-  <h1>Your Personalized Outfit Recommendations</h1>
+<div class="container-card container-wide recommendations-container">
+  <h1 class="heading-1">Your Personalized Outfit Recommendations</h1>
 
   <!-- Trip Summary -->
   {% if data %}
-  <div class="trip-summary">
-    <h2>Trip Details</h2>
+  <div class="container-section trip-summary">
+    <h2 class="heading-2">Trip Details</h2>
     <div class="trip-details">
       <p><strong>Destination:</strong> {{ data.city or 'N/A' }}{% if data.region %}, {{ data.region }}{% endif %}</p>
       <p><strong>Duration:</strong> {{ data.days or 'N/A' }} days</p>
@@ -20,7 +20,7 @@
       {% if data.activities %}
         <p><strong>Activities:</strong>
           {% for activity in data.activities %}
-            <span class="activity-tag">{{ activity }}</span>{% if not loop.last %}, {% endif %}
+            <span class="tag">{{ activity }}</span>{% if not loop.last %} {% endif %}
           {% endfor %}
         </p>
       {% endif %}
@@ -63,8 +63,8 @@
                     <ul class="shopping-list">
                       {% for product in group.results %}
                         <li class="shopping-item">
-                          <div style="display: flex; gap: 1rem; align-items: center;">
-                            <a href="{{ product.link }}" target="_blank" style="flex: 1;">
+                          <div class="flex-row">
+                            <a href="{{ product.link }}" target="_blank" class="flex-1">
                               {% if product.thumbnail %}
                                 <img src="{{ product.thumbnail }}" alt="{{ product.title }}" width="60">
                               {% endif %}
@@ -74,7 +74,7 @@
                               <input type="hidden" name="title" value="{{ product.title }}">
                               <input type="hidden" name="price" value="{{ product.price }}">
                               <input type="hidden" name="image" value="{{ product.thumbnail }}">
-                              <button type="submit" class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.8rem;">
+                              <button type="submit" class="btn btn-secondary btn-small-inline">
                                 Add to Closet
                               </button>
                             </form>
