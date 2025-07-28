@@ -14,7 +14,19 @@
 
 .navbar-brand {
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-inverse) !important;
+  color: #0288D1 !important;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+  color: #0277BD !important;
+  text-decoration: none;
+}
+
+.navbar-brand h2 {
+  margin: 0;
+  color: inherit;
 }
 
 .nav-link {
@@ -48,11 +60,12 @@
    FOOTER
    ========================================== */
 .footer-box {
-  background-color: var(--color-primary-dark) !important;
+  background-color: white !important;
+  color: var(--color-text-primary) !important;
   bottom: 0;
   left: 0;
   width: 100% !important;
-  text-align: right;
+  text-align: left;
   padding: var(--spacing-md);
   font-size: 0.6rem;
   z-index: 100;
@@ -64,8 +77,20 @@
 .image-overlay-container {
   position: relative;
   width: 100%;
-  height: 90vh;
+  height: 75vh;
   overflow: hidden;
+}
+
+.image-overlay-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  pointer-events: none;
+  z-index: 2;
 }
 
 .full-width-image {
@@ -73,6 +98,28 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  
+  /* Very gradual, soft fade - no harsh edges */
+  mask-image: linear-gradient(to bottom, 
+    black 0%, 
+    black 50%, 
+    rgba(0,0,0,0.9) 65%, 
+    rgba(0,0,0,0.7) 75%, 
+    rgba(0,0,0,0.5) 82%, 
+    rgba(0,0,0,0.3) 88%, 
+    rgba(0,0,0,0.1) 94%, 
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(to bottom, 
+    black 0%, 
+    black 50%, 
+    rgba(0,0,0,0.9) 65%, 
+    rgba(0,0,0,0.7) 75%, 
+    rgba(0,0,0,0.5) 82%, 
+    rgba(0,0,0,0.3) 88%, 
+    rgba(0,0,0,0.1) 94%, 
+    transparent 100%
+  );
 }
 
 .overlay {
@@ -81,11 +128,12 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.3); /* Light overlay for text readability */
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  z-index: 1;
 }
 
 .overlay-text {
@@ -103,42 +151,54 @@
   margin-bottom: var(--spacing-lg);
 }
 
+/* Enhanced Get Started button */
+.btn-get-started {
+  font-size: 1.2rem;
+  padding: 12px 30px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 30px;
+  background: linear-gradient(45deg, #0288D1, #03A9F4);
+  border: none;
+  box-shadow: 0 4px 15px rgba(2, 136, 209, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-get-started:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(2, 136, 209, 0.4);
+  background: linear-gradient(45deg, #0277BD, #0288D1);
+}
+
+/* Gradient spacer for smooth transition */
+.gradient-spacer {
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(65, 88, 208, 0.1) 20%,
+    rgba(65, 88, 208, 0.3) 40%,
+    rgba(65, 88, 208, 0.5) 60%,
+    rgba(65, 88, 208, 0.7) 80%,
+    rgba(65, 88, 208, 1) 100%
+  );
+  width: 100%;
+}
+
 /* How it works section */
 .how-it-works {
   text-align: center;
   padding: var(--spacing-3xl) var(--spacing-xl);
+  margin-top: 0; /* Ensure no gap between image and section */
+  background: transparent; /* Keep transparent background */
 }
 
 .how-it-works h2 {
-  color: white;
+  color: white; /* White color for visibility on gradient background */
   font-weight: var(--font-weight-extrabold);
   font-size: 3.5rem;
   margin-bottom: var(--spacing-xl);
-}
-
-.cards {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-xl);
-  flex-wrap: wrap;
-}
-
-.card {
-  background: white;
-  padding: var(--spacing-xl);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  max-width: 400px;
-  flex: 1;
-}
-
-.card h3 {
-  font-size: var(--font-size-2xl);
-  margin-bottom: var(--spacing-md);
-}
-
-.card p {
-  color: #555;
 }
 
 /* ==========================================
