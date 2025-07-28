@@ -7,8 +7,11 @@
         <h1>TAKE YOUR CLOSET TO THE NEXT LEVEL</h1>
         <h1>RAIN OR SHINE.</h1>
         <p>Get the perfect outfit for today.</p>
-        <a href="/destination" class="btn btn-primary">Plan your Outfit</a>
-        <a href="{{ url_for('closet.view_closet') }}" class="btn btn-primary">View Closet</a>
+        {% if not current_user.is_authenticated %}
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-get-started">Get Started</a>
+        {% else %}
+        <a href="{{ url_for('main.destination') }}" class="btn btn-primary btn-get-started">Plan Your Trip</a>
+        {% endif %}
 
       </div>
     </div>
