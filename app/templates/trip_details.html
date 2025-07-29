@@ -123,11 +123,28 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
         border: 1px solid #f0f0f0;
+        position: relative;
+    }
+    
+    .shopping-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
     }
     
     .shopping-item:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .shopping-item:hover::before {
+        transform: scaleX(1);
     }
     
     .item-image {
@@ -171,20 +188,39 @@
     .shop-button {
         display: block;
         width: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
         color: white;
         text-decoration: none;
         padding: 0.8rem;
-        border-radius: 6px;
+        border-radius: 20px;
         text-align: center;
         font-weight: 500;
         transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: none;
+    }
+    
+    .shop-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
     }
     
     .shop-button:hover {
-        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+    }
+    
+    .shop-button:hover::before {
+        transform: scaleX(1);
     }
     
     .no-data {
@@ -208,11 +244,28 @@
         overflow: hidden;
         transition: all 0.3s ease;
         border: 1px solid #f0f0f0;
+        position: relative;
+    }
+    
+    .day-recommendation-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
     }
     
     .day-recommendation-card:hover {
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         transform: translateY(-2px);
+    }
+    
+    .day-recommendation-card:hover::before {
+        transform: scaleX(1);
     }
     
     .day-header {
@@ -228,8 +281,8 @@
     }
     
     .day-header:hover {
-        background: #f9fafb;
-        border-bottom-color: #667eea;
+        background: #fef7ed;
+        border-bottom-color: #f97316;
     }
     
     .day-info {
@@ -258,7 +311,7 @@
         font-size: 1.2rem;
         transition: transform 0.3s ease;
         display: inline-block;
-        color: #667eea;
+        color: #f97316;
     }
     
     .day-header.active .toggle-icon {
@@ -279,7 +332,7 @@
     }
     
     .day-details h4 {
-        color: #667eea;
+        color: #f97316;
         font-size: 1.1rem;
         margin: 1.5rem 0 0.75rem 0;
     }

@@ -110,7 +110,7 @@
   <div class="text-center mt-2xl">
     <a class="btn btn-secondary btn-small" href="{{ url_for('main.duration') }}">← Back</a>
     <a class="btn btn-success btn-small" href="{{ url_for('main.profile') }}">View Trips</a>
-    <a class="btn btn-secondary btn-small" href="{{ url_for('closet.view_closet') }}">👚 View Closet</a>
+    <a class="btn btn-secondary btn-small" href="{{ url_for('closet.view_closet') }}">View Closet</a>
   </div>
 
 </div>
@@ -225,14 +225,32 @@
   border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
   padding: 1rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
 .product-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  border-color: #29b6f6;
+  border-color: #f97316;
+}
+
+.product-card:hover::before {
+  transform: scaleX(1);
 }
 
 .product-image {
@@ -283,55 +301,74 @@
 
 .btn {
   padding: 0.6rem 1.2rem;
-  border-radius: 0.5rem;
+  border-radius: 20px;
   text-decoration: none;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: inline-block;
   border: none;
   cursor: pointer;
   font-size: 0.85rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.btn:hover::before {
+  transform: scaleX(1);
 }
 
 .btn-sm {
   padding: 0.5rem 1rem;
   font-size: 0.8rem;
+  border-radius: 16px;
 }
 
 .btn-primary {
-  background: #29b6f6;
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
   color: white;
-  box-shadow: 0 2px 8px rgba(41, 182, 246, 0.3);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
 }
 
 .btn-primary:hover {
-  background: #1e88e5;
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(41, 182, 246, 0.4);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
 }
 
 .btn-secondary {
-  background: #6b7280;
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
   color: white;
-  box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
 }
 
 .btn-secondary:hover {
-  background: #565e6b;
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.4);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
 }
 
 .btn-success {
-  background: #10b981;
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
 
 .btn-success:hover {
-  background: #059669;
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
 }
 
 .error-message {
@@ -400,10 +437,28 @@
   margin-bottom: 15px;
   overflow: hidden;
   transition: all 0.3s ease;
+  position: relative;
+}
+
+.day-recommendation-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
 }
 
 .day-recommendation-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.day-recommendation-card:hover::before {
+  transform: scaleX(1);
 }
 
 .day-header {
@@ -418,7 +473,7 @@
 }
 
 .day-header:hover {
-  background: #f8f9fa;
+  background: #fef7ed;
 }
 
 .day-info h3.day-title {
@@ -443,7 +498,7 @@
 
 .toggle-icon {
   font-size: 16px;
-  color: #666;
+  color: #f97316;
   transition: transform 0.3s ease;
   display: inline-block;
 }
@@ -466,7 +521,7 @@
 }
 
 .day-details h4 {
-  color: #333;
+  color: #f97316;
   margin-bottom: 10px;
   font-size: 16px;
 }
