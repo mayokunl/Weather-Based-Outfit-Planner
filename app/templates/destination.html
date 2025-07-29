@@ -1,32 +1,28 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container-card container-form mt-xl">
-  <h1 class="form-title">Plan Your Trip</h1>
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-  {% for category, message in messages %}
-  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-    {{ message }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="container-card container-wide mt-xl mb-3xl">
+  <h1 class="heading-1">Plan Your Trip ✈️</h1>
+
+  <div class="container-section">
+    <form method="post" class="p-lg">
+      <div class="form-group">
+        <label for="city" class="form-label">City</label>
+        <input id="city" name="city" class="form-control" placeholder="e.g., Miami" required>
+      </div>
+
+      <div class="form-group">
+        <label for="region" class="form-label">State</label>
+        <input id="region" name="region" class="form-control" placeholder="e.g., Florida" required>
+      </div>
+
+      <div class="text-center mt-xl">
+        <button type="submit" class="btn btn-primary btn-large">Next →</button>
+      </div>
+    </form>
   </div>
-  {% endfor %}
-  {% endif %}
-  {% endwith %}
-  <div class="fs-10 text-success">{{ success_message }}</div>
-  <div class="fs-10 text-danger">{{ message }}</div>
-  <form action="/destination" method="POST">
-    <div class="form-section">
-      <h3 class="heading-3">Where are you traveling?</h3>
-      <div class="form-group">
-        <label class="form-label">City:</label>
-        <input name="city" class="form-input" required>
-      </div>
-      <div class="form-group">
-        <label class="form-label">State:</label>
-        <input name="region" class="form-input" required>
-      </div>
-    </div>
-    <button type="submit" class="btn btn-large">Next →</button>
-  </form>
+
+  <div class="button-group mt-xl">
+    <a class="btn btn-secondary" href="{{ url_for('main.home') }}">🏠 Back to Home</a>
+  </div>
 </div>
 {% endblock %}

@@ -1,23 +1,36 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} 
 {% block content %}
-<h1>Tell us about yourself</h1>
-<form method="post">
-  <label for="name">Name</label>
-  <input id="name" name="name" required>
+<div class="container mt-3xl mb-3xl">
+  <div class="container-card">
+    <h1 class="form-title">Tell Us About Yourself</h1>
 
-  <label for="age">Age</label>
-  <input id="age" name="age" type="number" min="1" required>
+    <form method="post">
+      <div class="form-group">
+        <label for="name" class="form-label">Name</label>
+        <input id="name" name="name" class="form-control" required />
+      </div>
 
-  <label for="gender">Gender</label>
-  <select id="gender" name="gender" required>
-    <option value="">— Select —</option>
-    <option>Male</option>
-    <option>Female</option>
-    <option>Non Binary</option>
-    <option>Prefer not to Say</option>
-    <option>Other</option>
-  </select>
+      <div class="form-group">
+        <label for="age" class="form-label">Age</label>
+        <input id="age" name="age" type="number" min="1" class="form-control" required />
+      </div>
 
-  <button type="submit">Save</button>
-</form>
+      <div class="form-group">
+        <label for="gender" class="form-label">Gender</label>
+        <select id="gender" name="gender" class="form-control" required>
+          <option value="">— Select —</option>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Non Binary</option>
+          <option>Prefer not to Say</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="text-center mt-xl">
+        <button type="submit" class="btn btn-primary btn-large">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
