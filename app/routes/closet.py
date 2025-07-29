@@ -80,7 +80,7 @@ def remove_from_closet(item_id):
     
     return redirect(url_for('closet.view_closet'))
 
-@closet_bp.route('/closet/view')
+@closet_bp.route('/closet')
 @login_required
 def view_closet():
     # Get items organized by category
