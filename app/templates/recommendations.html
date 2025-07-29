@@ -1,44 +1,47 @@
 {% extends "layout.html" %}
 
 {% block head %}
-<!-- Recommendations page specific CSS -->
 <link rel="stylesheet" href="{{ url_for('static', filename='recommendations.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="recommendations-container">
-  <h1>Your Personalized Outfit Recommendations</h1>
+<div class="page-wrapper">
+<div class="container-wide p-2xl">
 
-  <!-- Trip Summary -->
+  <h1 class="text-center mb-2xl">Your Personalized Outfit Recommendations ✨</h1>
+
   {% if data %}
-  <div class="trip-summary">
-    <h2>Trip Details</h2>
-    <div class="trip-details">
-      <p><strong>Destination:</strong> {{ data.city or 'N/A' }}{% if data.region %}, {{ data.region }}{% endif %}</p>
-      <p><strong>Duration:</strong> {{ data.days or 'N/A' }} days</p>
-      <p><strong>Gender:</strong> {{ data.gender or 'N/A' }}</p>
-      {% if data.activities %}
+    <div class="card mb-2xl">
+      <h2 class="mb-md">Trip Details ℹ️</h2>
+      <div class="trip-details">
+        <p><strong>Destination:</strong> {{ data.city or 'N/A' }}</p>
+        <p><strong>Event Type:</strong> {{ data.event or 'N/A' }}</p>
+        <p><strong>Start Date:</strong> {{ data.start_date or 'N/A' }}</p>
+        <p><strong>End Date:</strong> {{ data.end_date or 'N/A' }}</p>
+        <p><strong>Temperature Preference:</strong> {{ data.temp_preference or 'N/A' }}</p>
         <p><strong>Activities:</strong>
-          {% for activity in data.activities %}
-            <span class="activity-tag">{{ activity }}</span>{% if not loop.last %}, {% endif %}
-          {% endfor %}
+          {% if data.activities %}
+            {% for activity in data.activities %}
+              <span class="activity-tag">{{ activity }}</span>
+            {% endfor %}
+          {% else %}
+            N/A
+          {% endif %}
         </p>
-      {% endif %}
+      </div>
     </div>
-  </div>
   {% endif %}
 
   {% if data.weather_summary %}
-  <div class="weather-summary">
-    <h2>Weather Forecast</h2>
-    <pre>{{ data.weather_summary }}</pre>
-  </div>
+    <div class="card mb-2xl">
+      <h2 class="mb-md">Weather Forecast 🌦️</h2>
+      <pre class="text-left">{{ data.weather_summary }}</pre>
+    </div>
   {% endif %}
 
-  <!-- AI Text -->
-  <div class="recommendations-section">
-    <h2>AI-Powered Outfit Recommendations</h2>
-    {% if response %}
+  {% if response %}
+    <div class="card mb-2xl">
+      <h2 class="mb-md">AI-Powered Outfit Recommendations 💡</h2>
       <div class="ai-recommendations">
         {% if '## Day' in html_response %}
           <!-- Daily Recommendations with Dropdowns -->
@@ -78,83 +81,38 @@
           {{ html_response|safe }}
         {% endif %}
       </div>
+    </div>
 
-      <!-- Visual & Shopping Results -->
-      {% if outfit_data %}
-        <div class="outfit-results">
-          {% for day, info in outfit_data.items() %}
-            <div class="recommendation-block">
-              <h3>{{ day }}</h3>
-
-              {% if info.image %}
-                <div class="outfit-inspiration">
-                  <img src="{{ info.image }}" alt="Outfit inspiration for {{ day }}" class="outfit-image">
+      {% for day, info in outfit_data.items() %}
+        <div class="card mb-2xl">
+          <h3 class="mb-md">{{ day }}</h3>
+          {% if info.image %}
+            <img src="{{ info.image }}" class="outfit-image mb-md" alt="Outfit Image for {{ day }}">
+          {% endif %}
+          {% if info.shopping %}
+            <div class="cards">
+              {% for product in info.shopping %}
+                <div class="card product-card">
+                  <div class="product-info">
+                    <h6>{{ product.name }}</h6>
+                    <p>{{ product.description }}</p>
+                    <a href="{{ product.link }}" class="btn btn-primary btn-small" target="_blank">View Product</a>
+                  </div>
                 </div>
-              {% endif %}
-
-              {% if info.shopping %}
-                <div class="shopping-section">
-                  <h4>Shop This Look:</h4>
-                  {% for category, category_data in info.shopping.items() %}
-                    <div class="category-section">
-                      <h5>{{ category }}</h5>
-                      <div class="products-grid">
-                        {% for product in category_data.products %}
-                          <div class="product-card">
-                            {% if product.thumbnail %}
-                              <img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="product-image">
-                            {% endif %}
-                            <div class="product-info">
-                              <h6 class="product-title">{{ product.title }}</h6>
-                              <p class="product-price">{{ product.price or 'Price not available' }}</p>
-                              <p class="product-source">from {{ product.source }}</p>
-                              <div class="product-actions">
-                                {% if product.link %}
-                                  <a href="{{ product.link }}" target="_blank" class="btn btn-primary btn-sm">
-                                    View Product
-                                  </a>
-                                {% endif %}
-                                <form action="{{ url_for('closet.add_to_closet') }}" method="POST" style="display: inline;">
-                                  <input type="hidden" name="title" value="{{ product.title }}">
-                                  <input type="hidden" name="price" value="{{ product.price }}">
-                                  <input type="hidden" name="image" value="{{ product.thumbnail }}">
-                                  <input type="hidden" name="source" value="{{ product.source }}">
-                                  <input type="hidden" name="item_type" value="{{ category }}">
-                                  <button type="submit" class="btn btn-secondary btn-sm">
-                                    Add to Closet
-                                  </button>
-                                </form>
-                              </div>
-                            </div>
-                          </div>
-                        {% endfor %}
-                      </div>
-                    </div>
-                  {% endfor %}
-                </div>
-              {% endif %}
+              {% endfor %}
             </div>
-          {% endfor %}
+          {% endif %}
         </div>
-      {% endif %}
-    {% elif error %}
-      <div class="error-message">
-        <p>Error generating recommendations: {{ error }}</p>
-        <p>Please check your configuration and try again.</p>
-      </div>
-    {% else %}
-      <div class="error-message">
-        <p>Sorry, we couldn't generate recommendations at this time. Please make sure your API keys are configured correctly.</p>
-      </div>
-    {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="text-center mt-2xl">
+    <a class="btn btn-secondary btn-small" href="{{ url_for('main.duration') }}">← Back</a>
+    <a class="btn btn-success btn-small" href="{{ url_for('main.profile') }}">View Trips</a>
+    <a class="btn btn-secondary btn-small" href="{{ url_for('closet.view_closet') }}">👚 View Closet</a>
   </div>
 
-  <!-- Action Buttons -->
-  <div class="button-group">
-    <a href="{{ url_for('main.duration') }}" class="btn btn-secondary">← Back</a>
-    <a href="{{ url_for('main.profile') }}" class="btn btn-success">View Trips</a>
-    <a href="{{ url_for('closet.view_closet') }}" class="btn btn-secondary">👚 View Closet</a>
-  </div>
 </div>
 
 <style>

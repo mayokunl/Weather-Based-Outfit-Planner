@@ -1,6 +1,6 @@
 import os
 import markdown
-import re
+import requests
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -41,12 +41,7 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
 
-class ClosetItem(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    title = db.Column(db.String(120), nullable=False)
-    price = db.Column(db.String(20))
-    image_url = db.Column(db.String(300))
+
 
 with app.app_context():
     db.create_all()
@@ -181,6 +176,9 @@ def register():
         session['user_id'] = user.id
         return redirect(url_for('complete_profile'))
     return render_template('register.html', form=form)
+
+
+
 
 @app.route('/completeProfile', methods=['GET', 'POST'])
 @login_required
