@@ -20,7 +20,7 @@ class DatabaseValidationError(Exception):
     """Custom exception for database validation errors."""
     pass
 
-def add_trip_orm(user_id, city, region, gender=None, age=None, activities=None, duration=None, weather=None, recommendations=None):
+def add_trip_orm(user_id, city, region, gender=None, age=None, activities=None, duration=None, weather=None, recommendations=None, outfit_data=None):
     """Add a trip using Flask-SQLAlchemy ORM with error handling."""
     try:
         # Validate user exists
@@ -43,11 +43,16 @@ def add_trip_orm(user_id, city, region, gender=None, age=None, activities=None, 
             weather=weather,
             recommendations=recommendations
         )
+        
+        # Set outfit data using the model method
+        if outfit_data:
+            trip.set_outfit_data(outfit_data)
+        
         db.session.add(trip)
         db.session.commit()
         
         logger.info(f"Successfully created trip {trip.id} for user {user_id}")
-        return trip.id
+        return trip
         
     except IntegrityError as e:
         db.session.rollback()
@@ -144,4 +149,46 @@ def create_user(username, email, password_hash, name=None, age=None, gender=None
     except Exception as e:
         db.session.rollback()
         logger.error(f"Unexpected error creating user: {e}")
+        raise DatabaseError(f"Unexpected error: {str(e)}")
+
+def delete_trip_orm(trip_id, user_id):
+    """Delete a trip by ID, ensuring user owns the trip."""
+    try:
+        trip = Trip.query.filter_by(id=trip_id, user_id=user_id).first()
+        if not trip:
+            raise DatabaseValidationError(f"Trip with ID {trip_id} not found or access denied")
+        
+        db.session.delete(trip)
+        db.session.commit()
+        
+        logger.info(f"Successfully deleted trip {trip_id} for user {user_id}")
+        return True
+        
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logger.error(f"Database error deleting trip: {e}")
+        raise DatabaseError(f"Database error: {str(e)}")
+    except DatabaseValidationError:
+        raise
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Unexpected error deleting trip: {e}")
+        raise DatabaseError(f"Unexpected error: {str(e)}")
+
+def get_trip_by_id_orm(trip_id, user_id):
+    """Get a specific trip by ID, ensuring user owns the trip."""
+    try:
+        trip = Trip.query.filter_by(id=trip_id, user_id=user_id).first()
+        if not trip:
+            raise DatabaseValidationError(f"Trip with ID {trip_id} not found or access denied")
+        
+        return trip
+        
+    except SQLAlchemyError as e:
+        logger.error(f"Database error fetching trip: {e}")
+        raise DatabaseError(f"Database error: {str(e)}")
+    except DatabaseValidationError:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error fetching trip: {e}")
         raise DatabaseError(f"Unexpected error: {str(e)}")

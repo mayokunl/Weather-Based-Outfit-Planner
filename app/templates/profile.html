@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container mt-3xl mb-3xl">
-  
+<div class="profile-wrapper">
   <!-- Flash Messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
@@ -16,52 +15,38 @@
 
   <!-- Profile Header -->
   <div class="container-card mb-xl">
-    <div style="text-align: center;">
-      <h1 class="form-title">👤 Your Profile</h1>
-      <p style="color: var(--color-text-muted); margin-bottom: 0;">Manage your profile and view your trip history</p>
-    </div>
+    <h1 class="form-title">👤 Your Profile</h1>
+    <p style="color: var(--color-text-muted); margin-bottom: 0;">Manage your profile and view your trip history</p>
   </div>
 
   <!-- Main Content Grid -->
-  <div style="display: grid; grid-template-columns: 0.8fr 2.2fr; gap: 2rem; align-items: start;">
-    
+  <div class="profile-grid">
     <!-- Left Column: Profile Information -->
-    <div class="container-card" style="padding: 1.5rem;">
-      <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--color-primary);">Profile Information</h2>
-
+    <div class="container-card profile-info-card">
+      <h2 class="profile-info-title">Profile Information</h2>
       <!-- Profile Info Display -->
       <div id="view-profile">
-        <div class="form-section" style="padding: 0.5rem 0;">
-          <div class="form-group" style="margin-bottom: 0.75rem;">
-            <strong>Name:</strong> {{ user.name or 'Not set' }}
-          </div>
-          <div class="form-group" style="margin-bottom: 0.75rem;">
-            <strong>Age:</strong> {{ user.age or 'Not set' }}
-          </div>
-          <div class="form-group" style="margin-bottom: 0.75rem;">
-            <strong>Gender:</strong> {{ user.gender or 'Not set' }}
-          </div>
+        <div class="form-section">
+          <div class="form-group"><strong>Name:</strong> {{ user.name or 'Not set' }}</div>
+          <div class="form-group"><strong>Age:</strong> {{ user.age or 'Not set' }}</div>
+          <div class="form-group"><strong>Gender:</strong> {{ user.gender or 'Not set' }}</div>
         </div>
-
         <div class="text-center" style="margin-top: 1rem;">
           <button class="btn btn-primary" onclick="toggleEdit(true)">✏️ Edit Profile</button>
         </div>
       </div>
-
       <!-- Profile Edit Form (Initially Hidden) -->
       <form method="post" id="edit-profile" style="display: none;">
-        <div class="form-section" style="padding: 0.5rem 0;">
-          <div class="form-group" style="margin-bottom: 1rem;">
+        <div class="form-section">
+          <div class="form-group">
             <label for="name" class="form-label">Name:</label>
             <input type="text" id="name" name="name" class="form-input" value="{{ user.name or '' }}" required />
           </div>
-
-          <div class="form-group" style="margin-bottom: 1rem;">
+          <div class="form-group">
             <label for="age" class="form-label">Age:</label>
             <input type="number" id="age" name="age" min="1" max="120" class="form-input" value="{{ user.age or '' }}" required />
           </div>
-
-          <div class="form-group" style="margin-bottom: 1rem;">
+          <div class="form-group">
             <label for="gender" class="form-label">Gender:</label>
             <select id="gender" name="gender" class="form-input" required>
               <option value="">— Select Gender —</option>
@@ -73,14 +58,12 @@
             </select>
           </div>
         </div>
-
         <div class="text-center" style="margin-top: 1rem;">
           <button type="submit" class="btn btn-success">💾 Save Changes</button>
           <button type="button" class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="toggleEdit(false)">❌ Cancel</button>
         </div>
       </form>
     </div>
-
     <!-- Right Column: Trip History -->
     <div class="container-card">
       <div class="trip-history-header">
@@ -89,7 +72,6 @@
           <p class="trip-count">{{ trips|length }} trip{{ 's' if trips|length != 1 else '' }}</p>
         {% endif %}
       </div>
-      
       {% if trips %}
         <div class="trips-container">
           {% for trip in trips %}
@@ -103,12 +85,17 @@
                 </div>
               </div>
               <div class="trip-actions">
-                <button class="trip-action-btn" onclick="toggleTripDetails('trip-{{ loop.index }}')" title="View Details">
+                <a href="{{ url_for('main.view_trip', trip_id=trip.id) }}" class="trip-action-btn view-btn" title="View Full Details">
+                  <span class="action-icon">👁️</span>
+                </a>
+                <button class="trip-action-btn" onclick="toggleTripDetails('trip-{{ loop.index }}')" title="View Quick Details">
                   <span class="expand-icon">▼</span>
+                </button>
+                <button class="trip-action-btn delete-btn" data-trip-id="{{ trip.id }}" data-trip-location="{{ trip.location }}" onclick="confirmDeleteTrip(this)" title="Delete Trip">
+                  <span class="action-icon">🗑️</span>
                 </button>
               </div>
             </div>
-            
             {% if trip.activities %}
             <div class="trip-activities">
               <span class="activities-label">Activities:</span>
@@ -116,14 +103,7 @@
                 {% for activity in trip.activities %}
                 {% if activity.strip() %}
                 <span class="activity-tag">
-                  {% if 'beach' in activity.lower() %}🏖️
-                  {% elif 'hiking' in activity.lower() or 'walk' in activity.lower() %}🥾
-                  {% elif 'restaurant' in activity.lower() or 'dining' in activity.lower() %}🍽️
-                  {% elif 'museum' in activity.lower() or 'gallery' in activity.lower() %}🎨
-                  {% elif 'shopping' in activity.lower() %}🛍️
-                  {% elif 'nightlife' in activity.lower() or 'bar' in activity.lower() %}🌃
-                  {% elif 'sightseeing' in activity.lower() %}👀
-                  {% else %}✨{% endif %}
+                  {% if 'beach' in activity.lower() %}🏖️{% elif 'hiking' in activity.lower() or 'walk' in activity.lower() %}🥾{% elif 'restaurant' in activity.lower() or 'dining' in activity.lower() %}🍽️{% elif 'museum' in activity.lower() or 'gallery' in activity.lower() %}🎨{% elif 'shopping' in activity.lower() %}🛍️{% elif 'nightlife' in activity.lower() or 'bar' in activity.lower() %}🌃{% elif 'sightseeing' in activity.lower() %}👀{% else %}✨{% endif %}
                   {{ activity.strip() }}
                 </span>
                 {% endif %}
@@ -131,19 +111,41 @@
               </div>
             </div>
             {% endif %}
-            
             {% if trip.recommendations %}
             <div class="trip-details" id="trip-{{ loop.index }}" style="display: none;">
               <div class="recommendations-preview">
                 <h4>🎯 AI Recommendations</h4>
                 <div class="recommendations-content">
-                  {{ trip.recommendations[:300] | replace('\n', '<br>') | safe }}
-                  {% if trip.recommendations|length > 300 %}
-                    <span class="read-more">... <button class="link-btn" onclick="showFullRecommendations('trip-{{ loop.index }}')">Read More</button></span>
+                  {% if '## Day' in trip.recommendations %}
+                    {% set days = trip.recommendations.split('## Day') %}
+                    {% set day_count = (days|length - 1) if days[0].strip() == '' else days|length %}
+                    <div class="daily-preview">
+                      <p><strong>{{ day_count }} day{{ 's' if day_count != 1 else '' }} of detailed outfit planning:</strong></p>
+                      {% for day_content in days[:3] %}
+                        {% if day_content.strip() and not day_content.startswith('#') %}
+                          {% set day_parts = day_content.split(':', 1) %}
+                          {% if day_parts|length > 1 %}
+                            {% set day_number = day_parts[0].strip() %}
+                            {% set day_title = day_parts[1].split('\n')[0].strip() %}
+                            <div class="day-preview-item">
+                              <strong>Day {{ day_number }}:</strong> {{ day_title }}
+                            </div>
+                          {% endif %}
+                        {% endif %}
+                      {% endfor %}
+                      {% if day_count > 3 %}
+                        <div class="more-days">... and {{ day_count - 3 }} more day{{ 's' if (day_count - 3) != 1 else '' }}</div>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    {{ trip.recommendations[:300] | replace('\n', '<br>') | safe }}
+                    {% if trip.recommendations|length > 300 %}
+                      <span class="read-more">... <button class="link-btn" onclick="showFullRecommendations('trip-{{ loop.index }}')">Read More</button></span>
+                    {% endif %}
                   {% endif %}
                 </div>
                 <div class="recommendations-actions">
-                  <button class="btn btn-sm btn-outline" onclick="copyRecommendations('trip-{{ loop.index }}')">📋 Copy</button>
+                  <a href="{{ url_for('main.view_trip', trip_id=trip.id) }}" class="btn btn-sm btn-secondary">👁️ View Full</a>
                   <a href="{{ url_for('main.destination') }}" class="btn btn-sm btn-primary">🔄 Plan Similar</a>
                 </div>
               </div>
@@ -160,7 +162,6 @@
           <a href="{{ url_for('main.destination') }}" class="btn btn-primary">Plan Your First Trip</a>
         </div>
       {% endif %}
-
       <div class="trip-history-footer">
         <a href="{{ url_for('main.destination') }}" class="btn btn-primary btn-large">✈️ Plan New Trip</a>
       </div>
@@ -170,9 +171,67 @@
 
 <!-- Enhanced CSS for Profile and Trip History -->
 <style>
+.container-card.mb-xl {
+  text-align: center;
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  max-width: 1200px;
+  margin: 0 auto 2rem auto;
+}
+.profile-wrapper {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem 1rem;
+}
+.profile-grid {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+.profile-info-card {
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+.profile-info-title {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+  text-align: center;
+}
+/* Consistent Button Styling */
+.btn.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+}
+
+.btn.btn-primary:hover {
+  background: #2563eb;
+}
+@media (max-width: 900px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+  .profile-info-card {
+    margin-bottom: 2rem;
+  }
+}
 @media (max-width: 768px) {
-  .container > div[style*="grid-template-columns"] {
-    grid-template-columns: 1fr !important;
+  .profile-wrapper {
+    padding: 1rem 0.25rem 2rem 0.25rem;
+  }
+  .profile-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 }
 
@@ -325,6 +384,31 @@
   color: white;
 }
 
+.trip-action-btn.view-btn {
+  color: #059669;
+  text-decoration: none;
+}
+
+.trip-action-btn.view-btn:hover {
+  background: #059669;
+  border-color: #059669;
+  color: white;
+}
+
+.trip-action-btn.delete-btn {
+  color: #dc2626;
+}
+
+.trip-action-btn.delete-btn:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: white;
+}
+
+.action-icon {
+  font-size: 0.75rem;
+}
+
 .expand-icon {
   font-size: 0.75rem;
   transition: transform 0.2s ease;
@@ -468,6 +552,28 @@
   font-size: 1rem;
   font-weight: 600;
 }
+
+/* Daily Preview Styles */
+.daily-preview {
+  margin: 0.5rem 0;
+}
+
+.day-preview-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.day-preview-item:last-child {
+  border-bottom: none;
+}
+
+.more-days {
+  font-style: italic;
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
 </style>
 
 <script>
@@ -489,28 +595,39 @@
     }
   }
 
-  function copyRecommendations(tripId) {
-    const content = document.querySelector(`#${tripId} .recommendations-content`).textContent;
-    navigator.clipboard.writeText(content).then(() => {
-      const button = event.currentTarget;
-      const originalText = button.innerHTML;
-      button.innerHTML = '✅ Copied!';
-      button.style.background = '#10b981';
-      button.style.color = 'white';
-      button.style.borderColor = '#10b981';
-      
-      setTimeout(() => {
-        button.innerHTML = originalText;
-        button.style.background = '';
-        button.style.color = '';
-        button.style.borderColor = '';
-      }, 2000);
-    });
-  }
-
   function showFullRecommendations(tripId) {
     // This could be enhanced to show a modal with full recommendations
     alert('Full recommendations modal feature coming soon!');
   }
+
+  function confirmDeleteTrip(button) {
+    const tripId = button.getAttribute('data-trip-id');
+    const tripLocation = button.getAttribute('data-trip-location');
+    
+    if (confirm(`Are you sure you want to delete the trip to ${tripLocation}? This action cannot be undone.`)) {
+      // Create a form and submit it to delete the trip
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `/trip/${tripId}/delete`;
+      
+      // Add CSRF token if available
+      const csrfToken = document.querySelector('meta[name="csrf-token"]');
+      if (csrfToken) {
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrf_token';
+        csrfInput.value = csrfToken.getAttribute('content');
+        form.appendChild(csrfInput);
+      }
+      
+      document.body.appendChild(form);
+      form.submit();
+    }
+  }
 </script>
 {% endblock %}
+
+/* Make the right-hand Trip History card fill its space naturally */
+.profile-grid > .container-card:not(.profile-info-card) {
+  width: 100%;
+}
