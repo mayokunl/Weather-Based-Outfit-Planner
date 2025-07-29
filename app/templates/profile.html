@@ -83,26 +83,47 @@
 
     <!-- Right Column: Trip History -->
     <div class="container-card">
-      <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--color-primary);">🧳 Trip History</h2>
+      <div class="trip-history-header">
+        <h2>🧳 Trip History</h2>
+        {% if trips %}
+          <p class="trip-count">{{ trips|length }} trip{{ 's' if trips|length != 1 else '' }}</p>
+        {% endif %}
+      </div>
       
       {% if trips %}
-        <div style="max-height: 500px; overflow-y: auto;">
+        <div class="trips-container">
           {% for trip in trips %}
-          <div class="trip-card" style="border: 1px solid #e5e7eb; border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem; background: #f9f9f9;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-              <h3 style="font-size: 1.1rem; margin: 0; color: var(--color-text-primary);">📍 {{ trip.location }}</h3>
-              <span style="background: var(--color-primary); color: white; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.8rem;">
-                {{ trip.duration }} days
-              </span>
+          <div class="trip-card">
+            <div class="trip-card-header">
+              <div class="trip-destination">
+                <div class="location-icon">📍</div>
+                <div class="location-details">
+                  <h3 class="location-name">{{ trip.location }}</h3>
+                  <p class="trip-duration">{{ trip.duration }} day{{ 's' if trip.duration != 1 else '' }}</p>
+                </div>
+              </div>
+              <div class="trip-actions">
+                <button class="trip-action-btn" onclick="toggleTripDetails('trip-{{ loop.index }}')" title="View Details">
+                  <span class="expand-icon">▼</span>
+                </button>
+              </div>
             </div>
             
             {% if trip.activities %}
-            <div style="margin-bottom: 0.5rem;">
-              <strong style="font-size: 0.9rem;">Activities:</strong>
-              <div style="margin-top: 0.25rem;">
+            <div class="trip-activities">
+              <span class="activities-label">Activities:</span>
+              <div class="activities-tags">
                 {% for activity in trip.activities %}
                 {% if activity.strip() %}
-                <span style="background: var(--color-secondary); color: white; padding: 0.2rem 0.4rem; border-radius: var(--radius-sm); font-size: 0.75rem; margin-right: 0.25rem; display: inline-block; margin-bottom: 0.25rem;">
+                <span class="activity-tag">
+                  {% if 'beach' in activity.lower() %}🏖️
+                  {% elif 'hiking' in activity.lower() or 'walk' in activity.lower() %}🥾
+                  {% elif 'restaurant' in activity.lower() or 'dining' in activity.lower() %}🍽️
+                  {% elif 'museum' in activity.lower() or 'gallery' in activity.lower() %}🎨
+                  {% elif 'shopping' in activity.lower() %}🛍️
+                  {% elif 'nightlife' in activity.lower() or 'bar' in activity.lower() %}🌃
+                  {% elif 'sightseeing' in activity.lower() %}👀
+                  {% else %}✨{% endif %}
                   {{ activity.strip() }}
                 </span>
                 {% endif %}
@@ -112,31 +133,42 @@
             {% endif %}
             
             {% if trip.recommendations %}
-            <details style="margin-top: 0.5rem;">
-              <summary style="cursor: pointer; font-size: 0.9rem; color: var(--color-primary);">View Recommendations</summary>
-              <div style="margin-top: 0.5rem; padding: 0.5rem; background: white; border-radius: var(--radius-sm); font-size: 0.8rem; max-height: 150px; overflow-y: auto;">
-                {{ trip.recommendations[:200] }}{% if trip.recommendations|length > 200 %}...{% endif %}
+            <div class="trip-details" id="trip-{{ loop.index }}" style="display: none;">
+              <div class="recommendations-preview">
+                <h4>🎯 AI Recommendations</h4>
+                <div class="recommendations-content">
+                  {{ trip.recommendations[:300] | replace('\n', '<br>') | safe }}
+                  {% if trip.recommendations|length > 300 %}
+                    <span class="read-more">... <button class="link-btn" onclick="showFullRecommendations('trip-{{ loop.index }}')">Read More</button></span>
+                  {% endif %}
+                </div>
+                <div class="recommendations-actions">
+                  <button class="btn btn-sm btn-outline" onclick="copyRecommendations('trip-{{ loop.index }}')">📋 Copy</button>
+                  <a href="{{ url_for('main.destination') }}" class="btn btn-sm btn-primary">🔄 Plan Similar</a>
+                </div>
               </div>
-            </details>
+            </div>
             {% endif %}
           </div>
           {% endfor %}
         </div>
       {% else %}
-        <div style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
-          <p>🌟 No trips yet!</p>
-          <p style="font-size: 0.9rem;">Start planning your first trip to see your history here.</p>
+        <div class="empty-trips">
+          <div class="empty-icon">✈️</div>
+          <h3>No trips yet!</h3>
+          <p>Start planning your first trip to see your history here.</p>
+          <a href="{{ url_for('main.destination') }}" class="btn btn-primary">Plan Your First Trip</a>
         </div>
       {% endif %}
 
-      <div class="text-center mt-xl">
-        <a href="{{ url_for('main.destination') }}" class="btn btn-primary">✈️ Plan New Trip</a>
+      <div class="trip-history-footer">
+        <a href="{{ url_for('main.destination') }}" class="btn btn-primary btn-large">✈️ Plan New Trip</a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Responsive CSS for smaller screens -->
+<!-- Enhanced CSS for Profile and Trip History -->
 <style>
 @media (max-width: 768px) {
   .container > div[style*="grid-template-columns"] {
@@ -169,12 +201,316 @@
   cursor: pointer;
   float: right;
 }
+
+/* Trip History Enhancements */
+.trip-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.trip-history-header h2 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--color-primary);
+}
+
+.trip-count {
+  background: #f0f9ff;
+  color: #0369a1;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.trips-container {
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.trip-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.trip-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-primary);
+}
+
+.trip-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
+}
+
+.trip-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.trip-destination {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.location-icon {
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.location-details h3 {
+  font-size: 1.2rem;
+  margin: 0;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.trip-duration {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0.25rem 0 0 0;
+}
+
+.trip-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.trip-action-btn {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #64748b;
+}
+
+.trip-action-btn:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.expand-icon {
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.trip-action-btn.active .expand-icon {
+  transform: rotate(180deg);
+}
+
+.trip-activities {
+  margin-bottom: 1rem;
+}
+
+.activities-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.activities-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.activity-tag {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.trip-details {
+  animation: slideDown 0.3s ease-out;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recommendations-preview h4 {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recommendations-content {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #374151;
+  margin-bottom: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.recommendations-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.btn-outline:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: inherit;
+}
+
+.empty-trips {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #64748b;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-trips h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.empty-trips p {
+  margin-bottom: 1.5rem;
+}
+
+.trip-history-footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-large {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
 </style>
 
 <script>
   function toggleEdit(editing) {
     document.getElementById('view-profile').style.display = editing ? 'none' : 'block';
     document.getElementById('edit-profile').style.display = editing ? 'block' : 'none';
+  }
+
+  function toggleTripDetails(tripId) {
+    const detailsElement = document.getElementById(tripId);
+    const button = event.currentTarget;
+    
+    if (detailsElement.style.display === 'none' || !detailsElement.style.display) {
+      detailsElement.style.display = 'block';
+      button.classList.add('active');
+    } else {
+      detailsElement.style.display = 'none';
+      button.classList.remove('active');
+    }
+  }
+
+  function copyRecommendations(tripId) {
+    const content = document.querySelector(`#${tripId} .recommendations-content`).textContent;
+    navigator.clipboard.writeText(content).then(() => {
+      const button = event.currentTarget;
+      const originalText = button.innerHTML;
+      button.innerHTML = '✅ Copied!';
+      button.style.background = '#10b981';
+      button.style.color = 'white';
+      button.style.borderColor = '#10b981';
+      
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.style.background = '';
+        button.style.color = '';
+        button.style.borderColor = '';
+      }, 2000);
+    });
+  }
+
+  function showFullRecommendations(tripId) {
+    // This could be enhanced to show a modal with full recommendations
+    alert('Full recommendations modal feature coming soon!');
   }
 </script>
 {% endblock %}
