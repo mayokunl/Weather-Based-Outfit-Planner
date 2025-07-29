@@ -7,13 +7,13 @@
 
 {% block content %}
 <div class="recommendations-container">
-  <h1 class="heading-1" style="text-align: center; color: #141517;">Your Personalized Outfit Recommendations</h1>
+  <h1 class="heading-1" style="text-align: center; color: #ebebeb;">Your Personalized Outfit Recommendations</h1>
 
 
   <!-- Trip Summary -->
   {% if data %}
   <div class="trip-summary">
-    <h2>Trip Details</h2>
+    <h2>Trip Details:</h2>
     <div class="trip-details">
       <p><strong>Destination:</strong> {{ data.city or 'N/A' }}{% if data.region %}, {{ data.region }}{% endif %}</p>
       <p><strong>Duration:</strong> {{ data.days or 'N/A' }} days</p>
