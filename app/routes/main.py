@@ -49,8 +49,21 @@ def duration():
     
     return render_template('duration.html')
 
-@main_bp.route('/trips')
+@main_bp.route('/profile', methods=['GET', 'POST'])
 @login_required
-def trips():
-    # For now, just return a simple trips page
-    return render_template('trips.html')
+def profile():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        age = request.form.get('age')
+        gender = request.form.get('gender')
+
+        current_user.name = name
+        current_user.age = age
+        current_user.gender = gender
+
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+
+        return redirect(url_for('main.profile'))
+
+    return render_template('profile.html', user=current_user)
