@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify, abort
 from flask_login import login_required, current_user
 from app import db
-from app.services.database_service import fetch_trips_by_user_orm
+from app.services.database_service import fetch_trips_by_user_orm, delete_trip_orm, get_trip_by_id_orm
 
 main_bp = Blueprint('main', __name__)
 
@@ -82,6 +82,7 @@ def profile():
             if trip.get('region'):
                 location += f", {trip['region']}"
             trips_to_show.append({
+                'id': trip['id'],
                 'location': location,
                 'activities': trip['activities'].split(',') if trip['activities'] else [],
                 'duration': trip['duration'],
@@ -92,3 +93,68 @@ def profile():
         trips_to_show = []
 
     return render_template('profile.html', user=current_user, trips=trips_to_show)
+
+@main_bp.route('/trip/<int:trip_id>/delete', methods=['POST'])
+@login_required
+def delete_trip(trip_id):
+    """Delete a trip after confirming user has access"""
+    try:
+        # Check if trip exists and belongs to user
+        trip = get_trip_by_id_orm(trip_id, current_user.id)
+        if not trip:
+            flash('Trip not found or you do not have permission to delete it.', 'error')
+            return redirect(url_for('main.profile'))
+        
+        # Delete the trip
+        if delete_trip_orm(trip_id, current_user.id):
+            flash('Trip deleted successfully!', 'success')
+        else:
+            flash('Error deleting trip. Please try again.', 'error')
+    except Exception as e:
+        print(f"Error deleting trip {trip_id}: {e}")
+        flash('An unexpected error occurred. Please try again.', 'error')
+    
+    return redirect(url_for('main.profile'))
+
+@main_bp.route('/trip/<int:trip_id>/view')
+@login_required  
+def view_trip(trip_id):
+    """View complete trip recommendations"""
+    try:
+        # Get trip details
+        trip = get_trip_by_id_orm(trip_id, current_user.id)
+        if not trip:
+            flash('Trip not found or you do not have permission to view it.', 'error')
+            return redirect(url_for('main.profile'))
+        
+        # Get outfit data if available - use the model's method
+        outfit_data = trip.get_outfit_data() if hasattr(trip, 'get_outfit_data') else {}
+        
+        # Prepare location string
+        location = trip.city
+        if trip.region:
+            location += f", {trip.region}"
+        
+        # Prepare template context
+        context = {
+            'trip': {
+                'id': trip.id,
+                'city': trip.city,
+                'region': trip.region,
+                'duration': trip.duration,
+                'activities': trip.activities,
+                'recommendations': trip.recommendations
+            },
+            'location': location,
+            'activities': trip.activities.split(',') if trip.activities else [],
+            'outfit_data': outfit_data,
+            'overall_outfit_image': outfit_data.get('overall_outfit_image', '') if outfit_data else '',
+            'shopping_items': outfit_data.get('shopping_items', []) if outfit_data else []
+        }
+        
+        return render_template('trip_details.html', **context)
+        
+    except Exception as e:
+        print(f"Error viewing trip {trip_id}: {e}")
+        flash('An unexpected error occurred. Please try again.', 'error')
+        return redirect(url_for('main.profile'))

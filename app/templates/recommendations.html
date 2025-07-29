@@ -40,7 +40,43 @@
     <h2>AI-Powered Outfit Recommendations</h2>
     {% if response %}
       <div class="ai-recommendations">
-        {{ html_response|safe }}
+        {% if '## Day' in html_response %}
+          <!-- Daily Recommendations with Dropdowns -->
+          <div class="daily-recommendations">
+            {% set days_content = html_response.split('## Day') %}
+            {% for day_content in days_content %}
+              {% if day_content.strip() and not day_content.startswith('#') %}
+                {% set day_parts = day_content.split(':', 1) %}
+                {% if day_parts|length > 1 %}
+                  {% set day_number = day_parts[0].strip() %}
+                  {% set day_title = day_parts[1].split('\n')[0].strip() %}
+                  {% set day_body = day_parts[1] %}
+                  
+                  <div class="day-recommendation-card">
+                    <div class="day-header" onclick="toggleDayDetails('rec-day-{{ loop.index }}')">
+                      <div class="day-info">
+                        <h3 class="day-title">Day {{ day_number }}: {{ day_title }}</h3>
+                        <span class="day-subtitle">Click to view outfit details</span>
+                      </div>
+                      <div class="day-toggle">
+                        <span class="toggle-icon">▼</span>
+                      </div>
+                    </div>
+                    
+                    <div class="day-content" id="rec-day-{{ loop.index }}" style="display: none;">
+                      <div class="day-details">
+                        {{ day_body | markdown | safe }}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <!-- Regular recommendations without day breakdown -->
+          {{ html_response|safe }}
+        {% endif %}
       </div>
 
       <!-- Visual & Shopping Results -->
@@ -263,6 +299,7 @@
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -393,5 +430,115 @@
     flex-direction: column;
   }
 }
+/* Daily Recommendation Dropdown Styles */
+.daily-recommendations {
+  margin-top: 20px;
+}
+
+.day-recommendation-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.day-recommendation-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.day-header {
+  background: white;
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.3s ease;
+}
+
+.day-header:hover {
+  background: #f8f9fa;
+}
+
+.day-info h3.day-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.3;
+}
+
+.day-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+  display: block;
+}
+
+.day-toggle {
+  flex-shrink: 0;
+  margin-left: 15px;
+}
+
+.toggle-icon {
+  font-size: 16px;
+  color: #666;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.day-content {
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.day-content.expanded {
+  max-height: 1000px;
+  padding: 20px;
+}
+
+.day-details {
+  color: #555;
+  line-height: 1.6;
+}
+
+.day-details h4 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.day-details ul {
+  padding-left: 20px;
+  margin-bottom: 15px;
+}
+
+.day-details li {
+  margin-bottom: 5px;
+}
+
 </style>
+
+<script>
+function toggleDayDetails(dayId) {
+  const dayContent = document.getElementById(dayId);
+  const toggleIcon = document.querySelector(`[onclick="toggleDayDetails('${dayId}')"] .toggle-icon`);
+  
+  if (dayContent.style.display === 'none' || dayContent.style.display === '') {
+    dayContent.style.display = 'block';
+    dayContent.classList.add('expanded');
+    toggleIcon.style.transform = 'rotate(180deg)';
+  } else {
+    dayContent.style.display = 'none';
+    dayContent.classList.remove('expanded');
+    toggleIcon.style.transform = 'rotate(0deg)';
+  }
+}
+</script>
+
 {% endblock %}

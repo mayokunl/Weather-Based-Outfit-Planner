@@ -68,7 +68,7 @@ def recommendations():
 
         # Save trip to database with error handling
         try:
-            add_trip_orm(
+            trip = add_trip_orm(
                 user_id=current_user.id,
                 city=trip_data['city'],
                 region=trip_data['region'],
@@ -77,9 +77,10 @@ def recommendations():
                 activities=",".join(trip_data['activities']) if trip_data['activities'] else None,
                 duration=trip_data['days'],
                 weather=weather_summary,
-                recommendations=response
+                recommendations=response,
+                outfit_data=outfit_data  # Save the complete outfit data
             )
-            logger.info(f"Successfully saved trip for user {current_user.id}")
+            logger.info(f"Successfully saved trip with outfit data for user {current_user.id}")
         except (DatabaseError, DatabaseValidationError) as e:
             logger.error(f"Failed to save trip: {e}")
             flash('Trip recommendations generated, but failed to save to your history.', 'warning')
