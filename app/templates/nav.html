@@ -1,22 +1,22 @@
-<nav class="navbar sticky-top navbar-expand-lg">
+<nav class="navbar sticky-top navbar-expand-lg bg-light shadow-sm">
   <div class="container-fluid">
-    <a href="{{ url_for('main.home') }}" class="navbar-brand">StyleCast</a>
+    <a href="{{ url_for('main.home') }}" class="navbar-brand fw-bold text-primary">StyleCast</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
         aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav ms-auto d-flex">
-            {% if not current_user.is_authenticated %}
-            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
-            <a class="nav-link" href="{{ url_for('auth.register') }}">Sign Up</a>
-            {% else %}
-            <a class="nav-link" href="{{ url_for('main.destination') }}">Plan</a>
-            <a class="nav-link" href="{{ url_for('closet.view_closet') }}">Closet</a>
-            <a class="nav-link" href="{{ url_for('main.profile') }}">Profile</a>
-            <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
-            {% endif %}              
-        </div>
+      <div class="navbar-nav ms-auto d-flex align-items-center gap-2">
+        {% if not current_user.is_authenticated %}
+          <a class="btn btn-outline-primary" href="{{ url_for('auth.login') }}">Login</a>
+          <a class="btn btn-primary" href="{{ url_for('auth.register') }}">Sign Up</a>
+        {% else %}
+          <a class="btn btn-primary" href="{{ url_for('main.destination') }}">Plan</a>
+          <a class="btn btn-outline-secondary" href="{{ url_for('closet.view_closet') }}">Closet</a>
+          <a class="btn btn-outline-secondary" href="{{ url_for('main.profile') }}">Profile</a>
+          <a class="btn btn-danger" href="{{ url_for('auth.logout') }}">Logout</a>
+        {% endif %}              
+      </div>
     </div>
   </div>
 </nav>
