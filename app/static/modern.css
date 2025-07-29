@@ -707,20 +707,24 @@ input[type="submit"].btn:focus-visible {
   text-decoration: none;
 }
 
-.nav-link {
-  margin-right: var(--spacing-xl);
-  font-weight: var(--font-semibold);
-  color: var(--color-text-primary) !important;
+.btn.nav-btn {
+  background-color: white !important;
+  color: black !important;
+  border: 2px solid #f97316 !important;
+  padding: 0.4rem 1rem !important;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
   text-decoration: none;
-  transition: var(--transition-fast);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family);
+  transition: all 0.3s ease;
 }
 
-.nav-link:hover {
-  text-decoration: underline !important;
-  color: var(--color-primary) !important;
+.btn.nav-btn:hover {
+  background-color: #f1f1f1 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important;
 }
+
 
 /* ==========================================
    FOOTER
