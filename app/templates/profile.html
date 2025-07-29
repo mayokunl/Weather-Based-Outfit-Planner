@@ -1,24 +1,71 @@
 {% extends "layout.html" %}
-{% block body %}
-  <h1>Your Profile</h1>
+{% block content %}
+<div class="container mt-3xl mb-3xl">
+  <div class="container-card">
+    <h1 class="form-title">Your Profile</h1>
 
-  <form method="post">
-    <label for="name">Name</label>
-    <input id="name" name="name" value="{{ user.name }}" required>
+    <!-- Profile Info Display -->
+    <div id="view-profile">
+      <p><strong>Name:</strong> {{ user.name }}</p>
+      <p><strong>Age:</strong> {{ user.age }}</p>
+      <p><strong>Gender:</strong> {{ user.gender }}</p>
 
-    <label for="age">Age</label>
-    <input id="age" name="age" type="number" min="1" value="{{ user.age }}" required>
+      <div class="text-center mt-xl">
+        <button class="btn btn-primary" onclick="toggleEdit(true)">Edit Profile</button>
+      </div>
+    </div>
 
-    <label for="gender">Gender</label>
-    <select id="gender" name="gender" required>
-      <option value="">— Select —</option>
-      <option {% if user.gender == "Male" %}selected{% endif %}>Male</option>
-      <option {% if user.gender == "Female" %}selected{% endif %}>Female</option>
-      <option {% if user.gender == "Non Binary" %}selected{% endif %}>Non Binary</option>
-      <option {% if user.gender == "Prefer not to Say" %}selected{% endif %}>Prefer not to Say</option>
-      <option {% if user.gender == "Other" %}selected{% endif %}>Other</option>
-    </select>
+    <!-- Profile Edit Form (Initially Hidden) -->
+    <form method="post" id="edit-profile" style="display: none;">
+      <div class="form-group">
+        <label for="name" class="form-label">Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="form-control"
+          value="{{ user.name }}"
+          required
+        />
+      </div>
 
-    <button type="submit">Update</button>
-  </form>
+      <div class="form-group">
+        <label for="age" class="form-label">Age</label>
+        <input
+          type="number"
+          id="age"
+          name="age"
+          min="1"
+          class="form-control"
+          value="{{ user.age }}"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="gender" class="form-label">Gender</label>
+        <select id="gender" name="gender" class="form-control" required>
+          <option value="">— Select —</option>
+          <option {% if user.gender == "Male" %}selected{% endif %}>Male</option>
+          <option {% if user.gender == "Female" %}selected{% endif %}>Female</option>
+          <option {% if user.gender == "Non Binary" %}selected{% endif %}>Non Binary</option>
+          <option {% if user.gender == "Prefer not to Say" %}selected{% endif %}>Prefer not to Say</option>
+          <option {% if user.gender == "Other" %}selected{% endif %}>Other</option>
+        </select>
+      </div>
+
+      <div class="text-center mt-xl">
+        <button type="submit" class="btn btn-success btn-large">Save Changes</button>
+        <button type="button" class="btn btn-secondary mt-md" onclick="toggleEdit(false)">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function toggleEdit(editing) {
+    document.getElementById('view-profile').style.display = editing ? 'none' : 'block';
+    document.getElementById('edit-profile').style.display = editing ? 'block' : 'none';
+  }
+</script>
 {% endblock %}
