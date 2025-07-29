@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container-card container-wide mt-xl">
   <h1 class="heading-1">🧥 My Closet</h1>
-  
+
   {% if items %}
     <div class="grid grid-2">
       {% for item in items %}
@@ -13,15 +13,6 @@
               <h5 class="heading-3">{{ item.title }}</h5>
               {% if item.price %}
                 <p class="text-muted"><strong>${{ item.price }}</strong></p>
-              {% endif %}
-              {% if item.brand %}
-                <p class="text-muted">Brand: {{ item.brand }}</p>
-              {% endif %}
-              {% if item.color %}
-                <p class="text-muted">Color: {{ item.color }}</p>
-              {% endif %}
-              {% if item.category %}
-                <span class="tag">{{ item.category }}</span>
               {% endif %}
             </div>
           </div>
@@ -35,7 +26,7 @@
       <a class="btn btn-primary" href="{{ url_for('main.destination') }}">Plan a Trip</a>
     </div>
   {% endif %}
-  
+
   <div class="button-group mt-xl">
     <a class="btn btn-secondary" href="{{ url_for('main.home') }}">🏠 Back to Home</a>
   </div>

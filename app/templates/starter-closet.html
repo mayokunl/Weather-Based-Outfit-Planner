@@ -1,0 +1,78 @@
+<!-- templates/starter-closet.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Starter Closet</title>
+  <style>
+    body {
+      background-color: #7fb2e9;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      color: #fff;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .product-card {
+      background-color: #fff;
+      color: #000;
+      border-radius: 10px;
+      padding: 15px;
+      width: 220px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .product-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .product-card img {
+      width: 100%;
+      border-radius: 5px;
+    }
+
+    button[type="submit"] {
+      display: block;
+      margin: 30px auto;
+      padding: 12px 25px;
+      background-color: #ffc107;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #e0a800;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pick Basic Items for Your Closet</h1>
+  <form method="POST">
+    {% for product in products %}
+      <label class="product-card">
+        <input type="checkbox" name="items" value="{{ product.title }}|{{ product.thumbnail }}|{{ product.price }}">
+        <img src="{{ product.thumbnail }}" alt="{{ product.title }}">
+        <h3>{{ product.title }}</h3>
+        <p>${{ product.price }}</p>
+      </label>
+    {% endfor %}
+    <button type="submit">Add Selected Items</button>
+  </form>
+</body>
+</html>

@@ -25,7 +25,7 @@ def add_to_closet():
 
     return redirect(request.referrer or url_for('main.home'))
 
-@closet_bp.route('/closet/view')
+@closet_bp.route('/closet')
 @login_required
 def view_closet():
     items = ClosetItem.query.filter_by(user_id=current_user.id).all()
