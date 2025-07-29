@@ -135,7 +135,10 @@ p {
 /* ==========================================
    BUTTONS - Unified Button System
    ========================================== */
-.btn {
+.btn, 
+button.btn,
+input[type="submit"].btn,
+a.btn {
   display: inline-block;
   padding: var(--spacing-md) var(--spacing-xl);
   font-family: var(--font-family);
@@ -143,79 +146,189 @@ p {
   font-weight: var(--font-semibold);
   text-align: center;
   text-decoration: none;
-  border: none;
-  border-radius: var(--radius-full);
+  border: none !important;
+  border-radius: 20px;
   cursor: pointer;
-  transition: var(--transition-normal);
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
   color: var(--color-text-light) !important;
-  background: var(--gradient-primary);
-  box-shadow: var(--shadow-primary);
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  outline: none !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
-.btn:hover {
+.btn::before, 
+button.btn::before,
+input[type="submit"].btn::before,
+a.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.btn:hover, 
+button.btn:hover,
+input[type="submit"].btn:hover,
+a.btn:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-primary-hover);
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
   color: var(--color-text-light) !important;
   text-decoration: none;
+  border: none !important;
+  outline: none !important;
 }
 
-.btn:active {
+.btn:hover::before, 
+button.btn:hover::before,
+input[type="submit"].btn:hover::before,
+a.btn:hover::before {
+  transform: scaleX(1);
+}
+
+.btn:active, 
+button.btn:active,
+input[type="submit"].btn:active,
+a.btn:active {
   transform: translateY(0);
+  border: none !important;
+  outline: none !important;
 }
 
-.btn:focus {
-  outline: 3px solid rgba(249, 115, 22, 0.5);
-  outline-offset: 2px;
+.btn:focus, 
+button.btn:focus,
+input[type="submit"].btn:focus,
+a.btn:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3);
+  border: none !important;
 }
 
-/* Button Variants */
-.btn-primary {
-  background: var(--gradient-primary);
-  box-shadow: var(--shadow-primary);
+/* Button Variants - All use same orange styling now */
+.btn-primary, 
+button.btn-primary,
+input[type="submit"].btn-primary,
+a.btn-primary {
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  border: none !important;
 }
 
-.btn-primary:hover {
-  box-shadow: var(--shadow-primary-hover);
+.btn-primary:hover, 
+button.btn-primary:hover,
+input[type="submit"].btn-primary:hover,
+a.btn-primary:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
+  border: none !important;
 }
 
-.btn-secondary {
-  background: var(--gradient-primary);
-  box-shadow: var(--shadow-primary);
+.btn-secondary, 
+button.btn-secondary,
+input[type="submit"].btn-secondary,
+a.btn-secondary {
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  border: none !important;
 }
 
-.btn-secondary:hover {
-  box-shadow: var(--shadow-primary-hover);
+.btn-secondary:hover, 
+button.btn-secondary:hover,
+input[type="submit"].btn-secondary:hover,
+a.btn-secondary:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
+  border: none !important;
 }
 
-.btn-success {
-  background: var(--gradient-success);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+.btn-success, 
+button.btn-success,
+input[type="submit"].btn-success,
+a.btn-success {
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  border: none !important;
 }
 
-.btn-success:hover {
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+.btn-success:hover, 
+button.btn-success:hover,
+input[type="submit"].btn-success:hover,
+a.btn-success:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
+  border: none !important;
 }
 
 /* Button Sizes */
-.btn-small {
+.btn-small, .btn-sm,
+button.btn-small, button.btn-sm,
+input[type="submit"].btn-small, input[type="submit"].btn-sm,
+a.btn-small, a.btn-sm {
   padding: var(--spacing-sm) var(--spacing-lg);
   font-size: var(--font-size-sm);
+  border-radius: 16px;
+  border: none !important;
 }
 
-.btn-large {
+.btn-large,
+button.btn-large,
+input[type="submit"].btn-large,
+a.btn-large {
   padding: var(--spacing-lg) var(--spacing-2xl);
   font-size: var(--font-size-lg);
   width: 100%;
+  border-radius: 25px;
+  border: none !important;
 }
 
 /* Special Get Started Button */
 .btn-get-started {
-  background: var(--gradient-primary);
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
   color: var(--color-text-light) !important;
-  box-shadow: var(--shadow-primary);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
   animation: buttonPulse 2s infinite;
+  border: none !important;
+}
+
+/* Override any stubborn browser defaults */
+button, 
+input[type="submit"], 
+input[type="button"] {
+  border: none !important;
+  outline: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Ensure all button-like elements get consistent styling */
+.btn, 
+button.btn,
+input[type="submit"].btn,
+a.btn,
+.trip-action-btn {
+  box-sizing: border-box;
+  border: none !important;
+  outline: none !important;
+}
+
+/* Additional override for form elements */
+.btn:focus-visible,
+button.btn:focus-visible,
+input[type="submit"].btn:focus-visible {
+  outline: none !important;
+  border: none !important;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3) !important;
 }
 
 @keyframes buttonPulse {
