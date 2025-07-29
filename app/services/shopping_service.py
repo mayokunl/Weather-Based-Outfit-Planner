@@ -69,25 +69,52 @@ def get_shopping_items(query: str, gender: str = '', num_results: int = 3) -> li
         products = results.get("shopping_results", [])[:num_results]
         print(f"🔎 Found {len(products)} products for '{full_query}'")
 
+        processed_products = []
         for p in products:
-            print("🧾", {
+            # Get the link - prefer direct links, fallback to SerpAPI
+            product_link = p.get("link")
+            
+            # If no direct link, try to construct a search URL for the store
+            if not product_link or 'serpapi.com' in product_link:
+                store_name = p.get("source", "").lower()
+                product_title = p.get("title", "")
+                
+                # Create a search URL for popular stores
+                if "amazon" in store_name:
+                    search_query = product_title.replace(" ", "+")
+                    product_link = f"https://www.amazon.com/s?k={search_query}"
+                elif "target" in store_name:
+                    search_query = product_title.replace(" ", "%20")
+                    product_link = f"https://www.target.com/s?searchTerm={search_query}"
+                elif "walmart" in store_name:
+                    search_query = product_title.replace(" ", "%20")
+                    product_link = f"https://www.walmart.com/search?q={search_query}"
+                elif "loft" in store_name:
+                    search_query = product_title.replace(" ", "%20")
+                    product_link = f"https://www.loft.com/search?q={search_query}"
+                else:
+                    # For other stores, use a Google search
+                    search_query = f"{product_title} {store_name}".replace(" ", "+")
+                    product_link = f"https://www.google.com/search?q={search_query}"
+            
+            product_data = {
                 "title": p.get("title"),
                 "price": p.get("price"),
-                "link": p.get("link"),
-                "thumbnail": p.get("thumbnail"),
-                "source": p.get("source")
-            })
-
-        return [
-            {
-                "title": p.get("title"),
-                "price": p.get("price"),
-                "link": p.get("link") or p.get("serpapi_product_api"),
+                "link": product_link,
                 "thumbnail": p.get("thumbnail"),
                 "source": p.get("source")
             }
-            for p in products if p.get("title") and (p.get("link") or p.get("serpapi_product_api"))
-        ]
+            
+            if product_data["title"] and product_data["link"]:
+                processed_products.append(product_data)
+                print("🧾", {
+                    "title": product_data["title"][:30] + "...",
+                    "price": product_data["price"],
+                    "link": product_data["link"][:50] + "...",
+                    "source": product_data["source"]
+                })
+
+        return processed_products
     except Exception as e:
         print(f"❌ Error getting shopping items: {e}")
         return []

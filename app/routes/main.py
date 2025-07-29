@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from flask_login import login_required, current_user
 from app import db
+from app.services.database_service import fetch_trips_by_user_orm
 
 main_bp = Blueprint('main', __name__)
 
@@ -72,4 +73,22 @@ def profile():
 
         return redirect(url_for('main.profile'))
 
-    return render_template('profile.html', user=current_user)
+    # Fetch user's trips for display
+    try:
+        trips_data = fetch_trips_by_user_orm(current_user.id)
+        trips_to_show = []
+        for trip in trips_data:
+            location = trip['city']
+            if trip.get('region'):
+                location += f", {trip['region']}"
+            trips_to_show.append({
+                'location': location,
+                'activities': trip['activities'].split(',') if trip['activities'] else [],
+                'duration': trip['duration'],
+                'recommendations': trip['recommendations']
+            })
+    except Exception as e:
+        print(f"Error fetching trips: {e}")
+        trips_to_show = []
+
+    return render_template('profile.html', user=current_user, trips=trips_to_show)

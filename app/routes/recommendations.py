@@ -3,7 +3,7 @@ import markdown
 from flask_login import current_user, login_required
 from app.services.weather_service import get_weather_summary
 from app.services.genai_service import build_prompt_from_session, get_recommendations
-from app.services.shopping_service import get_overall_outfit_image, get_shopping_items
+from app.services.serp_service import get_overall_outfit_image, get_shopping_items
 from app.services.database_service import add_trip_orm, DatabaseError, DatabaseValidationError
 from app.services.session_service import TripPlanningSession
 from app.utils.helpers import parse_daily_outfits
@@ -34,22 +34,36 @@ def recommendations():
         TripPlanningSession.set_recommendations(response)
         parsed_outfits = parse_daily_outfits(response)
 
+        logger.info(f"AI Response preview: {response[:200]}...")
+        logger.info(f"Parsed outfits: {parsed_outfits}")
+
         html_response = markdown.markdown(response)
         outfit_data = {}
 
         for day, outfit_query in parsed_outfits.items():
+            logger.info(f"Processing {day} with query: {outfit_query}")
+            
             outfit_image = get_overall_outfit_image(outfit_query, user_profile['gender'])
+            logger.info(f"Got outfit image for {day}: {'Yes' if outfit_image else 'No'}")
+            
             item_keywords = [item.strip() for item in outfit_query.split(",")]
-            shopping_links = []
+            shopping_data = {}
+            
             for item in item_keywords:
-                products = get_shopping_items(item, user_profile['gender'])
+                logger.info(f"Searching for item: {item}")
+                products = get_shopping_items(item, user_profile['gender'], num_results=3)
+                logger.info(f"Found {len(products)} products for {item}")
+                
                 if products:
-                    shopping_links.append({"item": item, "results": products})
+                    shopping_data[item] = {"products": products}
+                    # Log first product for debugging
+                    first_product = products[0]
+                    logger.info(f"First product: {first_product.get('title', 'No title')[:50]}... - Link: {first_product.get('link', 'No link')[:50]}...")
 
             outfit_data[day] = {
                 "query": outfit_query,
                 "image": outfit_image,
-                "shopping": shopping_links
+                "shopping": shopping_data
             }
 
         # Save trip to database with error handling
@@ -72,6 +86,11 @@ def recommendations():
         except Exception as e:
             logger.error(f"Unexpected error saving trip: {e}")
             flash('Trip recommendations generated, but failed to save to your history.', 'warning')
+
+        # Final logging
+        logger.info(f"Final outfit_data keys: {list(outfit_data.keys())}")
+        for day, data in outfit_data.items():
+            logger.info(f"{day}: Image={'Yes' if data.get('image') else 'No'}, Shopping categories: {len(data.get('shopping', {}))}")
 
         return render_template("recommendations.html", outfit_data=outfit_data, response=response, html_response=html_response, data=session)
     

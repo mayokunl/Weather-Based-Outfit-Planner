@@ -78,10 +78,12 @@
                                     View Product
                                   </a>
                                 {% endif %}
-                                <form action="{{ url_for('add_to_closet') }}" method="POST" style="display: inline;">
+                                <form action="{{ url_for('closet.add_to_closet') }}" method="POST" style="display: inline;">
                                   <input type="hidden" name="title" value="{{ product.title }}">
                                   <input type="hidden" name="price" value="{{ product.price }}">
                                   <input type="hidden" name="image" value="{{ product.thumbnail }}">
+                                  <input type="hidden" name="source" value="{{ product.source }}">
+                                  <input type="hidden" name="item_type" value="{{ category }}">
                                   <button type="submit" class="btn btn-secondary btn-sm">
                                     Add to Closet
                                   </button>
