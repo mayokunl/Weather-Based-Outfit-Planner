@@ -54,6 +54,7 @@ def complete_profile():
         # Store user profile data in session for trip planning
         session['age'] = current_user.age
         session['gender'] = current_user.gender
+        session['from_onboarding'] = True  # Flag to indicate this is part of onboarding
         return redirect(url_for('auth.starter_closet'))
     return render_template('completeProfile.html')
 
@@ -63,20 +64,73 @@ def starter_closet():
     if request.method == 'POST':
         selected_items = request.form.getlist('items')
         
+        # Helper function to categorize items based on product info
+        def get_item_category(title, api_category):
+            title_lower = title.lower()
+            api_category_lower = api_category.lower()
+            
+            # Map API categories to our internal categories
+            if 'tops' in api_category_lower or 'shirts' in api_category_lower:
+                return 'tops'
+            elif 'dresses' in api_category_lower:
+                return 'dresses'
+            elif 'shoes' in api_category_lower:
+                return 'shoes'
+            elif 'bags' in api_category_lower:
+                return 'bags'
+            elif 'watches' in api_category_lower:
+                return 'accessories'
+            elif 'jewellery' in api_category_lower:
+                return 'jewelry'
+            elif 'sunglasses' in api_category_lower:
+                return 'accessories'
+            # Fallback to title analysis
+            elif any(word in title_lower for word in ['shirt', 'top', 'blouse', 'sweater', 'cardigan', 'tank']):
+                return 'tops'
+            elif any(word in title_lower for word in ['dress', 'gown']):
+                return 'dresses'
+            elif any(word in title_lower for word in ['shoe', 'boot', 'sneaker', 'heel', 'sandal']):
+                return 'shoes'
+            elif any(word in title_lower for word in ['bag', 'purse', 'handbag']):
+                return 'bags'
+            elif any(word in title_lower for word in ['necklace', 'ring', 'earring', 'bracelet', 'jewelry', 'jewellery']):
+                return 'jewelry'
+            elif any(word in title_lower for word in ['watch']):
+                return 'accessories'
+            elif any(word in title_lower for word in ['glasses', 'sunglasses']):
+                return 'accessories'
+            else:
+                return 'other'
 
         for item_str in selected_items:
-            title, image, price = item_str.split('|')
+            parts = item_str.split('|')
+            if len(parts) >= 4:
+                title, image, price, category = parts
+            else:
+                title, image, price = parts[:3]
+                category = 'general'
+            
+            item_type = get_item_category(title, category)
+            
             item = ClosetItem(
                 user_id=current_user.id,
                 title=title,
                 image_url=image,
-                price=price
+                price=price,
+                item_type=item_type,
+                source='DummyJSON'
             )
             db.session.add(item)
 
         db.session.commit()
         flash("Items added to your closet!", "success")
-        return redirect(url_for('closet.view_closet'))
+        
+        # Check if user came from onboarding (complete profile) or from existing closet
+        if 'from_onboarding' in session:
+            session.pop('from_onboarding', None)  # Clear the flag
+            return redirect(url_for('main.profile'))  # Go to profile for new users
+        else:
+            return redirect(url_for('closet.view_closet'))  # Go to closet for existing users
 
     # ✅ Fetch clothing-only categories
     categories = [

@@ -1,34 +1,724 @@
 {% extends "layout.html" %}
+
+{% block head %}
+<style>
+  .filter-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 1px solid #f0f0f0;
+  }
+  
+  .filter-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .filter-label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+  }
+  
+  .filter-select {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    color: #374151;
+    font-size: 0.9rem;
+    min-width: 120px;
+    transition: all 0.3s ease;
+  }
+  
+  .filter-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  
+  .filter-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .filter-tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-transform: capitalize;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .filter-tag::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+  
+  .filter-tag:hover {
+    background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+    text-decoration: none;
+  }
+  
+  .filter-tag:hover::before {
+    transform: scaleX(1);
+  }
+  
+  .filter-tag.active {
+    background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  }
+
+  .closet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .closet-item {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+    position: relative;
+  }
+  
+  .closet-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+  
+  .item-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background: #f8f9fa;
+  }
+  
+  .item-content {
+    padding: 1rem;
+  }
+  
+  .item-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .item-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #27ae60;
+    margin-bottom: 0.5rem;
+  }
+  
+  .item-source {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+  
+  .category-tag {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    backdrop-filter: blur(4px);
+    z-index: 1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid transparent;
+  }
+  
+  .category-tag:hover {
+    background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+  }
+  
+  .category-edit {
+    background: white;
+    color: #333;
+    border: 2px solid #667eea;
+    padding: 0.2rem 0.4rem;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    min-width: 80px;
+    text-align: center;
+  }
+  
+  .category-edit:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+  }
+  
+  .closet-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .stat-item {
+    background: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border: 1px solid #f0f0f0;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #667eea;
+    display: block;
+  }
+  
+  .stat-label {
+    font-size: 0.8rem;
+    color: #666;
+    text-transform: capitalize;
+  }
+
+  .notification {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(300px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .notification.success {
+    background: #10b981;
+  }
+  
+  .notification.error {
+    background: #ef4444;
+  }
+  
+  .notification.show {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Category Edit Modal */
+  .category-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  
+  .category-modal.show {
+    display: flex;
+  }
+  
+  .category-modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+  }
+  
+  @keyframes modalSlideIn {
+    from {
+      transform: scale(0.9) translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .modal-header {
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .modal-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+  
+  .modal-subtitle {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .category-option {
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: capitalize;
+    font-weight: 500;
+    background: white;
+  }
+  
+  .category-option:hover {
+    border-color: #667eea;
+    background: #f8f9ff;
+  }
+  
+  .category-option.selected {
+    border-color: #667eea;
+    background: #667eea;
+    color: white;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+  
+  .modal-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .modal-btn.cancel {
+    background: #f3f4f6;
+    color: #374151;
+  }
+  
+  .modal-btn.cancel:hover {
+    background: #e5e7eb;
+  }
+  
+  .modal-btn.save {
+    background: #667eea;
+    color: white;
+  }
+  
+  .modal-btn.save:hover {
+    background: #5a6fd8;
+  }
+  
+  .modal-btn.save:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+  }
+  
+  @media (max-width: 768px) {
+    .closet-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+    
+    .item-image {
+      height: 150px;
+    }
+    
+    .item-content {
+      padding: 0.75rem;
+    }
+    
+    .filter-controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .filter-tags {
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+function editCategory(itemId, currentCategory) {
+  const tagElement = document.querySelector(`[data-item-id="${itemId}"] .category-tag`);
+  const originalText = tagElement.textContent;
+  
+  // Create input field
+  const input = document.createElement('select');
+  input.className = 'category-edit';
+  input.value = currentCategory;
+  
+  // Add options
+  const categories = ['top', 'bottom', 'shoe', 'dress', 'accessory', 'jewelry', 'bag', 'other'];
+  categories.forEach(cat => {
+    const option = document.createElement('option');
+    option.value = cat;
+    option.textContent = cat;
+    option.selected = cat === currentCategory;
+    input.appendChild(option);
+  });
+  
+  // Replace tag with input
+  tagElement.textContent = '';
+  tagElement.appendChild(input);
+  
+  // Focus after a small delay to prevent immediate blur
+  setTimeout(() => {
+    input.focus();
+  }, 50);
+  
+  let isChanging = false;
+  let hasChanged = false;
+  
+  // Handle save
+  function saveCategory() {
+    if (isChanging) return; // Prevent multiple saves
+    
+    const newCategory = input.value;
+    hasChanged = newCategory !== currentCategory;
+    
+    if (hasChanged) {
+      isChanging = true;
+      fetch(`/closet/update-category/${itemId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ category: newCategory })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          tagElement.textContent = newCategory;
+          showNotification('Category updated successfully!', 'success');
+          // Refresh page after a short delay to update stats
+          setTimeout(() => window.location.reload(), 1000);
+        } else {
+          tagElement.textContent = originalText;
+          showNotification('Failed to update category: ' + data.message, 'error');
+        }
+      })
+      .catch(error => {
+        tagElement.textContent = originalText;
+        showNotification('Error updating category', 'error');
+      })
+      .finally(() => {
+        isChanging = false;
+      });
+    } else {
+      tagElement.textContent = originalText;
+    }
+  }
+  
+  // Handle change event (when user selects an option)
+  input.addEventListener('change', function(e) {
+    e.stopPropagation();
+    saveCategory();
+  });
+  
+  // Handle keyboard events
+  input.addEventListener('keydown', function(e) {
+    e.stopPropagation();
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveCategory();
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      tagElement.textContent = originalText;
+    }
+  });
+  
+  // Handle blur with a delay to allow for click on options
+  let blurTimeout;
+  input.addEventListener('blur', function(e) {
+    // Use a timeout to allow click events on options to fire first
+    blurTimeout = setTimeout(() => {
+      if (!hasChanged) {
+        tagElement.textContent = originalText;
+      }
+    }, 150);
+  });
+  
+  // Cancel blur timeout if user clicks on the select
+  input.addEventListener('mousedown', function(e) {
+    if (blurTimeout) {
+      clearTimeout(blurTimeout);
+    }
+  });
+  
+  // Prevent event bubbling when clicking on the select
+  input.addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+}
+
+function showNotification(message, type) {
+  // Remove existing notifications
+  const existing = document.querySelector('.notification');
+  if (existing) {
+    existing.remove();
+  }
+  
+  // Create new notification
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  
+  // Show notification
+  setTimeout(() => notification.classList.add('show'), 100);
+  
+  // Hide notification after 3 seconds
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Add click handlers when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.category-tag').forEach(tag => {
+    tag.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const itemDiv = this.closest('[data-item-id]');
+      const itemId = itemDiv.dataset.itemId;
+      const currentCategory = this.textContent.trim();
+      editCategory(itemId, currentCategory);
+    });
+  });
+});
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="container-card container-wide mt-xl">
   <h1 class="heading-1">🧥 My Closet</h1>
 
-  {% if items %}
-    <div class="grid grid-2">
-      {% for item in items %}
-        <div class="mb-lg">
-          <div class="container-section">
-            <img src="{{ item.image_url }}" class="img-card-full" alt="{{ item.title }}">
-            <div class="p-lg">
-              <h5 class="heading-3">{{ item.title }}</h5>
-              {% if item.price %}
-                <p class="text-muted"><strong>${{ item.price }}</strong></p>
-              {% endif %}
-            </div>
-          </div>
+  {% if has_any_items %}
+    <!-- Filter Section (always show if user has any items) -->
+    <div class="filter-section">
+      <div class="filter-controls">
+        <span class="filter-label">Filter by category:</span>
+        <div class="filter-tags">
+          <a href="{{ url_for('closet.view_closet') }}" 
+             class="filter-tag {{ 'active' if not current_filter or current_filter == 'all' else '' }}">
+            All Items
+          </a>
+          {% for category in all_categories %}
+            <a href="{{ url_for('closet.view_closet', filter=category) }}" 
+               class="filter-tag {{ 'active' if current_filter == category else '' }}">
+              {{ category|title }}
+            </a>
+          {% endfor %}
         </div>
-      {% endfor %}
+      </div>
     </div>
+
+    {% if items_by_category %}
+      <!-- Closet Statistics -->
+      <div class="closet-stats">
+        {% if current_filter and current_filter != 'all' %}
+          <div class="stat-item">
+            <span class="stat-number">{{ total_items }}</span>
+            <span class="stat-label">{{ current_filter|title }} Item{{ 's' if total_items != 1 else '' }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ total_user_items }}</span>
+            <span class="stat-label">Total Item{{ 's' if total_user_items != 1 else '' }}</span>
+          </div>
+        {% else %}
+          {% set total_items = items_by_category.values() | map('length') | sum %}
+          <div class="stat-item">
+            <span class="stat-number">{{ total_items }}</span>
+            <span class="stat-label">Total Item{{ 's' if total_items != 1 else '' }}</span>
+          </div>
+          {% for category, items in items_by_category.items() %}
+            <div class="stat-item">
+              <span class="stat-number">{{ items|length }}</span>
+              <span class="stat-label">
+                {% set count = items|length %}
+                {% if category == 'accessory' %}
+                  {{ count }} Accessor{{ 'ies' if count != 1 else 'y' }}
+                {% elif category == 'shoe' %}
+                  {{ count }} Shoe{{ 's' if count != 1 else '' }}
+                {% elif category == 'dress' %}
+                  {{ count }} Dress{{ 'es' if count != 1 else '' }}
+                {% elif category == 'top' %}
+                  {{ count }} Top{{ 's' if count != 1 else '' }}
+                {% elif category == 'bottom' %}
+                  {{ count }} Bottom{{ 's' if count != 1 else '' }}
+                {% elif category == 'jewelry' %}
+                  {{ count }} Jewelr{{ 'y' if count == 1 else 'y Items' }}
+                {% elif category == 'bag' %}
+                  {{ count }} Bag{{ 's' if count != 1 else '' }}
+                {% elif category == 'other' %}
+                  {{ count }} Other Item{{ 's' if count != 1 else '' }}
+                {% else %}
+                  {{ count }} {{ category|title }}{{ 's' if count != 1 else '' }}
+                {% endif %}
+              </span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      
+      <!-- All Items Grid -->
+      <div class="closet-grid closet-cards">
+        {% for category, items in items_by_category.items() %}
+          {% for item in items %}
+            <div class="card text-center closet-card" data-item-id="{{ item.id }}">
+              <div class="category-tag" title="Click to edit category">{{ item.item_type }}</div>
+              <img src="{{ item.image_url }}" class="item-image closet-img" alt="{{ item.title }}">
+              <div class="item-content">
+                <h5 class="item-title">{{ item.title }}</h5>
+                {% if item.price %}
+                  <div class="item-price">${{ item.price }}</div>
+                {% endif %}
+                {% if item.source %}
+                  <div class="item-source">from {{ item.source }}</div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <!-- No items in current filter, but user has items in other categories -->
+      <div class="container-section text-center">
+        <h4 class="heading-2">No {{ current_filter|title }} Items Found</h4>
+        <p class="text-muted mb-lg">
+          {% if current_filter and current_filter != 'all' %}
+            You don't have any items in the "{{ current_filter }}" category yet.
+          {% else %}
+            No items found with the current filter.
+          {% endif %}
+        </p>
+        <div class="button-group">
+          <a class="btn btn-secondary" href="{{ url_for('closet.view_closet') }}">View All Items</a>
+          <a class="btn btn-primary" href="{{ url_for('auth.starter_closet') }}">Add More Items</a>
+        </div>
+      </div>
+    {% endif %}
   {% else %}
+    <!-- User has no items at all -->
     <div class="container-section text-center">
       <h4 class="heading-2">Your closet is empty!</h4>
-      <p class="text-muted mb-lg">Start planning trips and adding items to build your wardrobe.</p>
-      <a class="btn btn-primary" href="{{ url_for('main.destination') }}">Plan a Trip</a>
+      <p class="text-muted mb-lg">Start by adding some basic items to build your wardrobe.</p>
+      <a class="btn btn-primary" href="{{ url_for('auth.starter_closet') }}">Add Starter Items</a>
+      <a class="btn btn-secondary" href="{{ url_for('main.destination') }}">Plan a Trip</a>
     </div>
   {% endif %}
 
   <div class="button-group mt-xl">
-    <a class="btn btn-secondary" href="{{ url_for('main.home') }}">🏠 Back to Home</a>
+    <a class="btn btn-secondary" href="{{ url_for('main.home') }}">Back to Home</a>
+    {% if has_any_items and items_by_category %}
+      <a class="btn btn-primary" href="{{ url_for('auth.starter_closet') }}">Add More Items</a>
+    {% endif %}
   </div>
 </div>
+<style>
+  .closet-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+    margin-top: 2rem;
+  }
+  .closet-card {
+    padding: var(--spacing-md);
+    position: relative;
+  }
+  .closet-img {
+    max-width: 80px;
+    margin: 0 auto var(--spacing-md) auto;
+    display: block;
+    height: 80px;
+    object-fit: contain;
+  }
+  @media (max-width: 900px) {
+    .closet-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 600px) {
+    .closet-cards {
+      grid-template-columns: 1fr;
+    }
+    .closet-img {
+      max-width: 60px;
+      height: 60px;
+    }
+  }
+</style>
 {% endblock %}

@@ -34,10 +34,11 @@
 
         <!-- Activities display -->
         <div id="activities-display" class="mt-md">
-          <p id="no-activities" class="text-muted text-center">
-            No activities added yet
-          </p>
-          <ul id="activity-list" class="mt-sm mb-sm"></ul>
+          <div id="activity-list" class="activities-tags-container mt-sm mb-sm">
+            <p id="no-activities" class="text-muted text-center">
+              No activities added yet
+            </p>
+          </div>
           <div id="hidden-inputs"></div>
         </div>
       </div>
@@ -48,11 +49,73 @@
 
     </form>
   </div>
-
-  <div class="button-group mt-xl">
-    <a class="btn btn-secondary" href="{{ url_for('main.home') }}">🏠 Back to Home</a>
-  </div>
 </div>
+
+<style>
+.activities-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 40px;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: #f8fafc;
+  align-items: center;
+  justify-content: center;
+}
+
+.activities-tags-container.has-activities {
+  justify-content: flex-start;
+}
+
+.activities-tags-container #no-activities {
+  margin: 0;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.activity-tag {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.activity-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.activity-remove-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.activity-remove-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+</style>
 
 <script>
 // Activity handling script
@@ -61,26 +124,72 @@ document.getElementById('add-btn').addEventListener('click', function () {
   const activity = input.value.trim();
 
   if (activity) {
-    const list = document.getElementById('activity-list');
+    const container = document.getElementById('activity-list');
     const hiddenInputs = document.getElementById('hidden-inputs');
     const noActivitiesMsg = document.getElementById('no-activities');
 
-    if (noActivitiesMsg) noActivitiesMsg.style.display = 'none';
+    // Hide the "no activities" message and update container class
+    if (noActivitiesMsg) {
+      noActivitiesMsg.style.display = 'none';
+      container.classList.add('has-activities');
+    }
 
-    const li = document.createElement('li');
-    li.textContent = activity;
-    list.appendChild(li);
+    // Create activity tag
+    const tag = document.createElement('div');
+    tag.className = 'activity-tag';
+    tag.innerHTML = `
+      <span class="activity-text">${activity}</span>
+      <button type="button" class="activity-remove-btn" onclick="removeActivity(this)">×</button>
+    `;
+    container.appendChild(tag);
 
+    // Create hidden input
     const hiddenInput = document.createElement('input');
     hiddenInput.type = 'hidden';
     hiddenInput.name = 'activities';
     hiddenInput.value = activity;
+    hiddenInput.className = 'activity-hidden-input';
     hiddenInputs.appendChild(hiddenInput);
+
+    // Link the tag and hidden input
+    tag.dataset.inputIndex = hiddenInputs.children.length - 1;
 
     input.value = '';
     input.focus();
   }
 });
+
+function removeActivity(button) {
+  const tag = button.parentElement;
+  const container = document.getElementById('activity-list');
+  const hiddenInputs = document.getElementById('hidden-inputs');
+  const noActivitiesMsg = document.getElementById('no-activities');
+  
+  // Find and remove the corresponding hidden input
+  const inputIndex = tag.dataset.inputIndex;
+  const hiddenInput = hiddenInputs.children[inputIndex];
+  if (hiddenInput) {
+    hiddenInput.remove();
+  }
+  
+  // Remove the tag
+  tag.remove();
+  
+  // Update indices for remaining tags
+  Array.from(container.children).forEach((child, index) => {
+    if (child.classList.contains('activity-tag')) {
+      child.dataset.inputIndex = index;
+    }
+  });
+  
+  // Check if there are any activity tags left
+  const activityTags = container.querySelectorAll('.activity-tag');
+  if (activityTags.length === 0) {
+    // Show "no activities" message and update container class
+    noActivitiesMsg.style.display = 'block';
+    container.classList.remove('has-activities');
+  }
+}
 
 document.getElementById('activity-input').addEventListener('keypress', function (e) {
   if (e.key === 'Enter') {
