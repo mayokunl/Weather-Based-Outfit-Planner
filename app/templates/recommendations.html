@@ -5,20 +5,19 @@
 {% endblock %}
 
 {% block content %}
-<div class="page-wrapper">
-<div class="container-wide p-2xl">
+<div class="recommendations-container">
+  <h1 class="heading-1" style="text-align: center; color: #ebebeb;">Your Personalized Outfit Recommendations</h1>
 
   <h1 class="text-center mb-2xl">Your Personalized Outfit Recommendations ✨</h1>
 
   {% if data %}
-    <div class="card mb-2xl">
-      <h2 class="mb-md">Trip Details ℹ️</h2>
-      <div class="trip-details">
-        <p><strong>Destination:</strong> {{ data.city or 'N/A' }}</p>
-        <p><strong>Event Type:</strong> {{ data.event or 'N/A' }}</p>
-        <p><strong>Start Date:</strong> {{ data.start_date or 'N/A' }}</p>
-        <p><strong>End Date:</strong> {{ data.end_date or 'N/A' }}</p>
-        <p><strong>Temperature Preference:</strong> {{ data.temp_preference or 'N/A' }}</p>
+  <div class="trip-summary">
+    <h2>Trip Details:</h2>
+    <div class="trip-details">
+      <p><strong>Destination:</strong> {{ data.city or 'N/A' }}{% if data.region %}, {{ data.region }}{% endif %}</p>
+      <p><strong>Duration:</strong> {{ data.days or 'N/A' }} days</p>
+      <p><strong>Gender:</strong> {{ data.gender or 'N/A' }}</p>
+      {% if data.activities %}
         <p><strong>Activities:</strong>
           {% if data.activities %}
             {% for activity in data.activities %}
