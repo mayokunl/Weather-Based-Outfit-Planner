@@ -1,71 +1,757 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container mt-3xl mb-3xl">
-  <div class="container-card">
-    <h1 class="form-title">Your Profile 👤</h1>
+<div class="profile-wrapper">
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert" style="margin-bottom: 2rem;">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
 
-    <!-- Profile Info Display -->
-    <div id="view-profile">
-      <p><strong>Name:</strong> {{ user.name }}</p>
-      <p><strong>Age:</strong> {{ user.age }}</p>
-      <p><strong>Gender:</strong> {{ user.gender }}</p>
+  <!-- Profile Header -->
+  <div class="container-card mb-xl">
+    <h1 class="form-title">Your Profile</h1>
+    <p style="color: var(--color-text-muted); margin-bottom: 0;">Manage your profile and view your trip history</p>
+  </div>
 
-      <div class="text-center mt-xl">
-        <button class="btn btn-primary" onclick="toggleEdit(true)">Edit Profile</button>
+  <!-- Main Content Grid -->
+  <div class="profile-grid">
+    <!-- Left Column: Profile Information -->
+    <div class="container-card profile-info-card">
+      <h2 class="profile-info-title">Profile Information</h2>
+      <!-- Profile Info Display -->
+      <div id="view-profile">
+        <div class="form-section">
+          <div class="form-group"><strong>Name:</strong> {{ user.name or 'Not set' }}</div>
+          <div class="form-group"><strong>Age:</strong> {{ user.age or 'Not set' }}</div>
+          <div class="form-group"><strong>Gender:</strong> {{ user.gender or 'Not set' }}</div>
+        </div>
+        <div class="text-center" style="margin-top: 1rem;">
+          <button class="btn btn-primary" onclick="toggleEdit(true)">Edit Profile</button>
+        </div>
+      </div>
+      <!-- Profile Edit Form (Initially Hidden) -->
+      <form method="post" id="edit-profile" style="display: none;">
+        <div class="form-section">
+          <div class="form-group">
+            <label for="name" class="form-label">Name:</label>
+            <input type="text" id="name" name="name" class="form-input" value="{{ user.name or '' }}" required />
+          </div>
+          <div class="form-group">
+            <label for="age" class="form-label">Age:</label>
+            <input type="number" id="age" name="age" min="1" max="120" class="form-input" value="{{ user.age or '' }}" required />
+          </div>
+          <div class="form-group">
+            <label for="gender" class="form-label">Gender:</label>
+            <select id="gender" name="gender" class="form-input" required>
+              <option value="">— Select Gender —</option>
+              <option value="Male" {% if user.gender == "Male" %}selected{% endif %}>Male</option>
+              <option value="Female" {% if user.gender == "Female" %}selected{% endif %}>Female</option>
+              <option value="Non Binary" {% if user.gender == "Non Binary" %}selected{% endif %}>Non Binary</option>
+              <option value="Prefer not to Say" {% if user.gender == "Prefer not to Say" %}selected{% endif %}>Prefer not to Say</option>
+              <option value="Other" {% if user.gender == "Other" %}selected{% endif %}>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="text-center" style="margin-top: 1rem;">
+          <button type="submit" class="btn btn-success">Save Changes</button>
+          <button type="button" class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="toggleEdit(false)">Cancel</button>
+        </div>
+      </form>
+    </div>
+    <!-- Right Column: Trip History -->
+    <div class="container-card mb-xl" style="overflow: visible;">
+      <div class="trip-history-header">
+        <h2>Trip History</h2>
+        {% if trips %}
+          <p class="trip-count">{{ trips|length }} trip{{ 's' if trips|length != 1 else '' }}</p>
+        {% endif %}
+      </div>
+      {% if trips %}
+        <div class="trips-container">
+          {% for trip in trips %}
+          <div class="trip-card">
+            <div class="trip-card-header">
+              <div class="trip-destination">
+                <div class="location-details">
+                  <div class="location-header">
+                    <h3 class="location-name">{{ trip.location }}</h3>
+                    {% if trip.recommendations %}
+                    <button class="expand-btn" onclick="toggleTripDetails('trip-{{ loop.index }}')" title="Expand/Collapse Details">
+                      <span class="expand-icon">⌄</span>
+                    </button>
+                    {% endif %}
+                  </div>
+                  <p class="trip-duration">{{ trip.duration }} day{{ 's' if trip.duration != 1 else '' }}</p>
+                </div>
+              </div>
+              <div class="trip-actions">
+                <button class="trip-action-btn view-btn" onclick="window.location.href='/trip/{{ trip.id }}/view'" title="View Full Trip">
+                  <span class="action-icon">View</span>
+                </button>
+                <button class="trip-action-btn delete-btn" data-trip-id="{{ trip.id }}" data-trip-location="{{ trip.location }}" onclick="confirmDeleteTrip(this)" title="Delete Trip">
+                  <span class="action-icon">Delete</span>
+                </button>
+              </div>
+            </div>
+            {% if trip.activities %}
+            <div class="trip-activities">
+              <div class="activities-tags">
+                {% for activity in trip.activities %}
+                {% if activity.strip() %}
+                <span class="activity-tag">
+                  {{ activity.strip() }}
+                </span>
+                {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+            {% if trip.recommendations %}
+            <div class="trip-details" id="trip-{{ loop.index }}" style="display: none;">
+              <div class="recommendations-preview">
+                <h4>AI Recommendations</h4>
+                <div class="recommendations-content">
+                  {% if '## Day' in trip.recommendations %}
+                    {% set days = trip.recommendations.split('## Day') %}
+                    {% set day_count = (days|length - 1) if days[0].strip() == '' else days|length %}
+                    <div class="daily-preview">
+                      <p><strong>{{ day_count }} day{{ 's' if day_count != 1 else '' }} of detailed outfit planning:</strong></p>
+                      {% for day_content in days[:3] %}
+                        {% if day_content.strip() and not day_content.startswith('#') %}
+                          {% set day_parts = day_content.split(':', 1) %}
+                          {% if day_parts|length > 1 %}
+                            {% set day_number = day_parts[0].strip() %}
+                            {% set day_title = day_parts[1].split('\n')[0].strip() %}
+                            <div class="day-preview-item">
+                              <strong>Day {{ day_number }}:</strong> {{ day_title }}
+                            </div>
+                          {% endif %}
+                        {% endif %}
+                      {% endfor %}
+                      {% if day_count > 3 %}
+                        <div class="more-days">... and {{ day_count - 3 }} more day{{ 's' if (day_count - 3) != 1 else '' }}</div>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    {{ trip.recommendations[:300] | replace('\n', '<br>') | safe }}
+                    {% if trip.recommendations|length > 300 %}
+                      <span class="read-more">... <button class="link-btn" onclick="showFullRecommendations('trip-{{ loop.index }}')">Read More</button></span>
+                    {% endif %}
+                  {% endif %}
+                </div>
+                <div class="recommendations-actions">
+                  <a href="{{ url_for('main.view_trip', trip_id=trip.id) }}" class="btn btn-sm btn-secondary">View Full</a>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-trips">
+          <div class="empty-icon">✈️</div>
+          <h3>No trips yet!</h3>
+          <p>Start planning your first trip to see your history here.</p>
+          <a href="{{ url_for('main.destination') }}" class="btn btn-primary">Plan Your First Trip</a>
+        </div>
+      {% endif %}
+      <div class="trip-history-footer">
+        <a href="{{ url_for('main.destination') }}" class="btn btn-primary btn-large">Plan New Trip</a>
       </div>
     </div>
-
-    <!-- Profile Edit Form (Initially Hidden) -->
-    <form method="post" id="edit-profile" style="display: none;">
-      <div class="form-group">
-        <label for="name" class="form-label">Name</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          class="form-control"
-          value="{{ user.name }}"
-          required
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="age" class="form-label">Age</label>
-        <input
-          type="number"
-          id="age"
-          name="age"
-          min="1"
-          class="form-control"
-          value="{{ user.age }}"
-          required
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="gender" class="form-label">Gender</label>
-        <select id="gender" name="gender" class="form-control" required>
-          <option value="">— Select —</option>
-          <option {% if user.gender == "Male" %}selected{% endif %}>Male</option>
-          <option {% if user.gender == "Female" %}selected{% endif %}>Female</option>
-          <option {% if user.gender == "Non Binary" %}selected{% endif %}>Non Binary</option>
-          <option {% if user.gender == "Prefer not to Say" %}selected{% endif %}>Prefer not to Say</option>
-          <option {% if user.gender == "Other" %}selected{% endif %}>Other</option>
-        </select>
-      </div>
-
-      <div class="text-center mt-xl">
-        <button type="submit" class="btn btn-success btn-large">Save Changes</button>
-        <button type="button" class="btn btn-secondary mt-md" onclick="toggleEdit(false)">Cancel</button>
-      </div>
-    </form>
   </div>
 </div>
+
+<!-- Enhanced CSS for Profile and Trip History -->
+<style>
+.container-card.mb-xl {
+  text-align: center;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  margin-bottom: 2rem;
+}
+.profile-wrapper {
+  max-width: 100%;
+  padding: 1.5rem 2rem 2rem 2rem;
+  overflow: visible;
+}
+.profile-grid {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 2fr);
+  gap: 2rem;
+  align-items: start;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.profile-info-card {
+  padding: 1.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  width: 100%;
+}
+.profile-info-title {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+  text-align: center;
+}
+@media (max-width: 900px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+  .profile-info-card {
+    margin-bottom: 2rem;
+  }
+}
+@media (max-width: 768px) {
+  .profile-wrapper {
+    padding: 1rem 0.25rem 2rem 0.25rem;
+  }
+  .profile-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+  color: #155724;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  float: right;
+}
+
+/* Trip History Enhancements */
+.trip-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.trip-history-header h2 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--color-primary);
+}
+
+.trip-count {
+  background: #f0f9ff;
+  color: #0369a1;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.trips-container {
+  width: 100%;
+  max-width: 650px;
+  padding: 1rem 2rem;
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: visible;
+}
+
+.trip-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 20px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 
+    0 4px 15px rgba(249, 115, 22, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: none;
+}
+
+.trip-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(249, 115, 22, 0.08) 0%, 
+    rgba(245, 158, 11, 0.05) 25%,
+    rgba(59, 130, 246, 0.05) 50%,
+    rgba(245, 158, 11, 0.05) 75%,
+    rgba(249, 115, 22, 0.08) 100%);
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.trip-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 
+    0 20px 40px rgba(249, 115, 22, 0.2),
+    0 8px 25px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-color: rgba(249, 115, 22, 0.3);
+}
+
+.trip-card:hover::before {
+  opacity: 1;
+}
+
+.trip-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, 
+    #f97316 0%, 
+    #f59e0b 50%, 
+    #3b82f6 100%);
+  border-radius: 0 0 0 20px;
+  transition: all 0.4s ease;
+  box-shadow: 
+    0 0 8px rgba(249, 115, 22, 0.4),
+    0 0 15px rgba(249, 115, 22, 0.2);
+}
+
+.trip-card:hover::after {
+  width: 6px;
+  box-shadow: 
+    0 0 15px rgba(249, 115, 22, 0.8),
+    0 0 25px rgba(249, 115, 22, 0.5),
+    0 0 35px rgba(249, 115, 22, 0.3);
+}
+
+.trip-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  position: relative;
+}
+
+.trip-destination {
+  display: flex;
+  align-items: center;
+}
+
+.location-details h3 {
+  font-size: 1.1rem;
+  margin: 0;
+  color: #1e293b;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.location-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trip-duration {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0.2rem 0 0 0;
+  line-height: 1;
+  text-align: left;
+}
+
+.expand-btn {
+  background: white;
+  border: 2px solid #f97316;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #f97316;
+  padding: 0;
+  box-shadow: 0 1px 3px rgba(249, 115, 22, 0.2), 0 0 0 1px rgba(249, 115, 22, 0.1);
+  outline: 2px solid rgba(249, 115, 22, 0.3);
+  outline-offset: 1px;
+}
+
+.expand-btn:hover {
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  border-color: #f97316;
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.4), 0 0 0 1px rgba(249, 115, 22, 0.2);
+  outline: 2px solid rgba(249, 115, 22, 0.5);
+  outline-offset: 1px;
+}
+
+.expand-icon {
+  font-size: 0.7rem;
+  transition: transform 0.3s ease;
+}
+
+.expand-btn.active .expand-icon {
+  transform: rotate(180deg);
+}
+
+.trip-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: flex-end;
+}
+
+.trip-action-btn {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  width: auto;
+  height: auto;
+  padding: 0.4rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #64748b;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  font-size: 0.8rem;
+  min-width: 60px;
+}
+
+.trip-action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.trip-action-btn:hover {
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  border-color: #f97316;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  color: white;
+  text-decoration: none;
+}
+
+.trip-action-btn:hover::before {
+  transform: scaleX(1);
+}
+
+.trip-action-btn.view-btn {
+  background: transparent;
+  border-color: #dbeafe;
+  color: #60a5fa;
+}
+
+.trip-action-btn.view-btn:hover {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  border-color: #60a5fa;
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
+  color: white;
+}
+
+.trip-action-btn.delete-btn {
+  background: transparent;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.trip-action-btn.delete-btn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+  border-color: #dc2626;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  color: white;
+}
+
+.action-icon {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.expand-icon {
+  font-size: 0.65rem;
+  transition: transform 0.2s ease;
+}
+
+.trip-action-btn.active .expand-icon {
+  transform: rotate(180deg);
+}
+
+.trip-activities {
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.activities-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.activity-tag {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.35rem 0.7rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  line-height: 1;
+}
+
+.activity-overflow {
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 0.25rem 0.5rem;
+  border-radius: 14px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  border: 1px solid #e2e8f0;
+}
+
+.trip-details {
+  animation: slideDown 0.3s ease-out;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+  position: relative;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recommendations-preview h4 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recommendations-content {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #374151;
+  margin-bottom: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.recommendations-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.btn-outline:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: inherit;
+}
+
+.empty-trips {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #64748b;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-trips h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.empty-trips p {
+  margin-bottom: 1.5rem;
+}
+
+.trip-history-footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-large {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Daily Preview Styles */
+.daily-preview {
+  margin: 0.5rem 0;
+}
+
+.day-preview-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.day-preview-item:last-child {
+  border-bottom: none;
+}
+
+.more-days {
+  font-style: italic;
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+</style>
+
+<style>
+/* Ensure the right column card can grow fully */
+.profile-grid > .container-card.mb-xl {
+  width: 100%;
+  max-width: none;
+}
+</style>
 
 <script>
   function toggleEdit(editing) {
     document.getElementById('view-profile').style.display = editing ? 'none' : 'block';
     document.getElementById('edit-profile').style.display = editing ? 'block' : 'none';
+  }
+
+  function toggleTripDetails(tripId) {
+    const detailsElement = document.getElementById(tripId);
+    const expandBtn = event.target.closest('.expand-btn');
+    
+    if (detailsElement.style.display === 'none' || !detailsElement.style.display) {
+      detailsElement.style.display = 'block';
+      if (expandBtn) expandBtn.classList.add('active');
+    } else {
+      detailsElement.style.display = 'none';
+      if (expandBtn) expandBtn.classList.remove('active');
+    }
+  }
+
+  function showFullRecommendations(tripId) {
+    // This could be enhanced to show a modal with full recommendations
+    alert('Full recommendations modal feature coming soon!');
+  }
+
+  function confirmDeleteTrip(button) {
+    const tripId = button.getAttribute('data-trip-id');
+    const tripLocation = button.getAttribute('data-trip-location');
+    
+    if (confirm(`Are you sure you want to delete the trip to ${tripLocation}? This action cannot be undone.`)) {
+      // Create a form and submit it to delete the trip
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `/trip/${tripId}/delete`;
+      
+      // Add CSRF token if available
+      const csrfToken = document.querySelector('meta[name="csrf-token"]');
+      if (csrfToken) {
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrf_token';
+        csrfInput.value = csrfToken.getAttribute('content');
+        form.appendChild(csrfInput);
+      }
+      
+      document.body.appendChild(form);
+      form.submit();
+    }
   }
 </script>
 {% endblock %}

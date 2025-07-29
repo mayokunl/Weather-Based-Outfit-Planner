@@ -1,0 +1,113 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container-card container-wide mt-3xl mb-3xl">
+  <h1 class="heading-1 text-center mb-xl">Pick Basic Items for Your Closet</h1>
+  <form method="POST">
+    <div class="cards starter-closet-cards">
+      {% for product in products %}
+        <label class="product-card card text-center starter-closet-card">
+          <img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="img-card-full mb-md starter-closet-img">
+          <h3 class="heading-3 mt-md mb-xs">{{ product.title }}</h3>
+          <p class="text-muted mb-md">${{ product.price }}</p>
+          <span class="custom-checkbox-container">
+            <input type="checkbox" name="items" value="{{ product.title }}|{{ product.thumbnail }}|{{ product.price }}">
+            <span class="checkmark"></span>
+          </span>
+        </label>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-xl">
+      <button type="submit" class="btn btn-primary btn-large">Add Selected Items</button>
+    </div>
+  </form>
+</div>
+<style>
+  .starter-closet-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+  }
+  .starter-closet-card {
+    padding: var(--spacing-md);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .starter-closet-img {
+    max-width: 80px;
+    margin: 0 auto var(--spacing-md) auto;
+    display: block;
+  }
+  .custom-checkbox-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    width: 100%;
+    margin-top: auto;
+    margin-bottom: 0.5em;
+  }
+  .custom-checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  .checkmark {
+    position: relative;
+    height: 1.5em;
+    width: 1.5em;
+    border-radius: 50%;
+    border: 2.5px solid black;
+    background: transparent;
+    transition: all 0.3s;
+    display: inline-block;
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+  .custom-checkbox-container input:checked ~ .checkmark {
+    background: black;
+    border: 2.5px solid black;
+    box-shadow: -10px -10px 20px 0px #5B51D8, 0 -10px 20px 0px #833AB4, 10px -10px 20px 0px #E1306C, 10px 0 20px 0px #FD1D1D, 10px 10px 20px 0px #F77737, 0 10px 20px 0px #FCAF45, -10px 10px 20px 0px #FFDC80;
+  }
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  .custom-checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+  }
+  .custom-checkbox-container .checkmark:after {
+    left: 0.55em;
+    top: 0.32em;
+    width: 0.25em;
+    height: 0.5em;
+    border: solid #fff;
+    border-width: 0 0.15em 0.15em 0;
+    transform: rotate(45deg);
+  }
+  .checkmark:hover {
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+    background: #f3f3f3;
+  }
+  .custom-checkbox-container input:checked ~ .checkmark:hover {
+    background: #222;
+  }
+  @media (max-width: 900px) {
+    .starter-closet-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 600px) {
+    .starter-closet-cards {
+      grid-template-columns: 1fr;
+    }
+    .starter-closet-img {
+      max-width: 60px;
+    }
+  }
+</style>
+{% endblock %}

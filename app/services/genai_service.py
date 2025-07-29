@@ -129,7 +129,7 @@ def get_product_with_real_links(query: str, gender: str = '', num_results: int =
     """
     Enhanced version that gets more specific product results with better filtering
     """
-    from serp_utils import get_shopping_items
+    from serp_service import get_shopping_items
     
     # Add gender and make query more specific for shopping
     enhanced_query = f"{gender} {query} buy online shop".strip()

@@ -1,24 +1,26 @@
 {% extends "layout.html" %}
 
+{# DEVELOPMENT FLAG: Set to false to use real API data #}
+{% set USE_HARDCODED_DATA = true %}
+
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='recommendations.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="page-wrapper">
-<div class="container-wide p-2xl">
+<div class="recommendations-container">
+  <h1 class="heading-1" style="text-align: center; color: #ebebeb;">Your Personalized Outfit Recommendations</h1>
 
   <h1 class="text-center mb-2xl">Your Personalized Outfit Recommendations ✨</h1>
 
   {% if data %}
-    <div class="card mb-2xl">
-      <h2 class="mb-md">Trip Details ℹ️</h2>
-      <div class="trip-details">
-        <p><strong>Destination:</strong> {{ data.city or 'N/A' }}</p>
-        <p><strong>Event Type:</strong> {{ data.event or 'N/A' }}</p>
-        <p><strong>Start Date:</strong> {{ data.start_date or 'N/A' }}</p>
-        <p><strong>End Date:</strong> {{ data.end_date or 'N/A' }}</p>
-        <p><strong>Temperature Preference:</strong> {{ data.temp_preference or 'N/A' }}</p>
+  <div class="trip-summary">
+    <h2>Trip Details:</h2>
+    <div class="trip-details">
+      <p><strong>Destination:</strong> {{ data.city or 'N/A' }}{% if data.region %}, {{ data.region }}{% endif %}</p>
+      <p><strong>Duration:</strong> {{ data.days or 'N/A' }} days</p>
+      <p><strong>Gender:</strong> {{ data.gender or 'N/A' }}</p>
+      {% if data.activities %}
         <p><strong>Activities:</strong>
           {% if data.activities %}
             {% for activity in data.activities %}
@@ -40,9 +42,230 @@
   {% endif %}
 
   {% if response %}
+    {% if USE_HARDCODED_DATA %}
+      <!-- HARDCODED DATA FOR STYLING - Remove when USE_HARDCODED_DATA = false -->
+      {% set hardcoded_response = "Weather Forecast 🌦️
+2025-07-30: high 94.9°F, low 80.0°F, Partially cloudy (precip chance 27.0%)
+2025-07-31: high 83.9°F, low 73.8°F, Rain, Partially cloudy (precip chance 81.0%)
+
+AI-Powered Outfit Recommendations 💡
+
+## Day 1: Conquer the Trails (July 30th - High 94.9°F, Low 80°F, Partially Cloudy)
+
+This is a scorcher! We need to prioritize breathability and sun protection for your hike. Comfort is key to enjoying the day.
+
+Outfit:
+
+Top: Lightweight, moisture-wicking athletic tank top in a light color (like pastel blue or white) to reflect the sun.
+
+Bottom: High-waisted, quick-dry hiking shorts (length of your preference). Consider a neutral color like olive green or khaki.
+
+Shoes: Breathable hiking sneakers or trail running shoes with good ankle support.
+
+Accessories: A wide-brimmed sun hat with UPF protection, polarized sunglasses, a small lightweight backpack to carry water and snacks, and a sweat-resistant hair tie.
+
+Weather Adjustments: If the 27% chance of rain materializes, bring a lightweight, packable rain jacket.
+
+Packing Notes: Pack everything except perhaps the hair tie, which might already be in your luggage.
+
+Product Searches:
+- Top: women's moisture-wicking tank top athletic wear pastel blue
+- Bottom: women's high-waisted hiking shorts quick-dry olive green, size [your size]
+- Shoes: women's lightweight hiking shoes Salomon Adidas trail running shoes
+- Accessories: wide brim sun hat UPF 50 protection, polarized sunglasses, small lightweight hiking backpack, sweat-resistant hair tie
+
+## Day 2: City Exploration (July 31st - High 83.9°F, Low 73.8°F, Rain, Partially Cloudy)
+
+Rain is in the forecast, so we need to adapt to potentially wet conditions while still staying stylish and comfortable for exploring the city after your hike.
+
+Outfit:
+
+Top: A breathable, lightweight t-shirt made from a quick-drying material (like a blend of cotton and polyester). Choose a bright color to lift your spirits on a potentially gloomy day.
+
+Bottom: Comfortable, water-resistant hiking pants or leggings. Avoid jeans as they'll take a long time to dry. A dark color will hide any mud splashes better than light ones.
+
+Shoes: Waterproof hiking boots or sneakers are ideal to keep your feet dry.
+
+Accessories: A compact, foldable umbrella, a waterproof backpack cover for your backpack (if using the one from day 1), a lightweight raincoat or jacket that packs down small.
+
+Weather Adjustments: Layering is key! The temperature might fluctuate throughout the day, so the t-shirt allows for easy removal if it gets too warm. The raincoat provides extra protection against heavier rainfall.
+
+Packing Notes: Pack all items.
+
+Product Searches:
+- Top: women's quick-drying t-shirt cotton polyester blend bright yellow
+- Bottom: women's water-resistant hiking pants Columbia, dark gray, size [your size]
+- Shoes: women's waterproof hiking boots Merrell Keen, size [your size]
+- Accessories: compact foldable umbrella, waterproof backpack cover, lightweight packable raincoat
+
+## Day 3: Relax and Recharge
+
+This is your chance to rest and recover. This day's outfit will depend on your plans for the day, but keeping it comfortable and stylish is essential.
+
+Outfit Suggestion (assuming some relaxed sightseeing):
+
+Top: Flowy, loose-fitting tank top or blouse. Choose a summery print or pastel shade for a cheerful look.
+
+Bottom: Comfortable jeans, shorts, or a flowing skirt, depending on personal preference and the weather.
+
+Shoes: Comfortable sneakers or sandals that you have packed or purchased for the other days.
+
+Accessories: A stylish cross-body bag, comfortable jewelry, a sunhat if the sun is still strong.
+
+Weather Adjustments: Check the actual forecast before selecting clothing. You might opt for a light cardigan or jacket if the temperature drops unexpectedly.
+
+Packing Notes: You should already have everything needed.
+
+Product Searches:
+- Top: women's flowy tank top summer floral print
+- Bottom: women's high-waisted denim shorts Levi's, size [your size] OR women's flowy midi skirt, cotton, [color]
+- Shoes: (reuse footwear from previous days)
+- Accessories: stylish cross-body bag, [your preferred jewelry style]
+
+Remember to always check the updated weather forecast before heading out each day and adjust your outfit accordingly! Have a fantastic trip to New York City!" %}
+      {% set working_response = hardcoded_response %}
+    {% else %}
+      <!-- REAL API DATA -->
+      {% set working_response = response %}
+    {% endif %}
+    
     <div class="card mb-2xl">
       <h2 class="mb-md">AI-Powered Outfit Recommendations 💡</h2>
-      <div class="ai-recommendations mb-xl">{{ html_response|safe }}</div>
+      <div class="ai-recommendations">
+        {% if '## Day' in working_response %}
+          <!-- Daily Recommendations with Enhanced Structure -->
+          <div class="daily-recommendations">
+            {% set days_content = working_response.split('## Day') %}
+            {% for day_content in days_content %}
+              {% if day_content.strip() and not day_content.startswith('#') %}
+                {% set day_parts = day_content.split(':', 1) %}
+                {% if day_parts|length > 1 %}
+                  {% set day_number = day_parts[0].strip() %}
+                  {% set day_title_line = day_parts[1].split('\n')[0].strip() %}
+                  {% set day_body = day_parts[1] %}
+                  
+                  <!-- Extract weather info if present -->
+                  {% set weather_start = day_title_line.find('(') %}
+                  {% set weather_end = day_title_line.find(')', weather_start) if weather_start != -1 else -1 %}
+                  {% set weather_match = day_title_line[weather_start:weather_end+1] if weather_start != -1 and weather_end != -1 and '°F' in day_title_line[weather_start:weather_end+1] else none %}
+                  {% set clean_title = day_title_line[:weather_start].strip() if weather_start != -1 else day_title_line %}
+                  
+                  <div class="day-recommendation-card">
+                    <div class="day-header" onclick="toggleDayDetails('rec-day-{{ loop.index }}')">
+                      <div class="day-info">
+                        <h3 class="day-title">Day {{ day_number }}</h3>
+                        {% if weather_match %}
+                          <span class="weather-info">{{ weather_match }}</span>
+                        {% endif %}
+                        <span class="day-subtitle">Click to view recommendations</span>
+                      </div>
+                      <div class="day-toggle">
+                        <span class="toggle-icon">⌄</span>
+                      </div>
+                    </div>
+                    
+                    <div class="day-content" id="rec-day-{{ loop.index }}">
+                      <div class="day-details">
+                        <!-- Debug: Show raw day content first -->
+                        <div class="debug-content" style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                          <h5>Debug - Raw Content:</h5>
+                          <pre style="font-size: 12px; white-space: pre-wrap;">{{ day_body[:500] }}...</pre>
+                        </div>
+                        
+                        <!-- Parse and organize content sections -->
+                        {% set sections = day_body.split('\n\n') %}
+                        {% set weather_section = '' %}
+                        {% set packing_section = '' %}
+                        {% set outfit_section = '' %}
+                        {% set shopping_section = '' %}
+                        {% set description_sections = [] %}
+                        
+                        <!-- First pass: collect sections by type -->
+                        {% for section in sections %}
+                          {% if section.strip() %}
+                            {% if 'Weather Adjustments:' in section %}
+                              {% set weather_section = section %}
+                            {% elif 'Packing Notes:' in section %}
+                              {% set packing_section = section %}
+                            {% elif 'Outfit:' in section %}
+                              {% set outfit_section = section %}
+                            {% elif 'Product Searches:' in section %}
+                              {% set shopping_section = section %}
+                            {% else %}
+                              {% set _ = description_sections.append(section) %}
+                            {% endif %}
+                          {% endif %}
+                        {% endfor %}
+                        
+                        <!-- Combined Box: Day info + Description + Weather + Packing -->
+                        <div class="day-info-box">
+                          <h4 class="day-main-title">{{ clean_title }}</h4>
+                          
+                          <!-- Display description -->
+                          {% for section in description_sections %}
+                            <div class="day-description">
+                              <pre>{{ section }}</pre>
+                            </div>
+                          {% endfor %}
+                          
+                          <!-- Weather Considerations -->
+                          {% if weather_section %}
+                            <div class="weather-considerations">
+                              <h5>🌦️ Weather Considerations</h5>
+                              <p>{{ weather_section.replace('Weather Adjustments:', '') | trim }}</p>
+                            </div>
+                          {% endif %}
+                          
+                          <!-- Packing Tips -->
+                          {% if packing_section %}
+                            <div class="packing-tips">
+                              <h5>🧳 Packing Tips</h5>
+                              <p>{{ packing_section.replace('Packing Notes:', '') | trim }}</p>
+                            </div>
+                          {% endif %}
+                        </div>
+                        
+                        <!-- Outfit Details below -->
+                        {% if outfit_section %}
+                          <div class="outfit-details-box">
+                            <h4>� Outfit Details</h4>
+                            <div class="outfit-expandable">
+                              <div class="outfit-header" onclick="toggleOutfitDetails('outfit-{{ loop.index0 }}-{{ loop.index }}')">
+                                <span>View complete outfit breakdown</span>
+                                <span class="expand-icon">⌄</span>
+                              </div>
+                              <div class="outfit-details" id="outfit-{{ loop.index0 }}-{{ loop.index }}" style="display: none;">
+                                {{ outfit_section | markdown | safe }}
+                              </div>
+                            </div>
+                          </div>
+                        {% endif %}
+                        
+                        <!-- Shopping Recommendations Toggle -->
+                        {% if shopping_section %}
+                          <div class="shopping-section">
+                            <div class="shopping-toggle" onclick="toggleShoppingDetails('shopping-{{ loop.index }}')">
+                              <h4>🛍️ Shopping Recommendations</h4>
+                              <span class="expand-icon">⌄</span>
+                            </div>
+                            <div class="shopping-details" id="shopping-{{ loop.index }}" style="display: none;">
+                              <pre>{{ shopping_section.replace('Product Searches:', '') | trim }}</pre>
+                            </div>
+                          </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <!-- Regular recommendations without day breakdown -->
+          {{ working_response|safe }}
+        {% endif %}
+      </div>
+    </div>
 
       {% for day, info in outfit_data.items() %}
         <div class="card mb-2xl">
@@ -69,11 +292,707 @@
   {% endif %}
 
   <div class="text-center mt-2xl">
-    <a class="btn btn-secondary btn-small" href="#">← Back</a>
-    <a class="btn btn-success btn-small" href="#">View Trips</a>
-    <a class="btn btn-secondary btn-small" href="#">👚 View Closet</a>
+    <a class="btn btn-secondary btn-small" href="{{ url_for('main.duration') }}">← Back</a>
+    <a class="btn btn-success btn-small" href="{{ url_for('main.profile') }}">View Trips</a>
+    <a class="btn btn-secondary btn-small" href="{{ url_for('closet.view_closet') }}">View Closet</a>
   </div>
 
 </div>
-</div>
+
+<style>
+/* Balanced Recommendations page styling */
+.recommendations-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.trip-summary {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1.2rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.trip-details p {
+  margin: 0.4rem 0;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.activity-tag {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-right: 0.3rem;
+}
+
+.recommendations-section {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ai-recommendations {
+  background: #f8fafc;
+  padding: 1.2rem;
+  border-radius: 8px;
+  border-left: 4px solid #f97316;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.recommendation-block {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.recommendation-block h3 {
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.outfit-inspiration {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.outfit-image {
+  max-width: 300px;
+  max-height: 400px;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.shopping-section {
+  margin-top: 2rem;
+}
+
+.shopping-section h4 {
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.category-section {
+  margin-bottom: 2rem;
+}
+
+.category-section h5 {
+  color: #374151;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: #f97316;
+}
+
+.product-card:hover::before {
+  transform: scaleX(1);
+}
+
+.product-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.product-info {
+  text-align: center;
+}
+
+.product-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  height: 2.8rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.product-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #059669;
+  margin-bottom: 0.25rem;
+}
+
+.product-source {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.product-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.btn:hover::before {
+  transform: scaleX(1);
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  border-radius: 16px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
+}
+
+.error-message {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid #dc2626;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.weather-summary {
+  border-radius: 12px;
+  padding: 16px;
+  margin: 20px 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  align-items: center;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.weather-summary h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.weather-summary pre {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .recommendations-container {
+    padding: 0.5rem;
+  }
+  
+  .day-header {
+    padding: 10px 12px;
+  }
+  
+  .day-content.expanded {
+    padding: 10px 12px;
+  }
+  
+  h1 {
+    font-size: 1.3rem;
+  }
+  
+  .btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+  }
+}
+/* Daily Recommendation Dropdown Styles - Centered and Larger */
+.daily-recommendations {
+  margin-top: 20px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.day-recommendation-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.day-recommendation-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.day-recommendation-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.day-recommendation-card:hover::before {
+  transform: scaleX(1);
+}
+
+.day-header {
+  background: white;
+  padding: 20px 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.3s ease;
+}
+
+.day-header:hover {
+  background: #fef7ed;
+}
+
+.day-info h3.day-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.2;
+}
+
+.day-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+  display: block;
+}
+
+.day-toggle {
+  flex-shrink: 0;
+  margin-left: 15px;
+}
+
+.toggle-icon {
+  font-size: 18px;
+  color: #f97316;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.day-content {
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border-top: 1px solid #f0f0f0;
+}
+
+.day-content.expanded {
+  max-height: none;
+  padding: 24px;
+  overflow: visible;
+}
+
+/* New box styling - Larger and more prominent */
+.day-info-box {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.day-main-title {
+  color: #f97316;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.day-description {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #374151;
+  margin-bottom: 16px;
+}
+
+.weather-considerations, .packing-tips {
+  margin-top: 16px;
+}
+
+.weather-considerations h5, .packing-tips h5 {
+  color: #f97316;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.weather-considerations p, .packing-tips p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.outfit-details-box {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.outfit-details-box h4 {
+  color: #f97316;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.outfit-content {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.shopping-section {
+  margin-top: 16px;
+}
+
+.shopping-toggle {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.shopping-toggle:hover {
+  background: #f3f4f6;
+}
+
+.shopping-toggle h4 {
+  color: #f97316;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.shopping-details {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 24px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.day-details {
+  color: #555;
+  line-height: 1.4;
+  font-size: 0.9rem;
+}
+
+.day-details h4 {
+  color: #f97316;
+  margin: 8px 0 6px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.day-details ul {
+  padding-left: 16px;
+  margin: 8px 0;
+}
+
+.day-details li {
+  margin-bottom: 3px;
+  font-size: 0.85rem;
+}
+
+/* Outfit and Shopping Expandable Sections - Compact */
+.outfit-expandable, .shopping-expandable {
+  margin: 8px 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.outfit-header, .shopping-header {
+  background: #f9fafb;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.outfit-header:hover, .shopping-header:hover {
+  background: #f3f4f6;
+}
+
+.outfit-header span, .shopping-header span {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.expand-icon {
+  font-size: 12px;
+  color: #f97316;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.outfit-details, .shopping-details {
+  padding: 10px 12px;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.description-section, .weather-section, .packing-section {
+  margin: 8px 0;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border-radius: 4px;
+  border-left: 2px solid #f97316;
+  font-size: 0.85rem;
+}
+
+.weather-info {
+  background: #e0f2fe;
+  color: #0277bd;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+/* Compact page headers and buttons */
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.card {
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: 8px;
+}
+
+.btn {
+  padding: 0.4rem 0.8rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  margin: 0.2rem;
+}
+
+.weather-summary {
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.weather-summary h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.weather-summary pre {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Remove excessive spacing from main containers */
+.container-wide {
+  padding: 1rem;
+}
+
+.p-2xl {
+  padding: 1rem !important;
+}
+
+.mb-2xl {
+  margin-bottom: 0.75rem !important;
+}
+
+.mb-md {
+  margin-bottom: 0.5rem !important;
+}
+
+.mt-2xl {
+  margin-top: 1rem !important;
+}
+
+</style>
+
+<script>
+function toggleDayDetails(dayId) {
+  const dayContent = document.getElementById(dayId);
+  const toggleIcon = document.querySelector(`[onclick="toggleDayDetails('${dayId}')"] .toggle-icon`);
+  
+  if (dayContent.classList.contains('expanded')) {
+    dayContent.classList.remove('expanded');
+    toggleIcon.style.transform = 'rotate(0deg)';
+  } else {
+    dayContent.classList.add('expanded');
+    toggleIcon.style.transform = 'rotate(180deg)';
+  }
+}
+
+function toggleShoppingDetails(shoppingId) {
+  const shoppingContent = document.getElementById(shoppingId);
+  const expandIcon = document.querySelector(`[onclick="toggleShoppingDetails('${shoppingId}')"] .expand-icon`);
+  
+  if (shoppingContent.style.display === 'none' || shoppingContent.style.display === '') {
+    shoppingContent.style.display = 'block';
+    expandIcon.style.transform = 'rotate(180deg)';
+  } else {
+    shoppingContent.style.display = 'none';
+    expandIcon.style.transform = 'rotate(0deg)';
+  }
+}
+</script>
+
 {% endblock %}
