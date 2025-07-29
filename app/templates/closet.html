@@ -681,12 +681,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   {% endif %}
 
-  <div class="button-group mt-xl">
-    <a class="btn btn-secondary" href="{{ url_for('main.home') }}">Back to Home</a>
-    {% if has_any_items and items_by_category %}
-      <a class="btn btn-primary" href="{{ url_for('auth.starter_closet') }}">Add More Items</a>
-    {% endif %}
-  </div>
 </div>
 <style>
   .closet-cards {

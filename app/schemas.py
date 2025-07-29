@@ -32,13 +32,14 @@ class TripSchema(Schema):
 
 class ClosetItemSchema(Schema):
     """Schema for closet item validation."""
-    name = fields.Str(required=True, validate=validate.Length(min=1, max=100))
-    category = fields.Str(
+    title = fields.Str(required=True, validate=validate.Length(min=1, max=100))
+    item_type = fields.Str(
         required=True,
-        validate=validate.OneOf(['tops', 'bottoms', 'shoes', 'accessories', 'outerwear'])
+        validate=validate.OneOf(['top', 'bottom', 'shoe', 'accessory', 'outerwear', 'dress'])
     )
-    color = fields.Str(validate=validate.Length(max=30))
-    brand = fields.Str(validate=validate.Length(max=50))
+    price = fields.Str(validate=validate.Length(max=20))
+    image_url = fields.Str(validate=validate.Length(max=300))
+    source = fields.Str(validate=validate.Length(max=50))
 
 def validate_request_data(schema_class, data):
     """Helper function to validate request data against a schema."""

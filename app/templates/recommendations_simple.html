@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="recommendations-container">
+  <h1>Your Personalized Outfit Recommendations</h1>
+
+  {% if data %}
+  <div class="trip-summary">
+    <h2>Trip Details:</h2>
+    <p><strong>Destination:</strong> {{ data.city or 'N/A' }}</p>
+    <p><strong>Duration:</strong> {{ data.days or 'N/A' }} days</p>
+    <p><strong>Gender:</strong> {{ data.gender or 'N/A' }}</p>
+  </div>
+  {% endif %}
+
+  {% if response %}
+    <div class="card">
+      <h2>AI-Powered Outfit Recommendations</h2>
+      <div>
+        <pre>{{ response }}</pre>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="text-center mt-2xl">
+    <a class="btn btn-secondary btn-small" href="{{ url_for('main.duration') }}">← Back</a>
+    <a class="btn btn-success btn-small" href="{{ url_for('main.profile') }}">View Trips</a>
+  </div>
+
+</div>
+{% endblock %}

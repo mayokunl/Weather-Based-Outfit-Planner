@@ -162,9 +162,11 @@
           <a href="{{ url_for('main.destination') }}" class="btn btn-primary">Plan Your First Trip</a>
         </div>
       {% endif %}
+      {% if trips %}
       <div class="trip-history-footer">
         <a href="{{ url_for('main.destination') }}" class="btn btn-primary btn-large">Plan New Trip</a>
       </div>
+      {% endif %}
     </div>
   </div>
 </div>

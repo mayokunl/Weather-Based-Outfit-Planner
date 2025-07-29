@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recommendations Test</title>
+</head>
+<body>
+    <h1>Recommendations Page</h1>
+    {% if data %}
+        <p>City: {{ data.city }}</p>
+        <p>Days: {{ data.days }}</p>
+    {% endif %}
+    
+    {% if response %}
+        <div>
+            <h2>Response:</h2>
+            <pre>{{ response }}</pre>
+        </div>
+    {% endif %}
+</body>
+</html>

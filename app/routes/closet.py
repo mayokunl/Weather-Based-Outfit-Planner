@@ -12,10 +12,12 @@ def categorize_item(item_name):
     
     # Define categories with keywords
     categories = {
-        'tops': ['shirt', 'blouse', 'top', 'tank', 'tee', 'sweater', 'hoodie', 'cardigan', 'jacket', 'blazer', 'coat'],
-        'bottoms': ['pants', 'jeans', 'shorts', 'skirt', 'dress', 'leggings', 'trousers'],
-        'shoes': ['shoes', 'sneakers', 'boots', 'sandals', 'heels', 'flats', 'loafers', 'slip-on'],
-        'accessories': ['hat', 'cap', 'sunglasses', 'bag', 'purse', 'backpack', 'scarf', 'belt', 'jewelry', 'watch', 'necklace', 'bracelet']
+        'top': ['shirt', 'blouse', 'top', 'tank', 'tee', 'sweater', 'hoodie', 'cardigan', 'jacket', 'blazer', 'coat'],
+        'bottom': ['pants', 'jeans', 'shorts', 'skirt', 'leggings', 'trousers'],
+        'dress': ['dress', 'gown', 'frock', 'sundress', 'maxi dress', 'mini dress'],
+        'shoe': ['shoes', 'sneakers', 'boots', 'sandals', 'heels', 'flats', 'loafers', 'slip-on'],
+        'accessory': ['hat', 'cap', 'sunglasses', 'bag', 'purse', 'backpack', 'scarf', 'belt'],
+        'jewelry': ['jewelry', 'watch', 'necklace', 'bracelet', 'ring', 'earrings']
     }
     
     for category, keywords in categories.items():
@@ -132,7 +134,7 @@ def view_closet():
         items_by_category[category].append(item)
     
     # Define standard categories (same as dropdown options)
-    standard_categories = ['top', 'bottom', 'shoe', 'dress', 'accessory', 'jewelry', 'bag', 'other']
+    standard_categories = ['top', 'bottom', 'dress', 'shoe', 'accessory', 'jewelry', 'other']
     
     # Get categories that actually have items for filtering
     existing_categories = set(item.item_type or 'other' for item in all_user_items)

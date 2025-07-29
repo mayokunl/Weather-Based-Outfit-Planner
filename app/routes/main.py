@@ -42,6 +42,7 @@ def duration():
     if request.method == 'POST':
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
+        activities = request.form.getlist('activities')  # Get list of activities
         
         if not start_date or not end_date:
             flash('Both start and end dates are required', 'error')
@@ -50,6 +51,22 @@ def duration():
         # Store in session
         session['start_date'] = start_date
         session['end_date'] = end_date
+        session['activities'] = activities
+        
+        # Calculate and store days
+        from datetime import datetime
+        try:
+            start = datetime.strptime(start_date, '%Y-%m-%d')
+            end = datetime.strptime(end_date, '%Y-%m-%d')
+            days = (end - start).days + 1
+            session['days'] = days
+        except Exception:
+            session['days'] = None
+        
+        print(f"Duration route - storing session data:")
+        print(f"  Start: {start_date}, End: {end_date}")
+        print(f"  Activities: {activities}")
+        print(f"  Days: {session.get('days')}")
         
         # Redirect to recommendations
         return redirect(url_for('recommendations.recommendations'))

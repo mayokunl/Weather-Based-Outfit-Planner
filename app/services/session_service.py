@@ -56,7 +56,7 @@ class TripPlanningSession:
         return {
             'gender': session.get('gender', 'unisex'),
             'age': session.get('age'),
-            'user_id': session.get('user_id')
+            'user_id': session.get('_user_id')
         }
     
     @staticmethod
