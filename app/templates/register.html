@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container-card container-form mt-xl mb-3xl">
+<div class="container-card container-form mt-xl mb-5xl">
     <form method="POST">
         {{ form.hidden_tag() }}
-        <h2 class="form-title">Sign Up</h2>
+        <h2 class="form-title">Sign Up 📝</h2>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}

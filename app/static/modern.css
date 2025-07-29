@@ -398,7 +398,7 @@ input[type="submit"].btn:focus-visible {
     0 0 0 4px rgba(249, 115, 22, 0.1);
   transition: var(--transition-normal);
   width: 100%;
-  margin: 0 auto;
+  margin: 2rem auto;
   max-width: 500px;
 }
 
