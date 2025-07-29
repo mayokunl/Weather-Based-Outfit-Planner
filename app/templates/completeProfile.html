@@ -33,4 +33,46 @@
     </form>
   </div>
 </div>
+<div class="container-card container-form mt-xl">
+  <h1 class="form-title">Tell us about yourself</h1>
+  
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+  
+  <form method="post">
+    <div class="form-section">
+      <div class="form-group">
+        <label class="form-label" for="name">Name:</label>
+        <input class="form-input" id="name" name="name" type="text" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="age">Age:</label>
+        <input class="form-input" id="age" name="age" type="number" min="1" max="120" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="gender">Gender:</label>
+        <select class="form-input" id="gender" name="gender" required>
+          <option value="">— Select Gender —</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Non Binary">Non Binary</option>
+          <option value="Prefer not to Say">Prefer not to Say</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+    
+    <button type="submit" class="btn btn-large">Complete Profile →</button>
+  </form>
+</div>
 {% endblock %}
