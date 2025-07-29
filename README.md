@@ -40,7 +40,7 @@ Picking the right outfit can be frustrating — especially when you don’t know
 - **[OpenWeatherMap API](https://openweathermap.org/)** — Real-time weather data  
 - **[SerpAPI](https://serpapi.com/)** — Location and search-based enhancement features  
 - **[Gemini GenAI](https://aistudio.google.com/app/apikey)** — Event-specific outfit logic and enhancements  
-- **Deployed on**: [Add deployment platform, e.g., Render, Fly.io, etc.]
+- **Deployed on**: Render
 
 ---
 
@@ -69,8 +69,10 @@ Picking the right outfit can be frustrating — especially when you don’t know
 ## Coming Soon
 
 - Image-based closet input to plan outfits using AI  
-- 
+- Taking in locations around the globe
+- Improved Image Generation
+- Ability to regenerate parts of an outfit you didn't like
 
 ---
 
-💡 *Style smarter. Pack better. Plan ahead. with StyleCast.*
+💡 *Style smarter. Pack better. Plan ahead. with StyleCast 💙.*
