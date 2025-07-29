@@ -6,9 +6,7 @@
 
 {% block content %}
 <div class="recommendations-container">
-  <h1 class="heading-1" style="text-align: center; color: #ebebeb;">Your Personalized Outfit Recommendations</h1>
-
-  <h1 class="text-center mb-2xl">Your Personalized Outfit Recommendations ✨</h1>
+  <h1 class="text-center mb-2xl" style="color: #ebebeb;">Your Personalized Outfit Recommendations ✨</h1>
 
   {% if data %}
   <div class="trip-summary">
@@ -19,91 +17,51 @@
       <p><strong>Gender:</strong> {{ data.gender or 'N/A' }}</p>
       {% if data.activities %}
         <p><strong>Activities:</strong>
-          {% if data.activities %}
-            {% for activity in data.activities %}
-              <span class="activity-tag">{{ activity }}</span>
-            {% endfor %}
-          {% else %}
-            N/A
-          {% endif %}
+          {% for activity in data.activities %}
+            <span class="activity-tag">{{ activity }}</span>
+          {% endfor %}
         </p>
-      </div>
+      {% endif %}
     </div>
+  </div>
   {% endif %}
 
   {% if data.weather_summary %}
-    <div class="card mb-2xl">
-      <h2 class="mb-md">Weather Forecast 🌦️</h2>
-      <pre class="text-left">{{ data.weather_summary }}</pre>
-    </div>
+  <div class="card mb-2xl">
+    <h2 class="mb-md">Weather Forecast 🌦️</h2>
+    <pre class="text-left">{{ data.weather_summary }}</pre>
+  </div>
   {% endif %}
 
   {% if response %}
-    <div class="card mb-2xl">
-      <h2 class="mb-md">AI-Powered Outfit Recommendations 💡</h2>
-      <div class="ai-recommendations">
-        {% if '## Day' in html_response %}
-          <!-- Daily Recommendations with Dropdowns -->
-          <div class="daily-recommendations">
-            {% set days_content = html_response.split('## Day') %}
-            {% for day_content in days_content %}
-              {% if day_content.strip() and not day_content.startswith('#') %}
-                {% set day_parts = day_content.split(':', 1) %}
-                {% if day_parts|length > 1 %}
-                  {% set day_number = day_parts[0].strip() %}
-                  {% set day_title = day_parts[1].split('\n')[0].strip() %}
-                  {% set day_body = day_parts[1] %}
-                  
-                  <div class="day-recommendation-card">
-                    <div class="day-header" onclick="toggleDayDetails('rec-day-{{ loop.index }}')">
-                      <div class="day-info">
-                        <h3 class="day-title">Day {{ day_number }}: {{ day_title }}</h3>
-                        <span class="day-subtitle">Click to view outfit details</span>
-                      </div>
-                      <div class="day-toggle">
-                        <span class="toggle-icon">▼</span>
-                      </div>
-                    </div>
-                    
-                    <div class="day-content" id="rec-day-{{ loop.index }}" style="display: none;">
-                      <div class="day-details">
-                        {{ day_body | markdown | safe }}
-                      </div>
-                    </div>
-                  </div>
-                {% endif %}
-              {% endif %}
-            {% endfor %}
-          </div>
-        {% else %}
-          <!-- Regular recommendations without day breakdown -->
-          {{ html_response|safe }}
-        {% endif %}
-      </div>
+  <div class="card mb-2xl">
+    <h2 class="mb-md">AI-Powered Outfit Recommendations 💡</h2>
+    <div class="ai-recommendations">
+      {{ html_response | safe }}
     </div>
+  </div>
 
-      {% for day, info in outfit_data.items() %}
-        <div class="card mb-2xl">
-          <h3 class="mb-md">{{ day }}</h3>
-          {% if info.image %}
-            <img src="{{ info.image }}" class="outfit-image mb-md" alt="Outfit Image for {{ day }}">
-          {% endif %}
-          {% if info.shopping %}
-            <div class="cards">
-              {% for product in info.shopping %}
-                <div class="card product-card">
-                  <div class="product-info">
-                    <h6>{{ product.name }}</h6>
-                    <p>{{ product.description }}</p>
-                    <a href="{{ product.link }}" class="btn btn-primary btn-small" target="_blank">View Product</a>
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
+  {% for day, info in outfit_data.items() %}
+  <div class="card mb-2xl">
+    <h3 class="mb-md">{{ day }}</h3>
+    {% if info.image %}
+      <img src="{{ info.image }}" class="outfit-image mb-md" alt="Outfit Image for {{ day }}">
+    {% endif %}
+    {% if info.shopping %}
+      <div class="cards">
+        {% for product in info.shopping %}
+        <div class="card product-card">
+          <div class="product-info">
+            <h6>{{ product.name }}</h6>
+            <p>{{ product.description }}</p>
+            <a href="{{ product.link }}" class="btn btn-primary btn-small" target="_blank">View Product</a>
+          </div>
         </div>
-      {% endfor %}
-    </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  {% endfor %}
   {% endif %}
 
   <div class="text-center mt-2xl">
@@ -111,7 +69,6 @@
     <a class="btn btn-success btn-small" href="{{ url_for('main.profile') }}">View Trips</a>
     <a class="btn btn-secondary btn-small" href="{{ url_for('closet.view_closet') }}">View Closet</a>
   </div>
-
 </div>
 
 <style>
