@@ -23,7 +23,7 @@ def recommendations():
         # Get user profile data
         user_profile = TripPlanningSession.get_user_profile()
         
-        # Get trip data directly from session
+        # Get trip data directly from session (except weather_summary)
         trip_data = {
             'city': session.get('city'),
             'region': session.get('region'),
@@ -31,7 +31,6 @@ def recommendations():
             'end_date': session.get('end_date'),
             'days': session.get('days'),
             'activities': session.get('activities'),
-            'weather_summary': session.get('weather_summary'),
         }
         
         if not trip_data['city'] or not trip_data['start_date'] or not trip_data['end_date'] or not trip_data['days'] or not trip_data['activities']:
@@ -48,6 +47,18 @@ def recommendations():
         
         print("All required session data present, proceeding with recommendations...")
 
+        # Always fetch the latest weather summary for the current trip
+        try:
+            weather_summary = get_weather_summary(
+                trip_data['city'],
+                trip_data['region'],
+                trip_data['start_date'],
+                trip_data['end_date']
+            )
+        except Exception as weather_exc:
+            logger.error(f"Error fetching weather summary: {weather_exc}")
+            weather_summary = 'Weather data not available'
+
         # Prepare template data
         template_data = {
             'city': trip_data['city'],
@@ -56,13 +67,16 @@ def recommendations():
             'end_date': trip_data['end_date'],
             'days': trip_data['days'],
             'activities': trip_data['activities'],
-            'weather_summary': trip_data.get('weather_summary', 'Weather data not available'),
+            'weather_summary': weather_summary,
             'gender': user_profile.get('gender', 'unisex'),
             'age': user_profile.get('age', 'N/A')
         }
         
-        # Build prompt for OpenAI using trip data only
-        prompt = build_prompt_from_session(trip_data)
+        # Add weather_summary to trip_data for prompt building
+        trip_data_with_weather = dict(trip_data)
+        trip_data_with_weather['weather_summary'] = weather_summary
+        # Build prompt for OpenAI using trip data and latest weather summary
+        prompt = build_prompt_from_session(trip_data_with_weather)
         # print(f"Prompt sent to OpenAI: {prompt}")
 
         # Get recommendations from OpenAI
