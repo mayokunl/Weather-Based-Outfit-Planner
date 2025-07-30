@@ -29,80 +29,60 @@
     </div>
   {% endif %}
 
-  {% if response %}
-    <div class="card mb-2xl">
-      <h2 class="mb-md">AI-Powered Outfit Recommendations 💡</h2>
-      <div class="ai-recommendations">
-        {% if days %}
-          <div class="daily-recommendations">
-            {% for day in days %}
-              <div class="day-dropdown mb-lg">
-                <div class="day-header">
-                  <div class="day-destination">
-                    <div class="day-details">
-                      <div class="day-details-header">
-                        <h3 class="day-name">{{ day.title }}</h3>
-                        <button class="expand-btn" onclick="toggleDropdown(this)" title="Expand/Collapse Details">
-                          <span class="expand-icon">⌄</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="day-content" style="display: none;">
-                  <div class="recommendations-preview">
-                    <h4>Outfit Details</h4>
-                    <div class="recommendations-content">
-                      {{ day.content | replace('\n', '<br>') | safe }}
-                    </div>
-                    {% if day.product_searches %}
-                      <div class="product-searches-section">
-                        <h4>Product Searches</h4>
-                        <ul class="product-search-list">
-                          {% for search in day.product_searches %}
-                            <li>{{ search }}</li>
-                          {% endfor %}
-                        </ul>
-                      </div>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-        {% else %}
-          <!-- Fallback for when days aren't parsed properly -->
-          <div class="recommendations-content">
-            {{ response | replace('\n', '<br>') | safe }}
-          </div>
-        {% endif %}
-      </div>
-    </div>
+  {# Removed AI-Powered Outfit Recommendations card and daily dropdowns #}
 
     {% if outfit_data %}
       {% for day, info in outfit_data.items() %}
-        <div class="card mb-2xl">
-          <h3 class="mb-md">{{ day }}</h3>
-          {% if info.image %}
-            <img src="{{ info.image }}" class="outfit-image mb-md" alt="Outfit Image for {{ day }}">
-          {% endif %}
-          {% if info.shopping %}
-            <div class="cards">
-              {% for product in info.shopping %}
-                <div class="card product-card">
-                  <div class="product-info">
-                    <h6>{{ product.name }}</h6>
-                    <p>{{ product.description }}</p>
-                    <a href="{{ product.link }}" class="btn btn-primary btn-small" target="_blank">View Product</a>
+        <div class="card mb-2xl" style="background:white; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); padding:2rem; margin-bottom:2rem;">
+          <div class="day-header">
+            <div class="day-destination">
+              <div class="day-details">
+                <div class="day-details-header">
+                  <h3 class="day-name">{{ day }}</h3>
+                  <button class="expand-btn" onclick="toggleDropdown(this)" title="Expand/Collapse Details">
+                    <span class="expand-icon">⌄</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="day-content" style="display: none;">
+            <div class="recommendations-preview">
+              <h4>Outfit Details</h4>
+              <div class="recommendations-content">
+                {{ info.content | markdown | safe }}
+              </div>
+              {% if info.shopping and info.shopping|length > 0 %}
+                <div class="shopping-section" style="margin-top:1rem;">
+                  <h4 class="shopping-title">Shopping Suggestions 🛍️</h4>
+                  <div class="closet-grid closet-cards" style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: stretch;">
+                    {% for product in info.shopping %}
+                    <div class="card text-center closet-card" style="min-width:320px;max-width:420px;flex-basis:340px;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;">
+                      <div class="category-tag" style="display:none;top:0.5rem;left:0.5rem;background:linear-gradient(135deg,#f97316 0%,#f59e0b 100%);">{{ day }}</div>
+                      {% if product.thumbnail %}
+                        <img src="{{ product.thumbnail }}" class="item-image closet-img" alt="{{ product.title }}">
+                      {% else %}
+                        <div class="item-image closet-img" style="display:flex;align-items:center;justify-content:center;color:#999;">No Image</div>
+                      {% endif %}
+                      <div class="item-content">
+                        <h5 class="item-title">{{ product.title }}</h5>
+                        {% if product.price %}<div class="item-price">{{ product.price }}</div>{% endif %}
+                        {% if product.source %}<div class="item-source">from {{ product.source }}</div>{% endif %}
+                        {% if product.link %}<a href="{{ product.link }}" target="_blank" rel="noopener noreferrer" class="shop-button" style="margin-top:0.5rem;">Shop Now</a>{% endif %}
+                        <button class="shop-button" style="margin-top:0.5rem;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);" onclick="alert('Add to Closet feature coming soon!')">Add to Closet</button>
+                      </div>
+                    </div>
+                    {% endfor %}
                   </div>
                 </div>
-              {% endfor %}
+              {% endif %}
             </div>
-          {% endif %}
+          </div>
         </div>
+
       {% endfor %}
     {% endif %}
-  {% endif %}
+
 
   <div class="text-center mt-2xl">
     <a class="btn btn-secondary btn-small" href="{{ url_for('main.duration') }}">← Back</a>
@@ -132,14 +112,19 @@
   font-size: 0.95rem;
 }
 
-.activity-tag {
-  background: #e3f2fd;
-  color: #1565c0;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  margin-right: 0.3rem;
-  font-size: 0.8rem;
-}
+    .activity-tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.35rem 0.7rem;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    line-height: 1;
+    }
 
 .card {
   background: rgba(255, 255, 255, 0.95);
@@ -158,7 +143,24 @@
   line-height: 1.6;
 }
 
-/* Daily Recommendation Dropdown Styles */
+.card-bg {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(59,130,246,0.07), 0 1.5px 6px rgba(249,115,22,0.07);
+  padding: 2.5rem 2rem 2rem 2rem;
+  margin: 2.5rem auto 0 auto;
+  max-width: 900px;
+  width: 100%;
+}
+.daily-section-container {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(59,130,246,0.07), 0 1.5px 6px rgba(249,115,22,0.07);
+  padding: 2.5rem 2rem 2rem 2rem;
+  margin: 2.5rem auto 0 auto;
+  max-width: 900px;
+  width: 100%;
+}
 .daily-recommendations {
   margin-top: 20px;
 }
@@ -404,9 +406,12 @@
 
 <script>
 function toggleDropdown(button) {
-  const content = button.closest('.day-dropdown').querySelector('.day-content');
+  // Find the nearest card container for this day
+  const card = button.closest('.card.mb-2xl');
+  if (!card) return;
+  const content = card.querySelector('.day-content');
   const icon = button.querySelector('.expand-icon');
-  
+  if (!content || !icon) return;
   if (content.style.display === 'none' || content.style.display === '') {
     content.style.display = 'block';
     icon.style.transform = 'rotate(180deg)';

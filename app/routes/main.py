@@ -143,15 +143,52 @@ def view_trip(trip_id):
         if not trip:
             flash('Trip not found or you do not have permission to view it.', 'error')
             return redirect(url_for('main.profile'))
+
+        # Get outfit data if available - use the model's method
+        outfit_data = trip.get_outfit_data() if hasattr(trip, 'get_outfit_data') else {}
+        # If outfit_data is a list (legacy), wrap in dict for compatibility
+        if isinstance(outfit_data, list):
+            outfit_data = {'days': outfit_data}
+
+        # Get days from outfit_data if available
+        days = outfit_data.get('days', []) if isinstance(outfit_data, dict) else []
+        # Debug: print shopping data for each day
+        for d in days:
+            key = d.get('title')
+            shopping = outfit_data.get('outfit_data', {}).get(key, {}).get('shopping')
+            print(f"[DEBUG] Shopping for '{key}': {shopping}")
+        # Get trip details
+        trip = get_trip_by_id_orm(trip_id, current_user.id)
+        if not trip:
+            flash('Trip not found or you do not have permission to view it.', 'error')
+            return redirect(url_for('main.profile'))
         
         # Get outfit data if available - use the model's method
         outfit_data = trip.get_outfit_data() if hasattr(trip, 'get_outfit_data') else {}
-        
+        # If outfit_data is a list (legacy), wrap in dict for compatibility
+        if isinstance(outfit_data, list):
+            outfit_data = {'days': outfit_data}
+
         # Prepare location string
         location = trip.city
         if trip.region:
             location += f", {trip.region}"
-        
+
+        # Clean and split activities for template
+        activities_list = [a.strip() for a in trip.activities.split(',')] if trip.activities else []
+        activities_list = [a for a in activities_list if a]
+
+        # Get days from outfit_data if available
+        days = outfit_data.get('days', []) if isinstance(outfit_data, dict) else []
+
+        # Debug: print keys in outfit_data['outfit_data'] and day titles
+        debug_outfit_keys = []
+        if isinstance(outfit_data, dict) and 'outfit_data' in outfit_data and isinstance(outfit_data['outfit_data'], dict):
+            debug_outfit_keys = list(outfit_data['outfit_data'].keys())
+        debug_day_titles = [d.get('title') for d in days]
+        print(f"[DEBUG] outfit_data['outfit_data'] keys: {debug_outfit_keys}")
+        print(f"[DEBUG] days titles: {debug_day_titles}")
+
         # Prepare template context
         context = {
             'trip': {
@@ -163,12 +200,13 @@ def view_trip(trip_id):
                 'recommendations': trip.recommendations
             },
             'location': location,
-            'activities': trip.activities.split(',') if trip.activities else [],
+            'activities': activities_list,
             'outfit_data': outfit_data,
-            'overall_outfit_image': outfit_data.get('overall_outfit_image', '') if outfit_data else '',
-            'shopping_items': outfit_data.get('shopping_items', []) if outfit_data else []
+            'days': days,
+            'overall_outfit_image': outfit_data.get('overall_outfit_image', '') if isinstance(outfit_data, dict) else '',
+            'shopping_items': outfit_data.get('shopping_items', []) if isinstance(outfit_data, dict) else []
         }
-        
+
         return render_template('trip_details.html', **context)
         
     except Exception as e:

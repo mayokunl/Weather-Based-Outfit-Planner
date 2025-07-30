@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 
 import os
 from openai import OpenAI
@@ -15,6 +16,21 @@ logging.basicConfig(level=logging.INFO)
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def build_prompt_from_session(session):
+    # Generate list of dates for the trip
+    start_date = session.get('start_date')
+    end_date = session.get('end_date')
+    date_lines = ""
+    if start_date and end_date:
+        try:
+            start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+            end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+            num_days = (end_dt - start_dt).days + 1
+            date_lines = "The trip is from {} to {}. The days are:\n".format(start_date, end_date)
+            for i in range(num_days):
+                day_dt = start_dt + timedelta(days=i)
+                date_lines += f"- Day {i+1}: {day_dt.strftime('%Y-%m-%d')}\n"
+        except Exception as e:
+            date_lines = ""
     """
     Constructs a natural-language prompt for the travel stylist based on session data.
     """
@@ -31,59 +47,67 @@ def build_prompt_from_session(session):
     Activities: {activities_text}
     Duration: {days} days
     Weather Forecast: {weather_text}
-    
+
+    {date_lines}
+
     Your task:
-    For each day of the trip, provide a detailed outfit recommendation that includes:
-    
+    For each day of the trip, use the exact date provided above for that day, and provide a detailed outfit recommendation that includes:
+
+    **IMPORTANT:** For all weather-related details, use ONLY the provided Weather Forecast above. Do NOT generate your own weather summary or forecast. Reference the provided weather summary for each day's recommendations.
+
     **Day [Number] ([Date]): [Specific Activity] in [Weather Summary]**
-    
+
     **Weather Adjustments:** [Specific weather-based adjustments like sunscreen, layers, etc.]
-    
+
     **Complete Outfit:**
     - Top: [specific item with details]
-    - Bottom: [specific item with details]  
+    - Bottom: [specific item with details]
     - Shoes: [specific item with details]
     - Accessories: [specific items with details]
-    
+
     **Activity Considerations:** [How the outfit works for the planned activities]
     **Packing Notes:** [Whether items should be packed or purchased]
-    
+
     **Product Searches:**
     - Top: [specific brand/style/color top query]
-    - Bottom: [specific brand/style/color bottom query]  
+    - Bottom: [specific brand/style/color bottom query]
     - Shoes: [specific brand/style/color shoes query]
     - Accessories: [specific accessory queries]
-    
+
     Make the search queries specific with:
     - Brand suggestions when relevant
     - Specific styles/cuts (e.g. "slim fit", "relaxed", "high-waisted")
     - Colors that work for the weather/activities
     - Material types (e.g. "cotton", "merino wool", "waterproof")
-    
+
     IMPORTANT: The outfit recommendations should be specifically tailored to the actual activities and city listed above. DO NOT use the example values below. Use only the city, activity, and weather from the trip details above.
-    
+
     Example format (do NOT copy the values, only the structure!):
     **Day 1 ([Date]): [Activity] in [City] [Weather Summary]**
-    
+
     **Weather Adjustments:** [Weather-based adjustments]
-    
+
     **Complete Outfit:**
     - Top: [item]
     - Bottom: [item]
     - Shoes: [item]
     - Accessories: [items]
-    
+
     **Activity Considerations:** [How the outfit works for the planned activities]
     **Packing Notes:** [Whether items should be packed or purchased]
-    
+
     **Product Searches:**
     - Top: [query]
     - Bottom: [query]
     - Shoes: [query]
     - Accessories: [query]
-    
+
     Use a helpful and stylish tone.
-    Format each day with the exact format shown above, but adapt the content to match the actual activities and city from the trip details.
+    Format each day with the exact format shown above, but adapt the content to match the actual activities and city from the trip details. Use the correct date for each day as listed above.
+
+    ---
+    
+    **IMPORTANT:** Format your entire response in valid markdown. Do NOT use HTML tags. Use markdown for all bold, lists, and section headings. Do not use <br> or <strong> tags. Only use markdown.
     """
     return prompt.strip()
 

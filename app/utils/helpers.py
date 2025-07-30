@@ -36,7 +36,7 @@ def parse_daily_outfits(gpt_response, gender=None):
         days.append({
             'title': day_title,
             'content': day_content,
-            'product_searches': product_searches
+            # 'product_searches': product_searches  # No longer sent to template
         })
     return days
 
@@ -57,3 +57,12 @@ def extract_clothing_items(content):
         items.extend(matches)
     
     return list(set(items))  # Remove duplicates
+
+def remove_product_searches_section(text):
+    """Remove the 'Product Searches' section and its list from markdown or HTML text."""
+    return re.sub(
+        r"(\*\*Product Searches:\*\*|<strong>Product Searches:</strong>)(.|\n)*?(?=(<br><br><strong>|---|$))",
+        "",
+        text,
+        flags=re.IGNORECASE
+    )
