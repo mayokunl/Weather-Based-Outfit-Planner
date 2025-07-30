@@ -284,10 +284,8 @@
     }
     
     .day-content {
-        padding: 0;
-        overflow: visible !important;
-        max-height: none !important;
         display: block !important;
+        padding: 0;
         transition: none;
     }
     .recommendations-content {
@@ -353,35 +351,7 @@
 
 {% endblock %}
 
-{% block scripts %}
-<script type="text/javascript">
-function toggleDropdown(button) {
-  const dropdown = button.closest('.day-dropdown');
-  const content = dropdown.querySelector('.day-content');
-  const icon = button.querySelector('.expand-icon');
-  if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-    content.style.maxHeight = '0px';
-    content.style.overflow = 'hidden';
-    icon.style.transform = 'rotate(0deg)';
-    dropdown.classList.remove('active');
-  } else {
-    content.style.maxHeight = content.scrollHeight + 'px';
-    content.style.overflow = 'visible';
-    icon.style.transform = 'rotate(180deg)';
-    dropdown.classList.add('active');
-  }
-}
-window.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.day-content').forEach(function(content) {
-    content.style.maxHeight = '0px';
-    content.style.overflow = 'hidden';
-  });
-  document.querySelectorAll('.expand-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() { toggleDropdown(this); });
-  });
-});
-</script>
-{% endblock %}
+{% block scripts %}{% endblock %}
 
 {% block content %}
 <div class="recommendations-container">
@@ -455,29 +425,56 @@ window.addEventListener('DOMContentLoaded', function() {
         <div class="day-header">
           <div class="day-destination">
             <div class="day-details">
-              <div class="day-details-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 1rem;">
+              <div class="day-details-header" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
                 <h3 class="day-name" style="margin: 0;">{{ day.title }}</h3>
+                <!-- Expand/collapse removed: always show content -->
               </div>
             </div>
           </div>
         </div>
+        <div style="margin-bottom: 0.5rem;">
+          <div class="debug-markdown-preview">
+            {{ day.content | markdown | safe }}
+          </div>
+        </div>
+<style>
+  .debug-markdown-preview {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 0.5rem 0 0.5rem 0;
+    color: #222;
+    font-size: 1.05rem;
+    box-shadow: 0 2px 8px rgba(249, 211, 82, 0.08);
+    border: 1.5px solid #fef7ed;
+    word-break: break-word;
+  }
+  .debug-markdown-preview h4,
+  .debug-markdown-preview strong {
+    color: #f59e0b !important;
+    font-weight: 700;
+    background: none !important;
+  }
+  .debug-markdown-preview ul {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .debug-markdown-preview li {
+    margin-bottom: 0.4rem;
+  }
+</style>
         <div class="day-content" style="display: block;">
           <div class="recommendations-preview">
             <div class="recommendations-content">
               <div style="margin-top: 1.5rem;"></div>
-              {% set content_str = day.content | markdown %}
-              {% if '<strong>Product Searches:' in content_str %}
-                {{ content_str.split('<strong>Product Searches:')[0] | safe }}
-              {% else %}
-                {{ content_str | safe }}
-              {% endif %}
+              {{ day.content | markdown | safe }}
             </div>
             {# Robust day-to-shopping lookup: normalize keys and fallback #}
             {% set shopping = [] %}
             {% if outfit_data.get('outfit_data') %}
-              {% set day_key = day.title.strip() %}
+              {% set day_key = day.title|trim|lower %}
               {% for k, v in outfit_data['outfit_data'].items() %}
-                {% if k.strip() == day_key %}
+                {% if k|trim|lower == day_key %}
                   {% if v is mapping and 'shopping' in v %}
                     {% set shopping = v['shopping'] %}
                   {% else %}
@@ -489,30 +486,38 @@ window.addEventListener('DOMContentLoaded', function() {
             {% if not shopping and day.get('shopping') %}
               {% set shopping = day['shopping'] %}
             {% endif %}
-            {% if shopping and shopping|length > 0 %}
             <div class="shopping-section" style="margin-top:1rem;">
               <h4 class="shopping-title">Shopping Suggestions 🛍️</h4>
               <div class="closet-grid closet-cards" style="display: flex; flex-wrap: wrap; gap: 2rem 2rem; justify-content: center; align-items: stretch; margin: 0 auto; max-width: 1200px;">
-                {% for product in shopping %}
-                <div class="card text-center closet-card" style="min-width:320px;max-width:400px;flex-basis:340px;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin-bottom:2rem;box-shadow:0 6px 24px rgba(0,0,0,0.10);">
-                  <div class="category-tag" style="display:none;top:0.5rem;left:0.5rem;background:linear-gradient(135deg,#f97316 0%,#f59e0b 100%);">{{ day.title }}</div>
-                  {% if product.thumbnail %}
-                    <img src="{{ product.thumbnail }}" class="item-image closet-img" alt="{{ product.title }}" style="width: 180px; height: 180px; object-fit: cover; margin: 0 auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-                  {% else %}
-                    <div class="item-image closet-img" style="width: 180px; height: 180px; display:flex;align-items:center;justify-content:center;color:#999;background:#f8f9fa;margin:0 auto;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">No Image</div>
-                  {% endif %}
-                  <div class="item-content">
-                    <h5 class="item-title">{{ product.title }}</h5>
-                    {% if product.price %}<div class="item-price">{{ product.price }}</div>{% endif %}
-                    {% if product.source %}<div class="item-source">from {{ product.source }}</div>{% endif %}
-                    {% if product.link %}<a href="{{ product.link }}" target="_blank" rel="noopener noreferrer" class="shop-button" style="margin-top:0.5rem;">Shop Now</a>{% endif %}
-                    <button class="activity-tag" style="margin-top:0.5rem; border:none; cursor:pointer;" onclick="alert('Add to Closet feature coming soon!')">Add to Closet</button>
+                {% if shopping and shopping|length > 0 %}
+                  {% for product in shopping %}
+                  <div class="card text-center closet-card" style="min-width:320px;max-width:400px;flex-basis:340px;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin-bottom:2rem;box-shadow:0 6px 24px rgba(0,0,0,0.10);">
+                    <div class="category-tag" style="display:none;top:0.5rem;left:0.5rem;background:linear-gradient(135deg,#f97316 0%,#f59e0b 100%);">{{ day.title }}</div>
+                    {% if product.thumbnail %}
+                      <img src="{{ product.thumbnail }}" class="item-image closet-img" alt="{{ product.title }}" style="width: 180px; height: 180px; object-fit: cover; margin: 0 auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                    {% else %}
+                      <div class="item-image closet-img" style="width: 180px; height: 180px; display:flex;align-items:center;justify-content:center;color:#999;background:#f8f9fa;margin:0 auto;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">No Image</div>
+                    {% endif %}
+                    <div class="item-content">
+                      <h5 class="item-title">{{ product.title }}</h5>
+                      {% if product.price %}<div class="item-price">{{ product.price }}</div>{% endif %}
+                      {% if product.source %}<div class="item-source">from {{ product.source }}</div>{% endif %}
+                      {% if product.link %}<a href="{{ product.link }}" target="_blank" rel="noopener noreferrer" class="activity-tag shopnow-orange" style="margin-top:0.5rem; border:none; cursor:pointer; display:inline-block; text-align:center; text-decoration:none;">Shop Now</a>{% else %}
+                        <span class="activity-tag shopnow-orange" style="margin-top:0.5rem; border:none; display:inline-block; text-align:center; text-decoration:none; opacity:0.7; cursor:not-allowed;">No Link</span>
+                      {% endif %}
+                      <button class="activity-tag" style="margin-top:0.5rem; border:none; cursor:pointer;" onclick="alert('Add to Closet feature coming soon!')">Add to Closet</button>
+                    </div>
                   </div>
-                </div>
-                {% endfor %}
+                  {% endfor %}
+                {% else %}
+                  <div class="card text-center closet-card" style="min-width:320px;max-width:400px;flex-basis:340px;display:flex;flex-direction:column;justify-content:center;align-items:center;margin-bottom:2rem;box-shadow:0 6px 24px rgba(0,0,0,0.10);height:260px;">
+                    <div class="item-content">
+                      <h5 class="item-title">No shopping suggestions for this day.</h5>
+                    </div>
+                  </div>
+                {% endif %}
               </div>
             </div>
-            {% endif %}
           </div>
         </div>
       </div>
@@ -520,22 +525,4 @@ window.addEventListener('DOMContentLoaded', function() {
   </div>
   {% endif %}
 </div>
-
-<script>
-function toggleDayDropdown(button) {
-  // Find the nearest day card container
-  const card = button.closest('.day-card');
-  if (!card) return;
-  const content = card.querySelector('.day-content');
-  const icon = button.querySelector('.expand-icon');
-  if (!content || !icon) return;
-  if (content.style.display === 'none' || content.style.display === '') {
-    content.style.display = 'block';
-    icon.style.transform = 'rotate(180deg)';
-  } else {
-    content.style.display = 'none';
-    icon.style.transform = 'rotate(0deg)';
-  }
-}
-</script>
 {% endblock %}
