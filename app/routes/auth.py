@@ -112,10 +112,20 @@ def starter_closet():
                 title, image, price, category = parts
             else:
                 title, image, price = parts[:3]
-                category = 'general'
-            
-            item_type = get_item_category(title, category)
-            
+                category = ''
+            # Normalize category to singular for consistency
+            category_map = {
+                'tops': 'top', 'top': 'top',
+                'bottoms': 'bottom', 'bottom': 'bottom',
+                'dresses': 'dress', 'dress': 'dress',
+                'shoes': 'shoe', 'shoe': 'shoe',
+                'accessories': 'accessory', 'accessory': 'accessory',
+                'jewelry': 'jewelry', 'jewelries': 'jewelry',
+                'bags': 'bag', 'bag': 'bag',
+                'other': 'other'
+            }
+            cat = category.strip().lower() if category else ''
+            item_type = category_map.get(cat, 'other')
             item = ClosetItem(
                 user_id=current_user.id,
                 title=title,

@@ -142,7 +142,10 @@ def get_shopping_items(query: str, gender: str = '', num_results: int = 3) -> li
     """Searches Google Shopping for product results with REAL working product links."""
     full_query = f"{gender} {query}".strip()
     print(f"🛍️ [Shopping] Searching: {full_query}")
-    
+    if not full_query:
+        print("⚠️ Query is empty! Returning no results.")
+        return []
+
     params = {
         "engine": "google_shopping",
         "q": full_query,
@@ -151,48 +154,54 @@ def get_shopping_items(query: str, gender: str = '', num_results: int = 3) -> li
         "gl": "us",
         "api_key": API_KEY
     }
-    
+    print(f"📝 Params: {json.dumps(params)}")
+
     search = GoogleSearch(params)
     results = search.get_dict()
-    
-    # Debug: Print the full structure of first result to understand available fields
+    print("📝 RAW SERPAPI RESPONSE (truncated):")
+    print(json.dumps(results, indent=2)[:2000])
+
     shopping_results = results.get("shopping_results", [])
-    if shopping_results:
+    if not shopping_results:
+        print(f"⚠️ No shopping results found for query: '{full_query}'")
+        if 'error' in results:
+            print(f"❌ SERPAPI ERROR: {results['error']}")
+    else:
         print("🔍 FIRST PRODUCT STRUCTURE:")
         first_product = shopping_results[0]
         for key, value in first_product.items():
             print(f"   {key}: {str(value)[:100]}...")
-    
+
     products = shopping_results[:num_results]
     print(f"🔎 Found {len(products)} products for '{full_query}'")
-    
+
     processed_products = []
     for i, product in enumerate(products):
-        print(f"\n🔄 Processing product {i+1}/{len(products)}: {product.get('title', 'No title')[:50]}...")
-        
+        print(f"\n📝 Processing product {i+1}/{len(products)}: {product.get('title', 'No title')[:50]}...")
+
         # Try to get the best available link
         raw_link = (
             product.get("link") or 
             product.get("product_link") or 
             product.get("serpapi_product_api")
         )
-        
+
         working_link = None
         purchase_options = []
-        
+
         # If we have a basic link, try to resolve it
         if raw_link:
             print(f"🔗 Raw link found: {raw_link[:100]}...")
-            
+
             # First, try to resolve any redirects
             resolved_link = resolve_redirect_link(raw_link)
-            
+
             # Then clean the URL
             working_link = extract_clean_product_url(resolved_link)
-            
+
             if working_link and working_link != raw_link:
                 print(f"✅ Cleaned link: {working_link[:100]}...")
-            
+
             # Add as primary purchase option
             if working_link:
                 purchase_options.append({
@@ -202,19 +211,19 @@ def get_shopping_items(query: str, gender: str = '', num_results: int = 3) -> li
                     "delivery": product.get("delivery"),
                     "primary": True
                 })
-        
+
         # Try to get additional purchase options from product API if we have product_id
         product_id = product.get("product_id")
         if product_id:
             print(f"📋 Product ID found: {product_id}, fetching additional options...")
             additional_options = get_additional_purchase_options(product_id)
-            
+
             # Add additional options (avoid duplicates)
             existing_sources = {opt.get("source", "") for opt in purchase_options}
             for option in additional_options:
                 if option.get("source") not in existing_sources:
                     purchase_options.append(option)
-        
+
         # Create the enhanced product data
         enhanced_product = {
             "title": product.get("title"),
@@ -228,22 +237,22 @@ def get_shopping_items(query: str, gender: str = '', num_results: int = 3) -> li
             "link": working_link,  # Primary working link
             "purchase_options": purchase_options  # All available options
         }
-        
+
         print(f"✅ Product processed - Primary link: {'✓' if working_link else '✗'}, Total options: {len(purchase_options)}")
-        
+
         # Only include products with at least a title
         if enhanced_product.get("title"):
             processed_products.append(enhanced_product)
-        
+
         # Add small delay to avoid rate limiting
         time.sleep(0.2)
-    
-    print(f"\n🎯 Processed {len(processed_products)} products total")
-    
+
+    print(f"\n🏯 Processed {len(processed_products)} products total")
+
     # Print summary of working links
     products_with_links = sum(1 for p in processed_products if p.get('link'))
     print(f"📊 Link success rate: {products_with_links}/{len(processed_products)} products have working links")
-    
+
     return processed_products
 
 def get_additional_purchase_options(product_id: str) -> list[dict]:
@@ -252,26 +261,20 @@ def get_additional_purchase_options(product_id: str) -> list[dict]:
     """
     try:
         print(f"🔍 Fetching additional options for product_id: {product_id}")
-        
         params = {
             "engine": "google_product",
             "product_id": product_id,
             "offers": "1",  # Enable fetching online sellers
             "api_key": API_KEY
         }
-        
         search = GoogleSearch(params)
         results = search.get_dict()
-        
         if "error" in results:
             print(f"❌ Product API Error: {results['error']}")
             return []
-        
         sellers_results = results.get("sellers_results", {})
         online_sellers = sellers_results.get("online_sellers", [])
-        
         print(f"🏪 Found {len(online_sellers)} additional sellers")
-        
         purchase_options = []
         for seller in online_sellers[:3]:  # Limit to 3 additional sellers
             raw_link = seller.get("link")
@@ -279,7 +282,6 @@ def get_additional_purchase_options(product_id: str) -> list[dict]:
                 # Resolve and clean the seller link
                 resolved_link = resolve_redirect_link(raw_link)
                 clean_link = extract_clean_product_url(resolved_link)
-                
                 if clean_link:
                     option = {
                         "source": seller.get("name", "Store"),
@@ -291,20 +293,15 @@ def get_additional_purchase_options(product_id: str) -> list[dict]:
                     }
                     purchase_options.append(option)
                     print(f"   ✅ {option['source']}: {option['price']} - {clean_link[:50]}...")
-        
         return purchase_options
-        
     except Exception as e:
         print(f"❌ Error fetching additional options for {product_id}: {str(e)}")
         return []
 
 def test_link_functionality(url: str) -> bool:
-    """
-    Test if a product link is working and accessible
-    """
+    """Test if a product link is working and accessible."""
     if not url or not url.startswith('http'):
         return False
-    
     try:
         response = requests.head(url, timeout=10, allow_redirects=True)
         is_working = response.status_code < 400
@@ -315,19 +312,14 @@ def test_link_functionality(url: str) -> bool:
         return False
 
 def get_enhanced_shopping_items(query: str, gender: str = '', num_results: int = 3) -> list[dict]:
-    """
-    Enhanced version that includes link testing and validation
-    """
+    """Enhanced version that includes link testing and validation."""
     products = get_shopping_items(query, gender, num_results)
-    
     # Test links and mark their status
     for product in products:
         if product.get('link'):
             product['link_tested'] = test_link_functionality(product['link'])
-        
         # Test purchase options too
         for option in product.get('purchase_options', []):
             if option.get('link'):
                 option['link_tested'] = test_link_functionality(option['link'])
-    
     return products

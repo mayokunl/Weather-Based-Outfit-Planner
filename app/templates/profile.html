@@ -29,7 +29,7 @@
           <span class="card-icon">👤</span>
           Profile Details
         </div>
-        <button class="edit-btn-improved" onclick="toggleEdit(true)">Edit</button>
+        <button class="edit-btn-profile" onclick="toggleEdit(true)">Edit</button>
       </div>
       <div id="view-profile">
         <div class="info-grid">
@@ -96,86 +96,34 @@
       </div>
       {% if trips %}
         <div class="trips-container">
-          {% for trip in trips %}
-          <div class="trip-card" style="margin-bottom: 2rem;">
-            <div class="trip-card-header">
-              <div class="location-details">
-                <div class="location-header">
-                  <h3 class="location-name">{{ trip.location }}</h3>
-                  {% if trip.recommendations %}
-                  <button class="expand-btn" onclick="toggleTripDetails('trip-{{ loop.index }}')" title="Expand/Collapse Details">
-                    <span class="expand-icon">⌄</span>
-                  </button>
+          {% for trip in trips|sort(attribute='created_at', reverse=True) %}
+          <div class="trip-card" style="margin-bottom: 2rem; text-align:left; box-shadow:0 2px 12px rgba(139,140,248,0.07); border-radius:20px; border:2px solid #f0f0f0; padding:2rem; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <h3 class="location-name" style="font-size:1.35rem; font-weight:700; color:#23272f; margin:0 0 0.2rem 0;">{{ trip.location }}</h3>
+                <div class="trip-duration" style="color:#64748b; font-size:1rem; margin-bottom:0.7rem;">{{ trip.duration }} day{{ 's' if trip.duration != 1 else '' }}</div>
+                {% if trip.activities %}
+                <div class="activities-tags" style="margin-bottom:0.7rem;">
+                  {% for activity in trip.activities %}
+                  {% if activity.strip() %}
+                  <span class="activity-tag profile-activity-tag"><span class="activity-text">{{ activity.strip() }}</span></span>
                   {% endif %}
+                  {% endfor %}
                 </div>
-                <p class="trip-duration">{{ trip.duration }} day{{ 's' if trip.duration != 1 else '' }}</p>
-              </div>
-              <div class="trip-actions">
-                <button class="trip-action-btn view-btn" onclick="window.location.href='/trip/{{ trip.id }}/view'" title="View Full Trip">
-                  <span class="action-icon">View</span>
-                </button>
-                <button class="trip-action-btn delete-btn" data-trip-id="{{ trip.id }}" data-trip-location="{{ trip.location }}" onclick="confirmDeleteTrip(this)" title="Delete Trip">
-                  <span class="action-icon">Delete</span>
-                </button>
-              </div>
-            </div>
-            {% if trip.activities %}
-            <div class="trip-activities">
-              <div class="activities-tags">
-                {% for activity in trip.activities %}
-                {% if activity.strip() %}
-                <span class="activity-tag">
-                  {{ activity.strip() }}
-                </span>
                 {% endif %}
-                {% endfor %}
               </div>
+              <form method="POST" action="/trip/{{ trip.id }}/delete" style="margin:0;">
+                <button type="button" class="delete-link-btn" data-trip-id="{{ trip.id }}" data-trip-location="{{ trip.location }}" onclick="confirmDeleteTrip(this)" style="background:none;border:none;color:#dc2626;font-weight:600;font-size:1.1rem;cursor:pointer;outline:none;">Delete</button>
+              </form>
             </div>
-            {% endif %}
-            {% if trip.recommendations %}
-            <div class="trip-details" id="trip-{{ loop.index }}" style="display: none;">
-              <div class="recommendations-preview">
-                <h4>AI Recommendations</h4>
-                <div class="recommendations-content">
-                  {% if '## Day' in trip.recommendations %}
-                    {% set days = trip.recommendations.split('## Day') %}
-                    {% set day_count = (days|length - 1) if days[0].strip() == '' else days|length %}
-                    <div class="daily-preview">
-                      <p><strong>{{ day_count }} day{{ 's' if day_count != 1 else '' }} of detailed outfit planning:</strong></p>
-                      {% for day_content in days[:3] %}
-                        {% if day_content.strip() and not day_content.startswith('#') %}
-                          {% set day_parts = day_content.split(':', 1) %}
-                          {% if day_parts|length > 1 %}
-                            {% set day_number = day_parts[0].strip() %}
-                            {% set day_title = day_parts[1].split('\n')[0].strip() %}
-                            <div class="day-preview-item">
-                              <strong>Day {{ day_number }}:</strong> {{ day_title }}
-                            </div>
-                          {% endif %}
-                        {% endif %}
-                      {% endfor %}
-                      {% if day_count > 3 %}
-                        <div class="more-days">... and {{ day_count - 3 }} more day{{ 's' if (day_count - 3) != 1 else '' }}</div>
-                      {% endif %}
-                    </div>
-                  {% else %}
-                    {{ trip.recommendations[:300] | replace('\n', '<br>') | safe }}
-                    {% if trip.recommendations|length > 300 %}
-                      <span class="read-more">... <button class="link-btn" onclick="showFullRecommendations('trip-{{ loop.index }}')">Read More</button></span>
-                    {% endif %}
-                  {% endif %}
-                </div>
-                <div class="recommendations-actions">
-                  <a href="{{ url_for('main.view_trip', trip_id=trip.id) }}" class="btn btn-sm btn-secondary">View Full</a>
-                </div>
-              </div>
+            <div style="display:flex;justify-content:center;">
+              <a href="{{ url_for('main.view_trip', trip_id=trip.id) }}" class="btn btn-secondary btn-sm view-full-btn">View</a>
             </div>
-            {% endif %}
           </div>
           {% endfor %}
         </div>
-        <div class="trip-history-footer">
-          <a href="{{ url_for('main.destination') }}" class="cta-btn">Plan New Trip</a>
+        <div class="trip-history-footer" style="display:flex;justify-content:center;margin-top:2.5rem;">
+          <a href="{{ url_for('main.destination') }}" class="btn btn-primary plan-trip-btn">Plan New Trip</a>
         </div>
       {% else %}
         <div class="empty-illustration">🌍</div>
@@ -298,20 +246,53 @@ body, .profile-bg-gradient {
 .card-icon {
   font-size: 20px;
 }
-.edit-btn-improved {
-  background: linear-gradient(135deg, #8b8cf8, #667eea);
-  color: white;
+/* Edit button styled like activity tags in duration.html */
+.edit-btn-profile {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
   border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
+  padding: 8px 20px;
+  border-radius: 16px;
   font-weight: 600;
   cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
+  font-size: 15px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.13);
+  outline: none;
+  letter-spacing: 0.02em;
 }
-.edit-btn-improved:hover {
+.edit-btn-profile:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.18);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(139, 140, 248, 0.3);
+}
+
+/* Match activity tag style from recommendations page */
+/* Activity tag style to match duration.html (purple gradient, white text) */
+.profile-activity-tag {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-radius: 20px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-right: 0.5rem;
+  margin-bottom: 0.3rem;
+  display: inline-block;
+  border: none;
+  box-shadow: 0 1px 3px rgba(102, 126, 234, 0.07);
+  letter-spacing: 0.01em;
+  transition: background 0.2s, color 0.2s;
+}
+.profile-activity-tag .activity-text {
+  color: #fff;
+  font-weight: 500;
+  font-size: 1rem;
+}
+.profile-activity-tag:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  color: #fff;
 }
 .info-grid {
   display: grid;
@@ -365,21 +346,27 @@ body, .profile-bg-gradient {
   margin-bottom: 32px;
   line-height: 1.5;
 }
-.cta-btn {
+.plan-trip-btn {
   background: linear-gradient(135deg, #ff8c42, #ff6b35);
   color: white;
   border: none;
-  padding: 16px 32px;
-  border-radius: 12px;
-  font-weight: 600;
+  padding: 0.7rem 2.2rem;
+  border-radius: 20px;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1.1rem;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.18);
+  outline: none;
+  margin: 0 auto;
+  display: inline-block;
 }
-.cta-btn:hover {
+.plan-trip-btn:hover {
+  background: linear-gradient(135deg, #ff6b35, #ff8c42);
+  box-shadow: 0 6px 20px rgba(255, 140, 66, 0.28);
+  color: white;
+  text-decoration: none;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 140, 66, 0.4);
 }
 .trips-container {
   width: 100%;
@@ -485,20 +472,30 @@ body, .profile-bg-gradient {
   box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
   color: white;
 }
-.trip-action-btn.delete-btn {
-  background: transparent;
-  border-color: #fecaca;
-  color: #dc2626;
+/* Remove old trip-action-btn styles for delete */
+.delete-link-btn:hover {
+  text-decoration: underline;
+  color: #b91c1c;
 }
-.trip-action-btn.delete-btn:hover {
-  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-  border-color: #dc2626;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+.view-full-btn {
+  background: linear-gradient(135deg, #ff8c42, #ff6b35);
   color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(255,140,66,0.13);
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-block;
 }
-.action-icon {
-  font-size: 0.85rem;
-  font-weight: 500;
+.view-full-btn:hover {
+  background: linear-gradient(135deg, #ff6b35, #ff8c42);
+  box-shadow: 0 4px 16px rgba(255,140,66,0.18);
+  color: white;
+  text-decoration: none;
 }
 .trip-activities {
   margin-bottom: 0.5rem;
@@ -626,18 +623,7 @@ body, .profile-bg-gradient {
     document.getElementById('edit-profile').style.display = editing ? 'block' : 'none';
   }
 
-  function toggleTripDetails(tripId) {
-    const detailsElement = document.getElementById(tripId);
-    const expandBtn = event.target.closest('.expand-btn');
-    
-    if (detailsElement.style.display === 'none' || !detailsElement.style.display) {
-      detailsElement.style.display = 'block';
-      if (expandBtn) expandBtn.classList.add('active');
-    } else {
-      detailsElement.style.display = 'none';
-      if (expandBtn) expandBtn.classList.remove('active');
-    }
-  }
+  // toggleTripDetails removed
 
   function showFullRecommendations(tripId) {
     // This could be enhanced to show a modal with full recommendations

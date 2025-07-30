@@ -74,9 +74,9 @@ def recommendations():
                 for item_type, item_desc in item_lines:
                     item_query = f"{gender} {item_desc}".strip()
                     logger.info(f"Searching for: {item_query}")
-                    results = get_shopping_items(item_desc, gender, num_results=1)
+                    results = get_shopping_items(item_desc, gender, num_results=3)
                     if results:
-                        shopping_items.append(results[0])
+                        shopping_items.extend(results)
                     else:
                         shopping_items.append({
                             'title': item_desc,
