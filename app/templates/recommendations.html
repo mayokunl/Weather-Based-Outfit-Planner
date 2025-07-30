@@ -2,85 +2,343 @@
 
 {% block content %}
 <div class="recommendations-container">
-  <h1 class="text-center mb-2xl" style="color: #ebebeb;">Your Personalized Outfit Recommendations ✨</h1>
+  <h1 class="heading-2 text-center mb-2xl" style="font-size:2.3rem; font-weight:800; color:#fff; letter-spacing:0.01em; margin-bottom:2.2rem;">Outfit Recommendations</h1>
 
   {% if data %}
-  <div class="trip-summary">
-    <h2>Trip Details:</h2>
-    <div class="trip-details">
-      <p><strong>Destination:</strong> {{ data.city or 'N/A' }}{% if data.region %}, {{ data.region }}{% endif %}</p>
-      <p><strong>Duration:</strong> {{ data.days or 'N/A' }} days</p>
-      <p><strong>Gender:</strong> {{ data.gender or 'N/A' }}</p>
-      {% if data.activities %}
-        <p><strong>Activities:</strong>
-          {% for activity in data.activities %}
-            <span class="activity-tag">{{ activity }}</span>
-          {% endfor %}
-        </p>
-      {% endif %}
+      <div class="container-card container-wide mt-md mb-lg" style="max-width:900px;width:100%;">
+    <div class="mb-sm" style="text-align:center;">
+      <h2 class="heading-2" style="margin-bottom:0.5rem; text-align:center;">Trip Overview ✈️</h2>
+      <p class="section-desc mb-lg" style="font-size:1rem;color:#6b7280;margin-bottom:0.5rem; text-align:center;">
+        See the details of your upcoming adventure
+      </p>
+    </div>
+    <div class="container-section">
+      <div class="trip-overview-two-cols" style="display: flex; flex-direction: row; justify-content: center; align-items: flex-start; gap: 2.5rem; width: 100%;">
+        <div class="trip-col" style="flex:1 1 0; min-width:0; max-width:none; text-align:center;">
+          <div class="trip-info-divider-row" style="margin-bottom:0.7rem; display:flex; align-items:center; justify-content:center; gap:1.2rem;">
+            <div class="trip-info-divider" style="flex:1 1 0; height:2.5px; background:linear-gradient(90deg,rgba(129,140,248,0) 0%,#818cf8 30%,#6366f1 70%,rgba(129,140,248,0) 100%); border-radius:2px; min-width:40px; max-width:100px;"></div>
+            <div class="trip-subtitle" style="margin: 0 1.2rem 0 1.2rem; text-align:center; font-weight:700; font-size:1.13rem; white-space:nowrap; letter-spacing:0.03em;">Your Upcoming trip</div>
+            <div class="trip-info-divider" style="flex:1 1 0; height:2.5px; background:linear-gradient(90deg,rgba(129,140,248,0) 0%,#818cf8 30%,#6366f1 70%,rgba(129,140,248,0) 100%); border-radius:2px; min-width:40px; max-width:100px;"></div>
+          </div>
+          <div class="compact-trip-info-row center-tiles" style="display:flex; flex-direction:row; justify-content:center; align-items:center; gap:1.2rem; margin-bottom:0;">
+            <div class="trip-info-card small">
+              <div class="trip-info-icon" aria-label="Duration">📅</div>
+              <div class="trip-info-label">Duration</div>
+              <div class="trip-info-value">{{ data.days }} Day{{ 's' if data.days|int > 1 else '' }}</div>
+            </div>
+            <div class="trip-info-card small">
+              <div class="trip-info-icon" aria-label="Location">📍</div>
+              <div class="trip-info-label">Location</div>
+              <div class="trip-info-value">{{ data.city }}{% if data.region %}, {{ data.region }}{% endif %}</div>
+            </div>
+          </div>
+        </div>
+        {% if data.activities %}
+        <div class="trip-col" style="flex:1 1 0; min-width:0; max-width:none; text-align:center;">
+          <div class="trip-info-divider-row" style="margin-bottom:0.7rem; display:flex; align-items:center; justify-content:center; gap:1.2rem;">
+            <div class="trip-info-divider" style="flex:1 1 0; height:2.5px; background:linear-gradient(90deg,rgba(129,140,248,0) 0%,#818cf8 30%,#6366f1 70%,rgba(129,140,248,0) 100%); border-radius:2px; min-width:40px; max-width:100px;"></div>
+            <div class="trip-activities-label" style="margin: 0 1.2rem 0 1.2rem; text-align:center; font-weight:700; font-size:1.13rem; white-space:nowrap; letter-spacing:0.03em;">Planned Activities</div>
+            <div class="trip-info-divider" style="flex:1 1 0; height:2.5px; background:linear-gradient(90deg,rgba(129,140,248,0) 0%,#818cf8 30%,#6366f1 70%,rgba(129,140,248,0) 100%); border-radius:2px; min-width:40px; max-width:100px;"></div>
+          </div>
+          <div class="trip-activities-chips" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:1.1rem 1.2rem; margin-bottom:0.5rem; min-height:48px;">
+            {% for activity in data.activities %}
+              <span class="activity-tag" style="margin:0 auto;">{{ activity }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
     </div>
   </div>
   {% endif %}
 
-  {% if data.weather_summary %}
-    <div class="card mb-2xl">
-      <h2 class="mb-md">Weather Forecast 🌦️</h2>
-      <pre class="text-left">{{ data.weather_summary }}</pre>
+{% if data.weather_summary %}
+  <div style="height:1.1rem;"></div>
+  <div class="container-card container-wide mt-md mb-lg improved-weather-section" style="max-width:900px;width:100%;">
+    <div class="weather-header">
+      <h2 class="heading-2" style="margin-bottom:0.5rem;">Weather Forecast</h2>
+      <div class="weather-subtitle">Plan your perfect outfits</div>
     </div>
+    <div class="weather-cards-row-horizontal" style="justify-content:center;">
+      {% for line in data.weather_summary.split('\n') %}
+        {% set parts = line.split(':') %}
+        {% if parts|length > 1 %}
+          {% set date_str = parts[0].strip() %}
+          {% set rest = parts[1] %}
+          {# Parse date and day #}
+          {% set date_obj = date_str|default('') %}
+          {% set date_fmt = date_obj[5:10]|replace('-', '/') if date_obj|length >= 10 else date_obj %}
+          {# Parse high, low, condition, icon, precip #}
+          {% set high = rest.split('high ')[1].split('°')[0] ~ '°' if 'high' in rest else '' %}
+          {% set low = rest.split('Low ')[1].split('°')[0] ~ '°' if 'Low' in rest else '' %}
+          {% set cond = rest.split(',')[-1].strip().lower() %}
+          {% set icon = weather_icons[cond.split(' ')[0]] if cond.split(' ')[0] in weather_icons else '🌡️' %}
+          {% set precip = rest.split('precip chance ')[1].split('%')[0] ~ '%' if 'precip chance' in rest else '' %}
+          <div class="weather-card">
+            <div class="weather-card-top-row">
+              <div class="card-date">{{ date_fmt }}</div>
+              <div class="temperature-row">
+                <div style="display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start;">
+                  <div class="temp-high" style="align-self:flex-start;">{{ high }}</div>
+                  <div class="temp-low">{{ low }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="condition-row">
+              <div class="condition-text">{{ cond|replace(' (precip chance ' ~ precip ~ ')', '')|capitalize }}</div>
+              <div class="rain-info">
+                <div class="rain-icon">💧</div>
+                <div class="rain-percentage">{{ precip }}</div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  <style>
+  .improved-weather-section {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(59,130,246,0.07), 0 1.5px 6px rgba(249,115,22,0.07);
+      padding: 1.7rem 2rem 1.5rem 2rem;
+      margin: 1.1rem auto 2.5rem auto;
+    max-width: 900px;
+    width: 100%;
+    overflow: visible;
+  }
+  .improved-weather-section .weather-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .improved-weather-section .weather-title {
+    font-size: 2.1rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.3rem;
+  }
+  .improved-weather-section .weather-subtitle {
+    color: #666;
+    font-size: 1.08rem;
+  }
+  .improved-weather-section .weather-cards-row-horizontal {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: #8b8cf8 #e8eaff;
+    overflow: visible;
+  }
+  .improved-weather-section .weather-cards-row-horizontal::-webkit-scrollbar {
+    height: 8px;
+  }
+  .improved-weather-section .weather-cards-row-horizontal::-webkit-scrollbar-thumb {
+    background: #8b8cf8;
+    border-radius: 8px;
+  }
+  .improved-weather-section .weather-cards-row-horizontal::-webkit-scrollbar-track {
+    background: #e8eaff;
+    border-radius: 8px;
+  }
+  .improved-weather-section .weather-card {
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8eaff 100%);
+    border-radius: 12px;
+    padding: 1.1rem 1.2rem 1.2rem 1.2rem;
+    border: 2px solid #e0e4ff;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.7rem;
+  }
+  .improved-weather-section .weather-card-top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.2rem;
+    margin-bottom: 0.2rem;
+  }
+  .improved-weather-section .temperature-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 1.1rem;
+    margin-bottom: 0;
+    min-height: 2.2rem;
+  }
+  .improved-weather-section .temp-high {
+    align-self: flex-start;
+  }
+  .improved-weather-section .temp-high {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff6b35;
+    margin-bottom: 0.1rem;
+    line-height: 1;
+  }
+  .improved-weather-section .temp-low {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: 500;
+    margin-top: 0.15rem;
+  }
+  .improved-weather-section .card-date {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0;
+    min-width: 60px;
+    flex-shrink: 0;
+    align-self: flex-start;
+  }
+  .improved-weather-section .temperature-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1.1rem;
+    margin-bottom: 0;
+  }
+  .improved-weather-section .weather-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(139, 140, 248, 0.2);
+    border-color: #8b8cf8;
+  }
+  .improved-weather-section .weather-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #8b8cf8, #667eea);
+  }
+  .improved-weather-section .card-date {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 2px;
+  }
+  .improved-weather-section .card-day {
+    font-size: 0.8rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+  .improved-weather-section .temperature-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .improved-weather-section .temp-high {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff6b35;
+  }
+  .improved-weather-section .temp-low {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: 500;
+  }
+  .improved-weather-section .weather-icon {
+    font-size: 2rem;
+  }
+  .improved-weather-section .condition-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0;
+  }
+  .improved-weather-section .condition-text {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+  }
+  .improved-weather-section .rain-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(74, 144, 226, 0.1);
+    padding: 6px 10px;
+    border-radius: 16px;
+    border: 1px solid rgba(74, 144, 226, 0.2);
+  }
+  .improved-weather-section .rain-icon {
+    color: #4a90e2;
+    font-size: 1rem;
+  }
+  .improved-weather-section .rain-percentage {
+    color: #4a90e2;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  </style>
   {% endif %}
 
   {# Removed AI-Powered Outfit Recommendations card and daily dropdowns #}
 
     {% if outfit_data %}
-      {% for day, info in outfit_data.items() %}
-        <div class="card mb-2xl" style="background:white; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); padding:2rem; margin-bottom:2rem;">
-          <div class="day-header">
-            <div class="day-destination">
-              <div class="day-details">
-                <div class="day-details-header">
-                  <h3 class="day-name">{{ day }}</h3>
-                  <button class="expand-btn" onclick="toggleDropdown(this)" title="Expand/Collapse Details">
-                    <span class="expand-icon">⌄</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="day-content" style="display: none;">
-            <div class="recommendations-preview">
-              <h4>Outfit Details</h4>
-              <div class="recommendations-content">
-                {{ info.content | markdown | safe }}
-              </div>
-              {% if info.shopping and info.shopping|length > 0 %}
-                <div class="shopping-section" style="margin-top:1rem;">
-                  <h4 class="shopping-title">Shopping Suggestions 🛍️</h4>
-                  <div class="closet-grid closet-cards" style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: stretch;">
-                    {% for product in info.shopping %}
-                    <div class="card text-center closet-card" style="min-width:320px;max-width:420px;flex-basis:340px;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;">
-                      <div class="category-tag" style="display:none;top:0.5rem;left:0.5rem;background:linear-gradient(135deg,#f97316 0%,#f59e0b 100%);">{{ day }}</div>
-                      {% if product.thumbnail %}
-                        <img src="{{ product.thumbnail }}" class="item-image closet-img" alt="{{ product.title }}">
-                      {% else %}
-                        <div class="item-image closet-img" style="display:flex;align-items:center;justify-content:center;color:#999;">No Image</div>
-                      {% endif %}
-                      <div class="item-content">
-                        <h5 class="item-title">{{ product.title }}</h5>
-                        {% if product.price %}<div class="item-price">{{ product.price }}</div>{% endif %}
-                        {% if product.source %}<div class="item-source">from {{ product.source }}</div>{% endif %}
-                        {% if product.link %}<a href="{{ product.link }}" target="_blank" rel="noopener noreferrer" class="shop-button" style="margin-top:0.5rem;">Shop Now</a>{% endif %}
-                        <button class="shop-button" style="margin-top:0.5rem;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);" onclick="alert('Add to Closet feature coming soon!')">Add to Closet</button>
-                      </div>
-                    </div>
-                    {% endfor %}
+      <div class="container-card container-wide mt-md mb-lg" style="max-width:900px;width:100%;">
+        <div class="mb-sm" style="text-align:center;">
+          <h2 class="heading-2" style="margin-bottom:0.5rem; text-align:center;">Daily Outfit Recommendations</h2>
+          <div class="weather-subtitle" style="margin-bottom:1.2rem;">See what to wear each day of your trip</div>
+        </div>
+        {% for day, info in outfit_data.items() %}
+          <div class="container-card mb-2xl day-card" style="background:#fff; border-radius:16px; box-shadow:0 2px 12px rgba(59,130,246,0.07), 0 1.5px 6px rgba(249,115,22,0.07); padding:1.5rem 1.5rem 1.2rem 1.5rem; max-width:850px; width:100%; margin:0.7rem auto 0 auto;">
+            <div class="day-header">
+              <div class="day-destination">
+                <div class="day-details">
+                  <div class="day-details-header" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                    <h3 class="day-name" style="margin: 0;">{{ day }}</h3>
+                    <button class="profile-dropdown-btn" type="button" onclick="toggleDayDropdown(this)" aria-label="Expand details">
+                      <span class="expand-icon">&#9660;</span>
+                    </button>
                   </div>
                 </div>
-              {% endif %}
+              </div>
+            </div>
+            <div class="day-content" style="display: none;">
+              <div class="recommendations-preview">
+                <div class="recommendations-content">
+                <div style="margin-top: 1.5rem;"></div>
+                  {{ info.content | markdown | safe }}
+                </div>
+                {% if info.shopping and info.shopping|length > 0 %}
+                  <div class="shopping-section" style="margin-top:1rem;">
+                    <h4 class="shopping-title">Shopping Suggestions 🛍️</h4>
+                    <div class="closet-grid closet-cards" style="display: flex; flex-wrap: wrap; gap: 2rem 2rem; justify-content: center; align-items: stretch; margin: 0 auto; max-width: 1200px;">
+                      {% for product in info.shopping %}
+                      <div class="card text-center closet-card" style="min-width:320px;max-width:400px;flex-basis:340px;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin-bottom:2rem;box-shadow:0 6px 24px rgba(0,0,0,0.10);">
+                        <div class="category-tag" style="display:none;top:0.5rem;left:0.5rem;background:linear-gradient(135deg,#f97316 0%,#f59e0b 100%);">{{ day }}</div>
+                        {% if product.thumbnail %}
+                          <img src="{{ product.thumbnail }}" class="item-image closet-img" alt="{{ product.title }}" style="width: 180px; height: 180px; object-fit: cover; margin: 0 auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                        {% else %}
+                          <div class="item-image closet-img" style="width: 180px; height: 180px; display:flex;align-items:center;justify-content:center;color:#999;background:#f8f9fa;margin:0 auto;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">No Image</div>
+                        {% endif %}
+                        <div class="item-content">
+                          <h5 class="item-title">{{ product.title }}</h5>
+                          {% if product.price %}<div class="item-price">{{ product.price }}</div>{% endif %}
+                          {% if product.source %}<div class="item-source">from {{ product.source }}</div>{% endif %}
+                          {% if product.link %}<a href="{{ product.link }}" target="_blank" rel="noopener noreferrer" class="activity-tag shopnow-orange" style="margin-top:0.5rem; border:none; cursor:pointer; display:inline-block; text-align:center; text-decoration:none;">Shop Now</a>{% endif %}
+                          <button class="activity-tag" style="margin-top:0.5rem; border:none; cursor:pointer;" onclick="alert('Add to Closet feature coming soon!')">Add to Closet</button>
+                        </div>
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
             </div>
           </div>
-        </div>
-
-      {% endfor %}
+        {% endfor %}
+      </div>
     {% endif %}
 
 
@@ -98,33 +356,178 @@
   padding: 1.5rem;
 }
 
-.trip-summary {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 1.2rem;
-  border-radius: 10px;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-}
 
-.trip-details p {
-  margin: 0.4rem 0;
-  color: #374151;
-  font-size: 0.95rem;
-}
 
-    .activity-tag {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 0.35rem 0.7rem;
-    border-radius: 16px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    display: inline-flex;
+
+
+  .trip-overview-modern {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.2rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    line-height: 1;
-    }
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(59,130,246,0.07), 0 1.5px 6px rgba(249,115,22,0.07);
+    padding: 2.5rem 2rem 2rem 2rem;
+    margin: 2.5rem auto 0 auto;
+    max-width: 900px;
+    width: 100%;
+  }
+  .compact-trip-overview .compact-trip-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    gap: 2.5rem;
+  }
+  .compact-trip-overview .compact-trip-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7rem;
+    min-width: 220px;
+    max-width: 320px;
+    flex: 1 1 220px;
+  }
+  .compact-trip-overview .compact-trip-info-row {
+    display: flex;
+    flex-direction: row;
+    gap: 1.2rem;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 0.2rem;
+}
+.compact-trip-overview .center-tiles {
+    justify-content: center;
+}
+.compact-trip-overview .trip-info-divider-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0.7rem;
+}
+.compact-trip-overview .trip-info-divider {
+    flex: 1 1 0;
+    height: 2px;
+    background: linear-gradient(90deg, #e5e8fa 0%, #a5b4fc 100%);
+    border-radius: 2px;
+    min-width: 20px;
+    max-width: 100px;
+}
+  }
+  .compact-trip-overview .compact-trip-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 180px;
+    max-width: 340px;
+    flex: 1 1 180px;
+    margin-top: 0.2rem;
+  }
+  .compact-trip-overview .trip-activities-label {
+    text-align: left;
+    margin-bottom: 0.7rem;
+  }
+  .compact-trip-overview .trip-activities-chips {
+    justify-content: flex-start;
+    gap: 0.7rem 1.1rem;
+    margin-bottom: 0;
+  }
+.trip-info-card {
+  background: #f8f9ff;
+  border: 2.5px solid #e5e8fa;
+  border-radius: 18px;
+  min-width: 140px;
+  max-width: 180px;
+  flex: 0 1 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.1rem 0.5rem 0.8rem 0.5rem;
+  box-shadow: 0 0.5px 8px rgba(59,130,246,0.04);
+}
+.trip-info-card.small {
+  min-width: 120px;
+  max-width: 160px;
+  flex: 0 1 120px;
+  padding: 0.7rem 0.3rem 0.7rem 0.3rem;
+}
+.trip-info-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+.trip-cards-row {
+.trip-info-label {
+  font-size: 0.85rem;
+  color: #7c7e8c;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.1rem;
+  text-transform: uppercase;
+}
+.trip-info-value {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #23272f;
+  margin-top: 0.1rem;
+  text-align: center;
+}
+  align-items: center;
+  padding: 2.2rem 1.2rem 1.6rem 1.2rem;
+  box-shadow: 0 0.5px 8px rgba(59,130,246,0.04);
+}
+.trip-info-icon {
+  font-size: 2.2rem;
+  margin-bottom: 0.7rem;
+}
+.trip-info-label {
+  font-size: 1.05rem;
+  color: #7c7e8c;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.2rem;
+  text-transform: uppercase;
+}
+.trip-info-value {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #23272f;
+  margin-top: 0.1rem;
+  text-align: center;
+}
+.trip-activities-label {
+  font-size: 1.13rem;
+  color: #888fa1;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 1.1rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+.trip-activities-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem 1.2rem;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+.activity-chip {
+  background: #a5b4fc;
+  color: #fff;
+  font-size: 1.13rem;
+  font-weight: 700;
+  border-radius: 2.2rem;
+  padding: 0.6rem 2.1rem;
+  box-shadow: 0 4px 18px rgba(99,102,241,0.10);
+  display: inline-block;
+  margin-bottom: 0.1rem;
+  letter-spacing: 0.01em;
+  transition: background 0.2s, color 0.2s;
+}
+.activity-chip:hover {
+  background: #6366f1;
+  color: #fff;
+}
+
 
 .card {
   background: rgba(255, 255, 255, 0.95);
@@ -219,32 +622,105 @@
   margin: 0;
 }
 
-.expand-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
 
-.expand-btn:hover {
-  background: #f1f5f9;
+/* Remove/override old expand-btn and expand-icon styles to allow profile-dropdown-btn to show correctly */
+.expand-btn, .expand-btn:hover {
+  all: unset;
 }
-
 .expand-icon {
-  font-size: 18px;
-  color: #6b7280;
-  transition: transform 0.3s ease;
-  display: inline-block;
+  color: #fff !important;
+  font-size: 1.3rem !important;
+  margin-left: 0;
+  transition: transform 0.3s;
 }
 
 .day-content {
   animation: slideDown 0.3s ease-out;
-  border-top: 1px solid #e5e7eb;
   padding-top: 0.5rem;
   margin-top: 0.5rem;
   position: relative;
+}
+
+.weather-subtitle {
+  color: #6366f1;
+  font-size: 1.08rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+
+
+/* Modern circular dropdown button for daily outfit cards */
+.profile-dropdown-btn {
+  background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  border-radius: 50% !important;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  max-width: 38px !important;
+  max-height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.10) !important;
+  font-size: 1.3rem !important;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s !important;
+  cursor: pointer !important;
+  outline: none !important;
+  position: relative !important;
+  z-index: 2 !important;
+  padding: 0 !important;
+}
+.profile-dropdown-btn:hover, .profile-dropdown-btn:focus {
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgba(249,115,22,0.13) !important;
+}
+.profile-dropdown-btn .expand-icon {
+  font-size: 1.3rem !important;
+  color: #fff !important;
+  margin-left: 0 !important;
+  transition: transform 0.3s !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.card.mb-2xl {
+  min-width: 320px;
+  max-width: 900px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-anchor: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+.card.mb-2xl .day-header,
+.card.mb-2xl .day-content {
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+.card.mb-2xl .day-header,
+.card.mb-2xl .day-content {
+  width: 100%;
+  box-sizing: border-box;
+}
+.card.mb-2xl .day-header {
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.card.mb-2xl .day-content {
+  margin-top: 0;
 }
 
 @keyframes slideDown {
@@ -402,12 +878,35 @@
 .text-left {
   text-align: left;
 }
+
+
+a.shopnow-orange.activity-tag {
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.10) !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  margin-top: 0.5rem !important;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s !important;
+}
+a.shopnow-orange.activity-tag:hover, a.shopnow-orange.activity-tag:focus {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.18) !important;
+  text-decoration: none !important;
+}
 </style>
 
+
+
 <script>
-function toggleDropdown(button) {
-  // Find the nearest card container for this day
-  const card = button.closest('.card.mb-2xl');
+function toggleDayDropdown(button) {
+  // Find the nearest day card container
+  const card = button.closest('.day-card');
   if (!card) return;
   const content = card.querySelector('.day-content');
   const icon = button.querySelector('.expand-icon');
