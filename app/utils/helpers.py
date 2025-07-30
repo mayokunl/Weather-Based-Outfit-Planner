@@ -1,43 +1,44 @@
 import re
 
-def parse_daily_outfits(gpt_response):
-    """Parse GPT response to extract daily outfit search queries."""
-    outfits = {}
-    
-    # Try multiple parsing patterns to be more robust
-    
-    # Pattern 1: ### Day 1: format
-    days = re.split(r'### Day (\d+):', gpt_response)
-    if len(days) > 2:  # Found matches
-        for i in range(1, len(days), 2):
-            day_num = days[i].strip()
-            content = days[i + 1]
-            day_label = f"Day {day_num}"
-            match = re.search(r'\*\*Search Query:\*\*\s*(.*)', content)
-            outfits[day_label] = match.group(1).strip() if match else f"summer outfit day {day_num}"
-        return outfits
-    
-    # Pattern 2: Day 1: format (without ###)
-    days = re.split(r'Day (\d+):', gpt_response)
-    if len(days) > 2:  # Found matches
-        for i in range(1, len(days), 2):
-            day_num = days[i].strip()
-            content = days[i + 1]
-            day_label = f"Day {day_num}"
-            
-            # Try to find search queries or product searches
-            search_match = re.search(r'(?:Search Query|Product Searches?):\*?\*?\s*(.*?)(?:\n|$)', content, re.IGNORECASE)
-            if search_match:
-                outfits[day_label] = search_match.group(1).strip()
-            else:
-                # Fall back to extracting clothing items from content
-                clothing_items = extract_clothing_items(content)
-                outfits[day_label] = ", ".join(clothing_items) if clothing_items else f"summer outfit day {day_num}"
-        return outfits
-    
-    # Pattern 3: No clear day structure, create default
-    outfits["Day 1"] = "summer casual outfit"
-    return outfits
+def parse_daily_outfits(gpt_response, gender=None):
+    """Parse GPT response to extract daily outfit details and product searches."""
+    days = []
+    if not gpt_response:
+        return days
+
+    # Pattern: **Day X (date): ...**
+    day_pattern = re.compile(r'\*\*Day (\d+) ?(\([^)]+\))?:? ?([^\n\*]*)\*\*', re.IGNORECASE)
+    product_pattern = re.compile(r'\*\*Product Searches:\*\*(.*?)(?=\n\*\*|\Z)', re.DOTALL)
+
+    # Split by day
+    day_matches = list(day_pattern.finditer(gpt_response))
+    for idx, match in enumerate(day_matches):
+        day_num = match.group(1)
+        date = match.group(2) or ''
+        title_extra = match.group(3).strip() if match.group(3) else ''
+        day_title = f"Day {day_num}{' ' + date if date else ''}{': ' + title_extra if title_extra else ''}".strip()
+        start = match.end()
+        end = day_matches[idx + 1].start() if idx + 1 < len(day_matches) else len(gpt_response)
+        day_content = gpt_response[start:end].strip()
+
+        # Extract product searches
+        product_searches = []
+        prod_match = product_pattern.search(day_content)
+        if prod_match:
+            for line in prod_match.group(1).split('\n'):
+                line = line.strip('-* ').strip()
+                if line:
+                    # Prefix gender if provided and not already present
+                    if gender and not line.lower().startswith(gender.lower()):
+                        line = f"{gender} {line}"
+                    product_searches.append(line)
+
+        days.append({
+            'title': day_title,
+            'content': day_content,
+            'product_searches': product_searches
+        })
+    return days
 
 def extract_clothing_items(content):
     """Extract clothing items from unstructured content."""

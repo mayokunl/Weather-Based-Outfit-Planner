@@ -82,3 +82,8 @@ class TripPlanningSession:
         ]
         for key in keys_to_clear:
             session.pop(key, None)
+
+    @staticmethod
+    def clear_recommendations():
+        """Clear only the recommendations from session."""
+        session.pop('recommendations', None)

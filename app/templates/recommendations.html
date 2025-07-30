@@ -1,9 +1,5 @@
 {% extends "layout.html" %}
 
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='recommendations.css') }}">
-{% endblock %}
-
 {% block content %}
 <div class="recommendations-container">
   <h1 class="text-center mb-2xl" style="color: #ebebeb;">Your Personalized Outfit Recommendations ✨</h1>
@@ -27,20 +23,63 @@
   {% endif %}
 
   {% if data.weather_summary %}
-  <div class="card mb-2xl">
-    <h2 class="mb-md">Weather Forecast 🌦️</h2>
-    <pre class="text-left">{{ data.weather_summary }}</pre>
-  </div>
+    <div class="card mb-2xl">
+      <h2 class="mb-md">Weather Forecast 🌦️</h2>
+      <pre class="text-left">{{ data.weather_summary }}</pre>
+    </div>
   {% endif %}
 
   {% if response %}
     <div class="card mb-2xl">
       <h2 class="mb-md">AI-Powered Outfit Recommendations 💡</h2>
       <div class="ai-recommendations">
-        <pre>{{ response }}</pre>
+        {% if days %}
+          <div class="daily-recommendations">
+            {% for day in days %}
+              <div class="day-dropdown mb-lg">
+                <div class="day-header">
+                  <div class="day-destination">
+                    <div class="day-details">
+                      <div class="day-details-header">
+                        <h3 class="day-name">{{ day.title }}</h3>
+                        <button class="expand-btn" onclick="toggleDropdown(this)" title="Expand/Collapse Details">
+                          <span class="expand-icon">⌄</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="day-content" style="display: none;">
+                  <div class="recommendations-preview">
+                    <h4>Outfit Details</h4>
+                    <div class="recommendations-content">
+                      {{ day.content | replace('\n', '<br>') | safe }}
+                    </div>
+                    {% if day.product_searches %}
+                      <div class="product-searches-section">
+                        <h4>Product Searches</h4>
+                        <ul class="product-search-list">
+                          {% for search in day.product_searches %}
+                            <li>{{ search }}</li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <!-- Fallback for when days aren't parsed properly -->
+          <div class="recommendations-content">
+            {{ response | replace('\n', '<br>') | safe }}
+          </div>
+        {% endif %}
       </div>
     </div>
 
+    {% if outfit_data %}
       {% for day, info in outfit_data.items() %}
         <div class="card mb-2xl">
           <h3 class="mb-md">{{ day }}</h3>
@@ -62,7 +101,7 @@
           {% endif %}
         </div>
       {% endfor %}
-    </div>
+    {% endif %}
   {% endif %}
 
   <div class="text-center mt-2xl">
@@ -119,6 +158,206 @@
   line-height: 1.6;
 }
 
+/* Daily Recommendation Dropdown Styles */
+.daily-recommendations {
+  margin-top: 20px;
+}
+
+.day-dropdown {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.day-dropdown:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.day-header {
+  background: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  border: none;
+  text-align: left;
+}
+
+.day-header:hover {
+  background: #f8f9fa;
+}
+
+.day-destination {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.day-details {
+  flex: 1;
+}
+
+.day-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.day-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.expand-btn:hover {
+  background: #f1f5f9;
+}
+
+.expand-icon {
+  font-size: 18px;
+  color: #6b7280;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.day-content {
+  animation: slideDown 0.3s ease-out;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+  position: relative;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recommendations-preview h4 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.outfit-details {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.outfit-details h4 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.outfit-details ul {
+  padding-left: 20px;
+  margin-bottom: 15px;
+}
+
+.outfit-details li {
+  margin-bottom: 5px;
+}
+
+/* Nested Product Searches Dropdown */
+.product-searches-dropdown {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 15px;
+  margin-top: 15px;
+}
+
+.nested-dropdown-toggle {
+  background: #f8fafc;
+  padding: 12px 15px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.nested-dropdown-toggle:hover {
+  background: #f1f5f9;
+  border-color: #d1d5db;
+}
+
+.nested-dropdown-title {
+  font-weight: 600;
+}
+
+.nested-dropdown-arrow {
+  font-size: 12px;
+  color: #6b7280;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.nested-dropdown-content {
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.nested-dropdown-content.expanded {
+  max-height: 500px;
+  padding: 15px;
+  margin-top: 10px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.product-search-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.product-search-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #374151;
+}
+
+.product-search-list li:last-child {
+  border-bottom: none;
+}
+
 .btn {
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
@@ -163,4 +402,18 @@
 }
 </style>
 
+<script>
+function toggleDropdown(button) {
+  const content = button.closest('.day-dropdown').querySelector('.day-content');
+  const icon = button.querySelector('.expand-icon');
+  
+  if (content.style.display === 'none' || content.style.display === '') {
+    content.style.display = 'block';
+    icon.style.transform = 'rotate(180deg)';
+  } else {
+    content.style.display = 'none';
+    icon.style.transform = 'rotate(0deg)';
+  }
+}
+</script>
 {% endblock %}

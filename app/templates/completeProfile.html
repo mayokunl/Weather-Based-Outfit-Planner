@@ -1,16 +1,16 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} 
 {% block content %}
 <div class="container-card container-form mt-3xl mb-3xl">
-  <h1 class="form-title">Tell Us About Yourself</h1>
+    <h1 class="form-title">Tell Us About Yourself</h1>
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endfor %}
-    {% endif %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+  {% endif %}
   {% endwith %}
   <form method="post">
     <div class="form-section">

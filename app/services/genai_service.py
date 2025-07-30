@@ -1,6 +1,6 @@
 
 import os
-import google.generativeai as genai
+from openai import OpenAI
 from dotenv import load_dotenv
 import logging
 import re
@@ -11,9 +11,8 @@ load_dotenv()
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 
-# Initialize Gemini client with your API key
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+# Initialize OpenAI client with your API key
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def build_prompt_from_session(session):
     """
@@ -35,12 +34,19 @@ def build_prompt_from_session(session):
     
     Your task:
     For each day of the trip, provide a detailed outfit recommendation that includes:
-    - Complete outfit (top, bottom, shoes, accessories)
-    - Adjustments based on weather conditions
-    - Tailoring to the planned activities
-    - Notes on whether each item should be packed or purchased
     
-    IMPORTANT: At the end of each day's section, provide specific product search queries for each clothing item that will help find actual purchasable products. Format like this:
+    **Day [Number] ([Date]): [Specific Activity] in [Weather Summary]**
+    
+    **Weather Adjustments:** [Specific weather-based adjustments like sunscreen, layers, etc.]
+    
+    **Complete Outfit:**
+    - Top: [specific item with details]
+    - Bottom: [specific item with details]  
+    - Shoes: [specific item with details]
+    - Accessories: [specific items with details]
+    
+    **Activity Considerations:** [How the outfit works for the planned activities]
+    **Packing Notes:** [Whether items should be packed or purchased]
     
     **Product Searches:**
     - Top: [specific brand/style/color top query]
@@ -54,15 +60,30 @@ def build_prompt_from_session(session):
     - Colors that work for the weather/activities
     - Material types (e.g. "cotton", "merino wool", "waterproof")
     
-    Example:
+    IMPORTANT: The outfit recommendations should be specifically tailored to the actual activities and city listed above. DO NOT use the example values below. Use only the city, activity, and weather from the trip details above.
+    
+    Example format (do NOT copy the values, only the structure!):
+    **Day 1 ([Date]): [Activity] in [City] [Weather Summary]**
+    
+    **Weather Adjustments:** [Weather-based adjustments]
+    
+    **Complete Outfit:**
+    - Top: [item]
+    - Bottom: [item]
+    - Shoes: [item]
+    - Accessories: [items]
+    
+    **Activity Considerations:** [How the outfit works for the planned activities]
+    **Packing Notes:** [Whether items should be packed or purchased]
+    
     **Product Searches:**
-    - Top: women's moisture-wicking tank top athletic wear
-    - Bottom: women's high-waisted hiking shorts quick-dry
-    - Shoes: women's lightweight hiking sandals Teva Chaco
-    - Accessories: wide brim sun hat UPF protection, polarized sunglasses
+    - Top: [query]
+    - Bottom: [query]
+    - Shoes: [query]
+    - Accessories: [query]
     
     Use a helpful and stylish tone.
-    Format the response with clear Day-by-Day headings.
+    Format each day with the exact format shown above, but adapt the content to match the actual activities and city from the trip details.
     """
     return prompt.strip()
 
@@ -114,14 +135,22 @@ def parse_daily_outfits_with_products(gpt_response):
 
 def get_recommendations(prompt):
     """
-    Sends the prompt to the Gemini API and returns the generated outfit recommendations.
+    Sends the prompt to the OpenAI API and returns the generated outfit recommendations.
     """
     try:
-        logging.info("Sending enhanced prompt to Gemini...")
-        response = model.generate_content(prompt)
-        return response.text
+        logging.info("Sending enhanced prompt to OpenAI...")
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful travel stylist that provides detailed outfit recommendations."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=2000,
+            temperature=0.3
+        )
+        return response.choices[0].message.content
     except Exception as e:
-        logging.error(f"Gemini API error: {e}")
+        logging.error(f"OpenAI API error: {e}")
         return f"Error getting recommendations: {str(e)}"
 
 # Enhanced SERP API integration

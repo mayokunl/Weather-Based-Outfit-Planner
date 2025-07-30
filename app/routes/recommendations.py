@@ -23,17 +23,24 @@ def recommendations():
         # Get user profile data
         user_profile = TripPlanningSession.get_user_profile()
         
-        # Get trip data from session
-        trip_data = TripPlanningSession.get_trip_data()
-        print(f"Trip data from session service: {trip_data}")
+        # Get trip data directly from session
+        trip_data = {
+            'city': session.get('city'),
+            'region': session.get('region'),
+            'start_date': session.get('start_date'),
+            'end_date': session.get('end_date'),
+            'days': session.get('days'),
+            'activities': session.get('activities'),
+            'weather_summary': session.get('weather_summary'),
+        }
         
-        if not trip_data:
+        if not trip_data['city'] or not trip_data['start_date'] or not trip_data['end_date'] or not trip_data['days'] or not trip_data['activities']:
             flash('No trip data found. Please start a new trip.', 'error')
             return redirect(url_for('main.destination'))
         
         # Check if all required data is present
         required_fields = ['city', 'start_date', 'end_date', 'days', 'activities']
-        missing_fields = [field for field in required_fields if field not in trip_data]
+        missing_fields = [field for field in required_fields if not trip_data.get(field)]
         
         if missing_fields:
             flash(f'Missing information: {", ".join(missing_fields)}. Please complete your trip planning.', 'error')
@@ -54,14 +61,24 @@ def recommendations():
             'age': user_profile.get('age', 'N/A')
         }
         
-        print(f"Template data being passed: {template_data}")
-        
-        # Get the AI response from session, but clean it completely
-        response = "Basic outfit recommendations for your trip - dress appropriately for the weather and activities."
-        
-        print(f"Response being passed: {response[:100] if response else 'No response'}...")
+        # Build prompt for OpenAI using trip data only
+        prompt = build_prompt_from_session(trip_data)
+        # print(f"Prompt sent to OpenAI: {prompt}")
 
-        return render_template('recommendations.html', data=template_data, response=response)
+        # Get recommendations from OpenAI
+        response = get_recommendations(prompt)
+        print(f"Raw OpenAI response: {response[:200] if response else 'No response'}...")
+
+        # Parse daily outfits from OpenAI response, passing gender
+        days = parse_daily_outfits(response, template_data['gender'])
+        print(f"Parsed days: {days}")
+
+        return render_template(
+            'recommendations.html',
+            data=template_data,
+            response=response,
+            days=days
+        )
     
     except Exception as e:
         logger.error(f"Error generating recommendations: {e}")

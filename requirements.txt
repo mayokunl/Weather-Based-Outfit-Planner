@@ -11,8 +11,8 @@ SQLAlchemy==2.0.41
 Markdown==3.8.2
 gunicorn==21.2.0
 email-validator==2.1.0
-Werkzeug==3.1.3
+Werkzeug==1.1.3
 marshmallow==4.0.0
 flask-marshmallow==1.3.0
 marshmallow-sqlalchemy==1.4.2
-google-generativeai
+openai
