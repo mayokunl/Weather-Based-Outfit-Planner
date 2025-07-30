@@ -315,22 +315,25 @@
                     <h4 class="shopping-title">Shopping Suggestions 🛍️</h4>
                     <div class="closet-grid closet-cards" style="display: flex; flex-wrap: wrap; gap: 2rem 2rem; justify-content: center; align-items: stretch; margin: 0 auto; max-width: 1200px;">
                       {% for product in info.shopping %}
-                      <div class="card text-center closet-card" style="min-width:320px;max-width:400px;flex-basis:340px;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin-bottom:2rem;box-shadow:0 6px 24px rgba(0,0,0,0.10);">
-                        <div class="category-tag" style="display:none;top:0.5rem;left:0.5rem;background:linear-gradient(135deg,#f97316 0%,#f59e0b 100%);">{{ day }}</div>
-                        {% if product.thumbnail %}
-                          <img src="{{ product.thumbnail }}" class="item-image closet-img" alt="{{ product.title }}" style="width: 180px; height: 180px; object-fit: cover; margin: 0 auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-                        {% else %}
-                          <div class="item-image closet-img" style="width: 180px; height: 180px; display:flex;align-items:center;justify-content:center;color:#999;background:#f8f9fa;margin:0 auto;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">No Image</div>
-                        {% endif %}
-                        <div class="item-content">
-                          <h5 class="item-title">{{ product.title }}</h5>
-                          {% if product.price %}<div class="item-price">{{ product.price }}</div>{% endif %}
-                          {% if product.source %}<div class="item-source">from {{ product.source }}</div>{% endif %}
-                          {% if product.link %}<a href="{{ product.link }}" target="_blank" rel="noopener noreferrer" class="activity-tag shopnow-orange" style="margin-top:0.5rem; border:none; cursor:pointer; display:inline-block; text-align:center; text-decoration:none;">Shop Now</a>{% endif %}
-                          <button class="activity-tag" style="margin-top:0.5rem; border:none; cursor:pointer;" onclick="alert('Add to Closet feature coming soon!')">Add to Closet</button>
+                        <div class="card text-center closet-card shopping-product-{{ loop.index0 }}{% if loop.index0 > 0 %} hidden-product{% endif %}" style="min-width:320px;max-width:400px;flex-basis:340px;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin-bottom:2rem;box-shadow:0 6px 24px rgba(0,0,0,0.10);">
+                          <div class="category-tag" style="display:none;top:0.5rem;left:0.5rem;background:linear-gradient(135deg,#f97316 0%,#f59e0b 100%);">{{ day }}</div>
+                          {% if product.thumbnail %}
+                            <img src="{{ product.thumbnail }}" class="item-image closet-img" alt="{{ product.title }}" style="width: 180px; height: 180px; object-fit: cover; margin: 0 auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                          {% else %}
+                            <div class="item-image closet-img" style="width: 180px; height: 180px; display:flex;align-items:center;justify-content:center;color:#999;background:#f8f9fa;margin:0 auto;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">No Image</div>
+                          {% endif %}
+                          <div class="item-content">
+                            <h5 class="item-title">{{ product.title }}</h5>
+                            {% if product.price %}<div class="item-price">{{ product.price }}</div>{% endif %}
+                            {% if product.source %}<div class="item-source">from {{ product.source }}</div>{% endif %}
+                            {% if product.link %}<a href="{{ product.link }}" target="_blank" rel="noopener noreferrer" class="activity-tag shopnow-orange" style="margin-top:0.5rem; border:none; cursor:pointer; display:inline-block; text-align:center; text-decoration:none;">Shop Now</a>{% endif %}
+                            <button class="activity-tag" style="margin-top:0.5rem; border:none; cursor:pointer;" onclick="alert('Add to Closet feature coming soon!')">Add to Closet</button>
+                          </div>
                         </div>
-                      </div>
                       {% endfor %}
+                      {% if info.shopping|length > 1 %}
+                        <button class="activity-tag shopnow-orange show-more-btn" style="margin-top:1rem;" onclick="showMoreProducts(this)">Show More</button>
+                      {% endif %}
                     </div>
                   </div>
                 {% endif %}
@@ -913,5 +916,20 @@ function toggleDayDropdown(button) {
     icon.style.transform = 'rotate(0deg)';
   }
 }
+
+function showMoreProducts(btn) {
+  // Only show hidden products in this shopping section
+  const grid = btn.closest('.closet-grid');
+  if (!grid) return;
+  const hidden = grid.querySelectorAll('.closet-card.hidden-product');
+  hidden.forEach(card => {
+    card.classList.remove('hidden-product');
+  });
+  btn.style.display = 'none';
+}
 </script>
+</style>
+.hidden-product {
+  display: none !important;
+}
 {% endblock %}
