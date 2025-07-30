@@ -355,7 +355,7 @@
 
 {% block content %}
 <div class="recommendations-container">
-  <a href="{{ url_for('main.profile') }}" class="back-button" style="margin-bottom:1.5rem;display:inline-block;">← Back to Profile</a>
+
 
   <div class="container-card container-wide mt-md mb-lg" style="max-width:900px;width:100%;">
     <div class="mb-sm" style="text-align:center;">
@@ -402,7 +402,7 @@
       </div>
     </div>
   </div>
-
+                              <span class="activity-tag shopnow-orange" style="margin:0 auto;">{{ activity }}</span>
   {% if overall_outfit_image %}
   <div class="container-card container-wide mt-md mb-lg improved-weather-section" style="max-width:900px;width:100%;">
     <div class="weather-header">
@@ -524,5 +524,8 @@
     {% endfor %}
   </div>
   {% endif %}
-</div>
+
+  <div style="text-align:center; margin-top:2.5rem; margin-bottom: 2.5rem;">
+    <a href="{{ url_for('main.profile') }}" class="activity-tag shopnow-orange" style="font-size:1.1rem; padding:0.9rem 2.2rem; font-weight:700; border-radius:22px; text-decoration:none; display:inline-block;">← Back to Profile</a>
+  </div>
 {% endblock %}
