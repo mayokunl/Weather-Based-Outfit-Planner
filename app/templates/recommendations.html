@@ -56,7 +56,7 @@
   <div style="height:1.1rem;"></div>
   <div class="container-card container-wide mt-md mb-lg improved-weather-section" style="max-width:900px;width:100%;">
     <div class="weather-header">
-      <h2 class="heading-2" style="margin-bottom:0.5rem;">Weather Forecast</h2>
+      <h2 class="heading-2" style="margin-bottom:0.5rem;">Weather Forecast 🛰</h2>
       <div class="weather-subtitle">Plan your perfect outfits</div>
     </div>
     <div class="weather-cards-row-horizontal" style="justify-content:center;">
@@ -287,7 +287,7 @@
     {% if outfit_data %}
       <div class="container-card container-wide mt-md mb-lg" style="max-width:900px;width:100%;">
         <div class="mb-sm" style="text-align:center;">
-          <h2 class="heading-2" style="margin-bottom:0.5rem; text-align:center;">Daily Outfit Recommendations</h2>
+          <h2 class="heading-2" style="margin-bottom:0.5rem; text-align:center;">Daily Outfit Recommendations 👕</h2>
           <div class="weather-subtitle" style="margin-bottom:1.2rem;">See what to wear each day of your trip</div>
         </div>
         {% for day, info in outfit_data.items() %}
@@ -341,12 +341,6 @@
       </div>
     {% endif %}
 
-
-  <div class="text-center mt-2xl">
-    <a class="btn btn-secondary btn-small" href="{{ url_for('main.duration') }}">← Back</a>
-    <a class="btn btn-success btn-small" href="{{ url_for('main.profile') }}">View Trips</a>
-    <a class="btn btn-secondary btn-small" href="{{ url_for('closet.view_closet') }}">View Closet</a>
-  </div>
 </div>
 
 <style>

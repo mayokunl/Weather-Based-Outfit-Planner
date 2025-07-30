@@ -1,22 +1,30 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container-card container-wide mt-xl mb-3xl">
-  <h1 class="heading-1">Plan Your Trip ✈️</h1>
+  <h1 class="heading-1">Plan a New Trip</h1>
+
+  <!-- Destination Section Title -->
+  <div class="mt-2xl mb-sm" style="text-align:center;">
+    <h2 class="heading-2" style="margin-bottom:0.5rem; text-align:center;">Destination 🗺️</h2>
+    <p class="section-desc mb-lg" style="font-size:1rem;color:#6b7280;margin-bottom:0.5rem; text-align:center;">
+      Enter the city and state for your trip destination.
+    </p>
+  </div>
 
   <div class="container-section">
     <form method="post" class="p-lg">
       <div class="form-group">
         <label for="city" class="form-label">City</label>
-        <input id="city" name="city" class="form-control" placeholder="e.g., Miami" required>
+        <input id="city" name="city" class="form-control" placeholder="ex: Miami" required>
       </div>
 
       <div class="form-group">
         <label for="region" class="form-label">State</label>
-        <input id="region" name="region" class="form-control" placeholder="e.g., Florida" required>
+        <input id="region" name="region" class="form-control" placeholder="ex: FL" required>
       </div>
 
       <div class="text-center mt-xl">
-        <button type="submit" class="btn btn-primary btn-large">Next →</button>
+        <button type="submit" class="btn btn-primary btn-large" style="width:65%;margin:0 auto;display:block;padding:0.6rem 0.5rem;border-radius:0.75rem;">Trip Details→</button>
       </div>
     </form>
   </div>

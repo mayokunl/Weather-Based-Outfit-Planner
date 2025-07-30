@@ -1,7 +1,15 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container-card container-wide mt-xl mb-3xl">
-  <h1 class="heading-1">Trip Details 📝</h1>
+  <h1 class="heading-1">Trip Details</h1>
+
+  <!-- Duration Section Title -->
+  <div class="mt-2xl mb-sm" style="text-align:center;">
+    <h2 class="heading-2" style="margin-bottom:0.5rem; text-align:center;">Duration ⏳</h2>
+    <p class="section-desc mb-lg" style="font-size:1rem;color:#6b7280;margin-bottom:0.5rem; text-align:center;">
+      Specify the start and end dates for your trip.
+    </p>
+  </div>
 
   <div class="container-section">
     <form method="post" class="p-lg">
@@ -17,34 +25,36 @@
         <input name="end_date" type="date" class="form-control" required>
       </div>
 
+
       <!-- Activities Section -->
-      <div class="mt-xl">
-        <h2 class="heading-2">Activities & Interests</h2>
-        <p class="text-muted mb-md">
+      <div class="mt-2xl mb-xl" style="text-align:center;">
+        <h2 class="heading-2" style="margin-bottom:0.5rem; text-align:center;">Activities & Interests 🏷️</h2>
+        <p class="section-desc mb-lg" style="font-size:1rem;color:#6b7280;margin-bottom:1.5rem; text-align:center;">
           Add activities you're planning to do during your trip to get personalized outfit recommendations.
         </p>
 
-        <div class="form-group d-flex align-items-end">
-          <div class="flex-grow-1 me-2">
-            <label for="activity-input" class="form-label">Enter an activity</label>
-            <input type="text" id="activity-input" class="form-control" placeholder="e.g. Hiking, Swimming, Sightseeing">
+        <div class="form-group mb-md" style="text-align:left;">
+          <label for="activity-input" class="form-label">Enter an activity</label>
+          <div style="display: flex; align-items: stretch;">
+            <input type="text" id="activity-input" class="form-control" placeholder="e.g. Hiking, Swimming..." style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
+            <button type="button" id="add-btn" class="btn btn-secondary btn-small" style="border-top-left-radius: 0; border-bottom-left-radius: 0; min-width: 80px; font-size:1.08rem; font-weight:600;">Add</button>
           </div>
-          <button type="button" id="add-btn" class="btn btn-small">Add</button>
         </div>
 
+        <div class="mb-sm" style="margin-top:1.5rem; text-align:left;">
+          <span class="section-desc" style="font-size:1.02rem;color:#5b5f73;font-weight:600;">Selected activities:</span>
+        </div>
         <!-- Activities display -->
-        <div id="activities-display" class="mt-md">
-          <div id="activity-list" class="activities-tags-container mt-sm mb-sm">
-            <p id="no-activities" class="text-muted text-center">
-              No activities added yet
-            </p>
+        <div id="activities-display" class="mt-sm mb-lg" style="background:#f8fafc;padding:0.75rem 1rem;border-radius:10px;min-height:48px;">
+          <div id="activity-list" class="activities-tags-container mt-xs mb-xs" style="justify-content:flex-start;">
+            <p id="no-activities" class="text-muted text-center" style="margin:0;">No activities added yet</p>
           </div>
           <div id="hidden-inputs"></div>
         </div>
       </div>
 
       <div class="text-center mt-xl">
-        <button type="submit" class="btn btn-primary btn-large">Continue to Recommendations →</button>
+        <button type="submit" class="btn btn-primary btn-large" style="width:65%;margin:0 auto;display:block;padding:0.6rem 0.5rem;border-radius:0.75rem;">Recommendations →</button>
       </div>
 
     </form>
@@ -52,68 +62,68 @@
 </div>
 
 <style>
+.section-desc {
+  font-size: 1rem;
+  color: #6b7280;
+}
 .activities-tags-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  min-height: 40px;
-  padding: 0.5rem;
-  border-radius: 8px;
-  background: #f8fafc;
+  gap: 0.3rem;
+  min-height: 32px;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
-
 .activities-tags-container.has-activities {
   justify-content: flex-start;
 }
-
 .activities-tags-container #no-activities {
   margin: 0;
   color: #6b7280;
   font-style: italic;
 }
-
 .activity-tag {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+  color: #fff;
+  padding: 0.28rem 0.85rem;
+  border-radius: 18px;
+  font-size: 1rem;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  gap: 0.22rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
   position: relative;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  margin-top: 0.18rem;
+  margin-bottom: 0.18rem;
 }
-
 .activity-tag:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
 }
-
 .activity-remove-btn {
-  background: rgba(255, 255, 255, 0.2);
+  background: transparent;
   border: none;
   border-radius: 50%;
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-  margin-left: 0.25rem;
+  color: #e0e7ff;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 0.18rem;
   transition: all 0.2s ease;
+  opacity: 0.7;
 }
-
 .activity-remove-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
+  background: #e0e7ff;
+  color: #374151;
+  opacity: 1;
+  transform: scale(1.08);
 }
 </style>
 
