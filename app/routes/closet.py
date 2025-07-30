@@ -136,16 +136,11 @@ def view_closet():
     # Define standard categories (same as dropdown options)
     standard_categories = ['top', 'bottom', 'dress', 'shoe', 'accessory', 'jewelry', 'other']
     
-    # Get categories that actually have items for filtering
-    existing_categories = set(item.item_type or 'other' for item in all_user_items)
-    
-    # Only show filter options for categories that have items and are in our standard list
-    available_categories = [cat for cat in standard_categories if cat in existing_categories]
-    
+    # Always show all standard categories as filter options
     return render_template('closet.html', 
                          items_by_category=items_by_category, 
                          total_items=len(items),
-                         all_categories=available_categories,
+                         all_categories=standard_categories,
                          current_filter=filter_category,
                          has_any_items=has_any_items,
                          total_user_items=len(all_user_items))

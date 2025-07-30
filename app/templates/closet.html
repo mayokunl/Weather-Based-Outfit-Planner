@@ -610,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function() {
               <span class="stat-label">
                 {% set count = items|length %}
                 {% if category == 'accessory' %}
-                  {{ count }} Accessor{{ 'ies' if count != 1 else 'y' }}
+                  {{ count }} Accessor{{ 'y' if count == 1 else 'ies' }}
                 {% elif category == 'shoe' %}
                   {{ count }} Shoe{{ 's' if count != 1 else '' }}
                 {% elif category == 'dress' %}
@@ -620,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 {% elif category == 'bottom' %}
                   {{ count }} Bottom{{ 's' if count != 1 else '' }}
                 {% elif category == 'jewelry' %}
-                  {{ count }} Jewelr{{ 'y' if count == 1 else 'y Items' }}
+                  {{ count }} Jewelry Item{{ '' if count == 1 else 's' }}
                 {% elif category == 'bag' %}
                   {{ count }} Bag{{ 's' if count != 1 else '' }}
                 {% elif category == 'other' %}
@@ -665,10 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
             No items found with the current filter.
           {% endif %}
         </p>
-        <div class="button-group">
-          <a class="btn btn-secondary" href="{{ url_for('closet.view_closet') }}">View All Items</a>
-          <a class="btn btn-primary" href="{{ url_for('auth.starter_closet') }}">Add More Items</a>
-        </div>
+        <a class="btn btn-secondary" href="{{ url_for('closet.view_closet') }}">View All Items</a>
       </div>
     {% endif %}
   {% else %}
@@ -680,6 +677,11 @@ document.addEventListener('DOMContentLoaded', function() {
       <a class="btn btn-secondary" href="{{ url_for('main.destination') }}">Plan a Trip</a>
     </div>
   {% endif %}
+
+<!-- Always show Add More Items button at the bottom -->
+<div class="add-items-bar text-center" style="margin: 2.5rem 0 1.5rem 0;">
+  <a class="btn btn-primary" href="{{ url_for('auth.starter_closet') }}">Add More Items</a>
+</div>
 
 </div>
 <style>

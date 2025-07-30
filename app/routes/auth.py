@@ -54,6 +54,10 @@ def complete_profile():
         # Store user profile data in session for trip planning
         session['age'] = current_user.age
         session['gender'] = current_user.gender
+        session['user_profile'] = {
+            'gender': current_user.gender or '',
+            'age': current_user.age or 'N/A'
+        }
         session['from_onboarding'] = True  # Flag to indicate this is part of onboarding
         return redirect(url_for('auth.starter_closet'))
     return render_template('completeProfile.html')

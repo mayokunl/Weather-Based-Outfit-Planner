@@ -48,26 +48,36 @@ def duration():
             flash('Both start and end dates are required', 'error')
             return render_template('duration.html')
         
-        # Store in session
-        session['start_date'] = start_date
-        session['end_date'] = end_date
-        session['activities'] = activities
-        
-        # Calculate and store days
+        # Calculate days
         from datetime import datetime
         try:
             start = datetime.strptime(start_date, '%Y-%m-%d')
             end = datetime.strptime(end_date, '%Y-%m-%d')
             days = (end - start).days + 1
-            session['days'] = days
         except Exception:
-            session['days'] = None
-        
-        print(f"Duration route - storing session data:")
-        print(f"  Start: {start_date}, End: {end_date}")
-        print(f"  Activities: {activities}")
-        print(f"  Days: {session.get('days')}")
-        
+            days = None
+
+        # Store all trip data in session['trip_data']
+        session['trip_data'] = {
+            'city': session.get('city'),
+            'region': session.get('region'),
+            'start_date': start_date,
+            'end_date': end_date,
+            'activities': activities,
+            'days': days
+        }
+
+        # Also store user profile info in session for recommendations
+        session['user_profile'] = {
+            'gender': getattr(current_user, 'gender', 'unisex') or 'unisex',
+            'age': getattr(current_user, 'age', 'N/A') or 'N/A'
+        }
+
+        print(f"Duration route - storing trip_data in session:")
+        print(session['trip_data'])
+        print(f"Duration route - storing user_profile in session:")
+        print(session['user_profile'])
+
         # Redirect to recommendations
         return redirect(url_for('recommendations.recommendations'))
     

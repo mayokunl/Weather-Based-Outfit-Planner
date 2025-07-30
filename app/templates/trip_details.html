@@ -285,9 +285,14 @@
     
     .day-content {
         padding: 0;
-        overflow: hidden;
-        max-height: 0;
-        transition: max-height 0.3s ease;
+        overflow: visible !important;
+        max-height: none !important;
+        display: block !important;
+        transition: none;
+    }
+    .recommendations-content {
+        display: block !important;
+        overflow: visible !important;
     }
     
     .day-details {
@@ -379,96 +384,158 @@ window.addEventListener('DOMContentLoaded', function() {
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="recommendations-container">
+  <a href="{{ url_for('main.profile') }}" class="back-button" style="margin-bottom:1.5rem;display:inline-block;">← Back to Profile</a>
 
-
-    <a href="{{ url_for('main.profile') }}" class="back-button">
-        ← Back to Profile
-    </a>
-    
-    <div class="trip-header">
-        <h1>{{ location }}</h1>
-        <div class="trip-meta">
-            <div class="meta-item">
-                <span>{{ trip.duration }} days</span>
-            </div>
-            {% if activities %}
-            <div class="meta-item activities-tags" style="gap: 0.25rem; padding: 0; background: none; border-radius: 0;">
-                {% for activity in activities %}
-                {% if activity.strip() %}
-                <span class="activity-tag">{{ activity.strip() }}</span>
-                {% endif %}
-                {% endfor %}
-            </div>
-            {% endif %}
-        </div>
+  <div class="container-card container-wide mt-md mb-lg" style="max-width:900px;width:100%;">
+    <div class="mb-sm" style="text-align:center;">
+      <h2 class="heading-2" style="margin-bottom:0.5rem; text-align:center;">Trip Overview ✈️</h2>
+      <p class="section-desc mb-lg" style="font-size:1rem;color:#6b7280;margin-bottom:0.5rem; text-align:center;">
+        See the details of your past adventure
+      </p>
     </div>
-    
-    <div class="recommendations-section">
-        {% if overall_outfit_image %}
-        <div class="overall-outfit">
-            <h2 class="section-title">Complete Outfit</h2>
-            <img src="{{ overall_outfit_image }}" alt="Complete outfit for {{ location }}" class="outfit-image">
+    <div class="container-section">
+      <div class="trip-overview-two-cols" style="display: flex; flex-direction: row; justify-content: center; align-items: flex-start; gap: 2.5rem; width: 100%;">
+        <div class="trip-col" style="flex:1 1 0; min-width:0; max-width:none; text-align:center;">
+          <div class="trip-info-divider-row" style="margin-bottom:0.7rem; display:flex; align-items:center; justify-content:center; gap:1.2rem;">
+            <div class="trip-info-divider" style="flex:1 1 0; height:2.5px; background:linear-gradient(90deg,rgba(129,140,248,0) 0%,#818cf8 30%,#6366f1 70%,rgba(129,140,248,0) 100%); border-radius:2px; min-width:40px; max-width:100px;"></div>
+            <div class="trip-subtitle" style="margin: 0 1.2rem 0 1.2rem; text-align:center; font-weight:700; font-size:1.13rem; white-space:nowrap; letter-spacing:0.03em;">Your Past Trip</div>
+            <div class="trip-info-divider" style="flex:1 1 0; height:2.5px; background:linear-gradient(90deg,rgba(129,140,248,0) 0%,#818cf8 30%,#6366f1 70%,rgba(129,140,248,0) 100%); border-radius:2px; min-width:40px; max-width:100px;"></div>
+          </div>
+          <div class="compact-trip-info-row center-tiles" style="display:flex; flex-direction:row; justify-content:center; align-items:center; gap:1.2rem; margin-bottom:0;">
+            <div class="trip-info-card small">
+              <div class="trip-info-icon" aria-label="Duration">📅</div>
+              <div class="trip-info-label">Duration</div>
+              <div class="trip-info-value">{{ trip.duration }} Day{{ 's' if trip.duration|int > 1 else '' }}</div>
+            </div>
+            <div class="trip-info-card small">
+              <div class="trip-info-icon" aria-label="Location">📍</div>
+              <div class="trip-info-label">Location</div>
+              <div class="trip-info-value">{{ trip.city }}{% if trip.region %}, {{ trip.region }}{% endif %}</div>
+            </div>
+          </div>
+        </div>
+        {% if activities %}
+        <div class="trip-col" style="flex:1 1 0; min-width:0; max-width:none; text-align:center;">
+          <div class="trip-info-divider-row" style="margin-bottom:0.7rem; display:flex; align-items:center; justify-content:center; gap:1.2rem;">
+            <div class="trip-info-divider" style="flex:1 1 0; height:2.5px; background:linear-gradient(90deg,rgba(129,140,248,0) 0%,#818cf8 30%,#6366f1 70%,rgba(129,140,248,0) 100%); border-radius:2px; min-width:40px; max-width:100px;"></div>
+            <div class="trip-activities-label" style="margin: 0 1.2rem 0 1.2rem; text-align:center; font-weight:700; font-size:1.13rem; white-space:nowrap; letter-spacing:0.03em;">Planned Activities</div>
+            <div class="trip-info-divider" style="flex:1 1 0; height:2.5px; background:linear-gradient(90deg,rgba(129,140,248,0) 0%,#818cf8 30%,#6366f1 70%,rgba(129,140,248,0) 100%); border-radius:2px; min-width:40px; max-width:100px;"></div>
+          </div>
+          <div class="trip-activities-chips" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:1.1rem 1.2rem; margin-bottom:0.5rem; min-height:48px;">
+            {% for activity in activities %}
+              <span class="activity-tag" style="margin:0 auto;">{{ activity }}</span>
+            {% endfor %}
+          </div>
         </div>
         {% endif %}
-        
-        {# Removed global shopping section. Shopping is now per-day below. #}
-        
-        {% if days %}
-        <div class="text-recommendations">
-            <h2 class="section-title">Daily Outfit Recommendations</h2>
-            <div class="daily-recommendations">
-            {% for day in days %}
-            <div class="day-box mb-lg" style="background:white; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); padding:2rem; margin-bottom:2rem;">
-                <h3 class="day-name" style="margin-bottom:1rem;">{{ day.title }}</h3>
-                <div class="recommendations-preview">
-                  <h4>Outfit Details</h4>
-                  <div class="recommendations-content" style="margin-bottom:1.5rem;">
-                    {# Only show content before 'Product Searches' if present #}
-                    {% set content_str = day.content | markdown %}
-                    {% if '<strong>Product Searches:' in content_str %}
-                      {{ content_str.split('<strong>Product Searches:')[0] | safe }}
-                    {% else %}
-                      {{ content_str | safe }}
-                    {% endif %}
-                  </div>
-                  {% set day_data = outfit_data['outfit_data'][day.title] if outfit_data.get('outfit_data') and outfit_data['outfit_data'].get(day.title) else [] %}
-                  {% if day_data is mapping and 'shopping' in day_data %}
-                    {% set shopping = day_data['shopping'] %}
+      </div>
+    </div>
+  </div>
+
+  {% if overall_outfit_image %}
+  <div class="container-card container-wide mt-md mb-lg improved-weather-section" style="max-width:900px;width:100%;">
+    <div class="weather-header">
+      <h2 class="heading-2" style="margin-bottom:0.5rem;">Complete Outfit</h2>
+    </div>
+    <div style="display:flex;justify-content:center;align-items:center;">
+      <img src="{{ overall_outfit_image }}" alt="Complete outfit for {{ location }}" class="outfit-image" style="max-width:350px;width:100%;border-radius:14px;box-shadow:0 2px 12px rgba(59,130,246,0.07), 0 1.5px 6px rgba(249,115,22,0.07);">
+    </div>
+  </div>
+  {% endif %}
+
+  {% if days %}
+  <div class="container-card container-wide mt-md mb-lg" style="max-width:900px;width:100%;">
+    <div class="mb-sm" style="text-align:center;">
+      <h2 class="heading-2" style="margin-bottom:0.5rem; text-align:center;">Daily Outfit Recommendations 👕</h2>
+      <div class="weather-subtitle" style="margin-bottom:1.2rem;">See what you wore each day of your trip</div>
+    </div>
+    {% for day in days %}
+      <div class="container-card mb-2xl day-card" style="background:#fff; border-radius:16px; box-shadow:0 2px 12px rgba(59,130,246,0.07), 0 1.5px 6px rgba(249,115,22,0.07); padding:1.5rem 1.5rem 1.2rem 1.5rem; max-width:850px; width:100%; margin:0.7rem auto 0 auto;">
+        <div class="day-header">
+          <div class="day-destination">
+            <div class="day-details">
+              <div class="day-details-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 1rem;">
+                <h3 class="day-name" style="margin: 0;">{{ day.title }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="day-content" style="display: block;">
+          <div class="recommendations-preview">
+            <div class="recommendations-content">
+              <div style="margin-top: 1.5rem;"></div>
+              {% set content_str = day.content | markdown %}
+              {% if '<strong>Product Searches:' in content_str %}
+                {{ content_str.split('<strong>Product Searches:')[0] | safe }}
+              {% else %}
+                {{ content_str | safe }}
+              {% endif %}
+            </div>
+            {# Robust day-to-shopping lookup: normalize keys and fallback #}
+            {% set shopping = [] %}
+            {% if outfit_data.get('outfit_data') %}
+              {% set day_key = day.title.strip() %}
+              {% for k, v in outfit_data['outfit_data'].items() %}
+                {% if k.strip() == day_key %}
+                  {% if v is mapping and 'shopping' in v %}
+                    {% set shopping = v['shopping'] %}
                   {% else %}
-                    {% set shopping = day_data %}
+                    {% set shopping = v %}
                   {% endif %}
-                  <div class="shopping-section" style="margin-top:1rem;">
-                    <h4 class="shopping-title">Shopping Suggestions 🛍️</h4>
-                    <div class="closet-grid closet-cards" style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: stretch;">
-                      {% for product in shopping %}
-                      <div class="card text-center closet-card" style="min-width:320px;max-width:420px;flex-basis:340px;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;">
-                        <div class="category-tag" style="display:none;top:0.5rem;left:0.5rem;background:linear-gradient(135deg,#f97316 0%,#f59e0b 100%);">{{ day.title }}</div>
-                        {% if product.thumbnail %}
-                          <img src="{{ product.thumbnail }}" class="item-image closet-img" alt="{{ product.title }}">
-                        {% else %}
-                          <div class="item-image closet-img" style="display:flex;align-items:center;justify-content:center;color:#999;">No Image</div>
-                        {% endif %}
-                        <div class="item-content">
-                          <h5 class="item-title">{{ product.title }}</h5>
-                          {% if product.price %}<div class="item-price">{{ product.price }}</div>{% endif %}
-                          {% if product.source %}<div class="item-source">from {{ product.source }}</div>{% endif %}
-                          {% if product.link %}<a href="{{ product.link }}" target="_blank" rel="noopener noreferrer" class="shop-button" style="margin-top:0.5rem;">Shop Now</a>{% endif %}
-                          <button class="shop-button" style="margin-top:0.5rem;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);" onclick="alert('Add to Closet feature coming soon!')">Add to Closet</button>
-                        </div>
-                      </div>
-                      {% endfor %}
-                    </div>
-                    {% if not shopping or shopping|length == 0 %}
-                      <div class="no-data">No shopping suggestions for this day.</div>
-                    {% endif %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+            {% if not shopping and day.get('shopping') %}
+              {% set shopping = day['shopping'] %}
+            {% endif %}
+            {% if shopping and shopping|length > 0 %}
+            <div class="shopping-section" style="margin-top:1rem;">
+              <h4 class="shopping-title">Shopping Suggestions 🛍️</h4>
+              <div class="closet-grid closet-cards" style="display: flex; flex-wrap: wrap; gap: 2rem 2rem; justify-content: center; align-items: stretch; margin: 0 auto; max-width: 1200px;">
+                {% for product in shopping %}
+                <div class="card text-center closet-card" style="min-width:320px;max-width:400px;flex-basis:340px;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin-bottom:2rem;box-shadow:0 6px 24px rgba(0,0,0,0.10);">
+                  <div class="category-tag" style="display:none;top:0.5rem;left:0.5rem;background:linear-gradient(135deg,#f97316 0%,#f59e0b 100%);">{{ day.title }}</div>
+                  {% if product.thumbnail %}
+                    <img src="{{ product.thumbnail }}" class="item-image closet-img" alt="{{ product.title }}" style="width: 180px; height: 180px; object-fit: cover; margin: 0 auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                  {% else %}
+                    <div class="item-image closet-img" style="width: 180px; height: 180px; display:flex;align-items:center;justify-content:center;color:#999;background:#f8f9fa;margin:0 auto;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">No Image</div>
+                  {% endif %}
+                  <div class="item-content">
+                    <h5 class="item-title">{{ product.title }}</h5>
+                    {% if product.price %}<div class="item-price">{{ product.price }}</div>{% endif %}
+                    {% if product.source %}<div class="item-source">from {{ product.source }}</div>{% endif %}
+                    {% if product.link %}<a href="{{ product.link }}" target="_blank" rel="noopener noreferrer" class="shop-button" style="margin-top:0.5rem;">Shop Now</a>{% endif %}
+                    <button class="activity-tag" style="margin-top:0.5rem; border:none; cursor:pointer;" onclick="alert('Add to Closet feature coming soon!')">Add to Closet</button>
                   </div>
                 </div>
+                {% endfor %}
+              </div>
             </div>
-            {% endfor %}
-            </div>
+            {% endif %}
+          </div>
         </div>
-        {% endif %}
-    </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 </div>
+
+<script>
+function toggleDayDropdown(button) {
+  // Find the nearest day card container
+  const card = button.closest('.day-card');
+  if (!card) return;
+  const content = card.querySelector('.day-content');
+  const icon = button.querySelector('.expand-icon');
+  if (!content || !icon) return;
+  if (content.style.display === 'none' || content.style.display === '') {
+    content.style.display = 'block';
+    icon.style.transform = 'rotate(180deg)';
+  } else {
+    content.style.display = 'none';
+    icon.style.transform = 'rotate(0deg)';
+  }
+}
+</script>
 {% endblock %}
