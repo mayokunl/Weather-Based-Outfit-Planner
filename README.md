@@ -1,6 +1,3 @@
-[![Tests](https://github.com/Yabsram/StyleCast/actions/workflows/test.yaml/badge.svg)](https://github.com/Yabsram/StyleCast/actions/workflows/test.yaml)
-[![Check Style](https://github.com/Yabsram/StyleCast/actions/workflows/check.yaml/badge.svg)](https://github.com/Yabsram/StyleCast/actions/workflows/check.yaml)
-
 # StyleCast 👗🌦️
 
 A personalized outfit planner that helps you dress for the weather and your plans. Whether you're headed to a formal event, a workout, or a casual hangout, StyleCast uses real-time weather data to recommend stylish, functional outfits.
